@@ -2,7 +2,7 @@
   <div class="min-h-screen flex flex-col overflow-x-hidden">
     <Header />
 
-    <main class="flex-1 pt-16">
+    <main class="flex-1 pt-20 sm:pt-0">
       <slot />
     </main>
 

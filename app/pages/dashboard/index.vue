@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-8 p-12 bg-gray-50/60 min-h-screen">
+  <div class="space-y-8 p-12 min-h-screen">
     <Breadcrumb />
 
     <div class="flex items-center justify-between">
@@ -184,7 +184,7 @@ const totalRevenue = computed(() => {
   const revenueByCurrency = {};
 
   filteredReceived.value
-    .filter((b) => b.current_status.name === "acceptée")
+    .filter((b) => b.current_status.name === "acceptée" || b.current_status.name === "payée")
     .forEach((b) => {
       const post = posts.value.find((p) => p.id === b.post.id);
       if (post && post.current_status === "vendu") {

@@ -1,252 +1,511 @@
 <template>
-  <div class="space-y-8 p-12 bg-gray-50/60 min-h-screen">
-    <Breadcrumb />
-    <div class="flex justify-between items-center">
-      <h2 class="text-2xl font-bold text-gray-800">{{ t('myListings') }}</h2>
-      <button
-        @click="refreshPosts"
-        class="flex items-center gap-2 text-gray-600 hover:text-[#10b481] transition-colors hidden"
-      >
-        <i class="bx bx-refresh text-xl animate-spin-once"></i>
-        <span class="hidden sm:inline text-sm font-medium"></span>
-      </button>
+  <div class="space-y-8 p-4 sm:p-12 bg-gray-50/60 min-h-screen">
+    <div class="flex items-center justify-between flex-wrap gap-3">
+  <h2 class="text-xl font-bold text-gray-800 flex-1 min-w-0">
+    {{ t("myListings") }}
+  </h2>
 
-      <button
-        @click="$router.push('/dashboard/post/create')"
-        class="flex items-center gap-2 text-white bg-[#10b481] hover:bg-[#0e9c70] transition-colors duration-300 py-2 px-4 rounded"
-      >
-        <i class="bx bx-plus text-xl"></i>
-        <span class="hidden sm:inline text-sm font-medium">{{ t('newListings') }}</span>
-      </button>
+  <button
+    @click="$router.push('/dashboard/post/create')"
+    class="flex items-center justify-center gap-2 btn-primary whitespace-nowrap"
+  >
+    <i class="bx bx-plus text-sm"></i>
+    <span class="text-sm font-medium">{{ t("newListings") }}</span>
+  </button>
+</div>
+
+
+    <div class="sm:hidden">
+      <div class="flex items-center gap-3">
+        <div
+          class="relative flex-1 border border-gray-200 rounded-xl bg-white shadow-sm py-1"
+        >
+          <i
+            class="bx bx-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+          ></i>
+          <input
+            v-model="filters.query"
+            type="text"
+            class="w-full pl-10 pr-3 py-2 text-sm bg-transparent focus:outline-none"
+            placeholder="Rechercher..."
+          />
+        </div>
+
+        <button
+          @click="showMobileFilters = !showMobileFilters"
+          class="p-2 btn-neutre"
+        >
+          <i class="bx bx-filter-alt text-gray-400"></i>
+        </button>
+      </div>
+
+      <transition name="fade">
+        <div
+          v-if="showMobileFilters"
+          class="mt-3 bg-white border border-gray-200 rounded-xl shadow-md p-4 space-y-4"
+        >
+          <select
+            v-model="filters.status"
+            class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#10b481]/30"
+          >
+            <option value="">{{ t("all") }}</option>
+            <option value="brouillon">{{ t("Draft") }}</option>
+            <option value="published">{{ t("Published") }}</option>
+            <option value="négociation">{{ t("Negotiation") }}</option>
+            <option value="vendu">{{ t("Sold") }}</option>
+            <option value="supprimé">{{ t("Deleted") }}</option>
+          </select>
+
+          <div class="space-y-2">
+            <label
+              v-for="(label, key) in dateOptions"
+              :key="key"
+              class="flex items-center gap-2 text-sm text-gray-600"
+            >
+              <input
+                type="radio"
+                :value="key"
+                v-model="filters.dateRange"
+                class="accent-[#10b481]"
+              />
+              {{ label }}
+            </label>
+          </div>
+        </div>
+      </transition>
     </div>
 
-    <div class="flex flex-wrap gap-6 border-b">
-      <button
-        @click="filterCategory('All')"
-        :class="[
-          'relative pb-1 font-medium text-gray-700 hover:text-[#10b481] transition-colors',
-          selectedType === 'All'
-            ? 'after:absolute after:-bottom-0.5 after:left-0 after:w-full after:h-0.5 after:bg-[#10b481]'
-            : '',
-        ]"
+    <div
+      class="hidden sm:flex items-center gap-3 border border-gray-200 rounded-xl px-4 py-2 bg-white shadow-sm transition"
+    >
+      <!-- Search -->
+      <div class="relative flex-1">
+        <i
+          class="bx bx-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+        ></i>
+        <input
+          v-model="filters.query"
+          type="text"
+          class="w-full pl-10 pr-3 py-2 text-sm bg-transparent focus:outline-none text-gray-800 placeholder-gray-400"
+          placeholder="Rechercher par produit ou titre"
+        />
+      </div>
+
+      <!-- Divider -->
+      <div class="w-px h-6 bg-gray-200"></div>
+
+      <!-- Status -->
+      <select
+        v-model="filters.status"
+        class="text-sm text-gray-600 bg-transparent focus:outline-none cursor-pointer hover:text-gray-800 transition"
       >
-        {{ t('All') }}
+        <option value="">{{ t("all") }}</option>
+        <option value="brouillon">{{ t("Draft") }}</option>
+        <option value="published">{{ t("Published") }}</option>
+        <option value="négociation">{{ t("Negotiation") }}</option>
+        <option value="vendu">{{ t("Sold") }}</option>
+        <option value="supprimé">{{ t("Deleted") }}</option>
+      </select>
+
+      <!-- Divider -->
+      <div class="w-px h-6 bg-gray-200"></div>
+
+      <!-- Date filter -->
+      <div class="relative">
+        <button
+          @click="showDateDropdown = !showDateDropdown"
+          class="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition"
+        >
+          <span class="whitespace-nowrap">{{ dateLabel }}</span>
+          <i
+            :class="
+              showDateDropdown
+                ? 'bx bx-chevron-up text-base'
+                : 'bx bx-chevron-down text-base'
+            "
+          ></i>
+        </button>
+
+        <transition name="fade">
+          <div
+            v-if="showDateDropdown"
+            class="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 min-w-full overflow-hidden"
+          >
+            <label
+              v-for="(label, key) in dateOptions"
+              :key="key"
+              class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 cursor-pointer hover:bg-gray-50 transition"
+            >
+              <input
+                type="radio"
+                :value="key"
+                v-model="filters.dateRange"
+                class="accent-[#10b481]/50"
+              />
+              <span>{{ label }}</span>
+            </label>
+          </div>
+        </transition>
+      </div>
+    </div>
+
+    <div class="flex flex-wrap gap-4 items-center border-b pb-4">
+      <button @click="filterCategory('All')" :class="categoryClass('All')">
+        {{ t("All") }}
       </button>
       <button
         @click="filterCategory('Buying')"
-        :class="[
-          'relative pb-1 font-medium text-gray-700 hover:text-[#10b481] transition-colors',
-          selectedType === 'Buying'
-            ? 'after:absolute after:-bottom-0.5 after:left-0 after:w-full after:h-0.5 after:bg-[#10b481]'
-            : '',
-        ]"
+        :class="categoryClass('Buying')"
       >
-        {{ t('Buying') }}
+        {{ t("Buying") }}
       </button>
       <button
         @click="filterCategory('Selling')"
-        :class="[
-          'relative pb-1 font-medium text-gray-700 hover:text-[#10b481] transition-colors',
-          selectedType === 'Selling'
-            ? 'after:absolute after:-bottom-0.5 after:left-0 after:w-full after:h-0.5 after:bg-[#10b481]'
-            : '',
-        ]"
+        :class="categoryClass('Selling')"
       >
-        {{ t('Selling') }}
+        {{ t("Selling") }}
       </button>
     </div>
 
     <div
       v-if="filteredPosts.length"
-      class="overflow-x-auto bg-white shadow-sm rounded border border-gray-200"
+      class="overflow-x-auto bg-white rounded-2xl shadow-sm"
     >
-      <table class="min-w-full w-full">
-        <thead class="bg-gray-50 border-b">
+      <table class="min-w-[700px] w-full text-left border-collapse">
+        <thead class="bg-[#FAFAF9]">
           <tr>
-            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700">
-              {{ t('product') }}
-            </th>
-            <!-- <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700">
-              Description
-            </th> -->
-            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700">
-              {{ t('quantity') }}
-            </th>
-            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700">
-              {{ t('price') }}
-            </th>
-            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700">
-              {{ t('category') }}
-            </th>
-            <th class="px-3 py-2 text-left text-sm font-semibold text-gray-700">
-              {{ t('date') }}
+            <th
+              @click="sortBy('product.product')"
+              class="cursor-pointer px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider border-b"
+            >
+              {{ t("product") }} <i class="bxr bx-carets-up-down"></i>
             </th>
             <th
-              class="px-3 py-2 text-center text-sm font-semibold text-gray-700"
+              @click="sortBy('quantity')"
+              class="cursor-pointer px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider border-b"
             >
-              {{ t('actions') }}
+              {{ t("quantity") }} <i class="bxr bx-carets-up-down"></i>
+            </th>
+            <th
+              @click="sortBy('price')"
+              class="cursor-pointer px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider border-b"
+            >
+              {{ t("price") }} <i class="bxr bx-carets-up-down"></i>
+            </th>
+            <th
+              @click="sortBy('type_post.type')"
+              class="cursor-pointer px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider border-b"
+            >
+              {{ t("category") }} <i class="bxr bx-carets-up-down"></i>
+            </th>
+            <th
+              @click="sortBy('created_at')"
+              class="cursor-pointer px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider border-b"
+            >
+              {{ t("date") }} <i class="bxr bx-carets-up-down"></i>
+            </th>
+            <th
+              class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider border-b"
+            >
+              {{ t("status") }}
+            </th>
+            <th
+              class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider border-b text-center"
+            >
+              {{ t("actions") }}
             </th>
           </tr>
         </thead>
-
         <tbody>
           <tr
             v-for="post in paginatedPosts"
             :key="post.id"
-            class="border-t transition"
+            class="hover:bg-gray-50 transition"
           >
-            <td class="px-3 py-2 flex items-center gap-3">
-              <img
-                v-if="post.image_url"
-                :src="post.image_url"
-                alt=""
-                class="w-12 h-12 object-cover rounded-md border"
-              />
-              <span class="font-medium text-gray-800">{{
-                post.product.product
-              }}</span>
+            <!-- Product -->
+            <td class="px-6 py-3 border-b text-sm text-gray-900">
+              <div class="flex items-center gap-3">
+                <img
+                  v-if="post.image_url"
+                  :src="post.image_url"
+                  alt="Product image"
+                  class="w-12 h-12 object-cover rounded-md border"
+                />
+                <span class="font-medium text-gray-800">{{
+                  post.product.product
+                }}</span>
+              </div>
             </td>
 
-            <!-- <td class="px-3 py-2 text-sm text-gray-600">
-              {{ truncated(post.description) }}
-            </td> -->
-            <td class="px-3 py-2 text-sm text-gray-600">
+            <!-- Quantity -->
+            <td
+              class="px-6 py-3 border-b text-sm text-gray-700 whitespace-nowrap"
+            >
               {{ post.quantity }} {{ post.product.unit.abbreviation }}
             </td>
-            <td class="px-3 py-2 text-sm text-gray-600">
+
+            <!-- Price -->
+            <td
+              class="px-6 py-3 border-b text-sm text-gray-700 whitespace-nowrap"
+            >
               {{ post.price }} {{ post.currency.symbol }}
             </td>
 
-            <td class="px-3 py-2">
+            <!-- Category -->
+            <td class="px-6 py-3 border-b text-sm">
               <span
                 :class="[
-                  'px-3 py-1 text-xs font-semibold rounded-full border',
+                  'px-3 py-1 text-xs font-semibold rounded-full border whitespace-nowrap',
                   post.type_post?.type === 'Selling'
                     ? 'border-[#10b481] text-[#10b481] bg-[#10b481]/10'
-                    : 'border-[#e76f51] text-[#e76f51] bg-[#f4a261]/10',
+                    : 'border-[#f4a261] text-[#f4a261] bg-[#f4a261]/10',
                 ]"
               >
                 {{ post.type_post?.type }}
               </span>
             </td>
 
-            <td class="px-3 py-2 text-sm text-gray-500">
+            <!-- Date -->
+            <td
+              class="px-6 py-3 border-b text-sm text-gray-600 whitespace-nowrap"
+            >
               {{ formatDate(post.created_at) }}
             </td>
 
-            <td class="px-3 py-2 flex justify-center gap-4">
-              <NuxtLink
-                :to="`/dashboard/post/bids/${post.id}`"
-                class="relative text-gray-600 hover:text-[#10b481] transition-colors"
-                title="Voir les offres"
+            <!-- Status -->
+            <td class="px-6 py-3 border-b text-sm">
+              <span
+                :class="[
+                  'px-3 py-1 text-xs font-semibold rounded-full border whitespace-nowrap',
+                  statusColors[post.current_status]?.border,
+                  statusColors[post.current_status]?.text,
+                  statusColors[post.current_status]?.bg,
+                ]"
               >
-                <i class="bx bx-bell text-xl"></i>
+                {{
+                  post.current_status.charAt(0).toUpperCase() +
+                  post.current_status.slice(1)
+                }}
+              </span>
+            </td>
 
-                <span
-                  v-if="post.total_bids > 0"
-                  class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center shadow-md"
+            <!-- Actions -->
+            <td class="px-6 py-3 border-b text-center">
+              <div class="flex items-center justify-center gap-2">
+                <NuxtLink
+                  :to="`/dashboard/post/bids/${post.id}`"
+                  class="relative p-2 rounded-full hover:bg-[#10b481]/10 transition"
+                  title="Voir les offres"
                 >
-                  {{ post.total_bids }}
-                </span>
-              </NuxtLink>
+                  <i class="bx bx-receipt text-lg text-[#10b481]"></i>
+                  <span
+                    v-if="post.total_bids > 0"
+                    class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-semibold bg-red-600 text-white rounded-full shadow"
+                    >{{ post.total_bids }}</span
+                  >
+                </NuxtLink>
 
-              <button
-                class="text-blue-500 hover:text-blue-700 transition-colors"
-                title="Modifier"
-              >
-                <i class="bx bx-edit text-lg"></i>
-              </button>
+                <button
+                  class="p-2 rounded-full hover:bg-[#f4a261]/10 transition"
+                  title="Modifier"
+                >
+                  <i class="bx bx-edit text-[#f4a261] text-lg"></i>
+                </button>
 
-              <button
-                class="text-red-500 hover:text-red-700 transition-colors"
-                title="Supprimer"
-              >
-                <i class="bx bx-trash text-lg"></i>
-              </button>
+                <button
+                  class="p-2 rounded-full hover:bg-[#e63946]/10 transition"
+                  title="Supprimer"
+                >
+                  <i class="bx bx-trash text-[#e63946] text-lg"></i>
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>
       </table>
 
-      <div class="flex justify-between items-center p-4 border-t bg-gray-50">
-        <p class="text-sm text-gray-600">
-          {{ t('page') }} {{ currentPage }} {{ t('sur') }} {{ totalPages }}
-        </p>
-        <div class="flex gap-2">
+      <!-- Pagination -->
+      <div class="bg-white px-4 py-4 flex items-center justify-between sm:px-6">
+        <div class="flex-1 flex justify-between sm:hidden">
           <button
             @click="prevPage"
             :disabled="currentPage === 1"
-            class="px-3 py-1 border rounded text-sm hover:bg-gray-100 disabled:opacity-40"
+            class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
           >
-            {{ t('prev') }}
+            {{ t("prev") }}
           </button>
           <button
             @click="nextPage"
             :disabled="currentPage === totalPages"
-            class="px-3 py-1 border rounded text-sm hover:bg-gray-100 disabled:opacity-40"
+            class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
           >
-            {{ t('next') }}
+            {{ t("next") }}
           </button>
+        </div>
+        <div
+          class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between"
+        >
+          <div>
+            <p class="text-sm text-gray-700">
+              {{ t("affichage") }}
+              <span class="font-medium">{{ currentPage }}</span> {{ t("a") }}
+              <span class="font-medium">{{ totalPages }}</span> {{ t("sur") }}
+              <span class="font-medium">{{ result }}</span> {{ t("résultats") }}
+            </p>
+          </div>
+          <div>
+            <nav
+              class="relative z-0 inline-flex rounded-lg shadow-sm -space-x-px"
+              aria-label="Pagination"
+            >
+              <button
+                @click="prevPage"
+                :disabled="currentPage === 1"
+                class="relative inline-flex items-center px-2 py-2 rounded-l border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+              >
+                <span class="sr-only">{{ t("prev") }}</span
+                ><i class="bx bx-chevron-left"></i>
+              </button>
+              <button
+                v-for="page in visiblePages"
+                :key="page"
+                @click="goToPage(page)"
+                :class="[
+                  'relative inline-flex items-center px-4 py-2 border text-sm font-medium',
+                  currentPage === page
+                    ? 'z-10 bg-[#10b481]/10 border-[#10b481] text-[#10b481]'
+                    : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50',
+                ]"
+                v-if="page !== '...'"
+              >
+                {{ page }}
+              </button>
+              <span v-else class="px-2">...</span>
+              <button
+                @click="nextPage"
+                :disabled="currentPage === totalPages"
+                class="relative inline-flex items-center px-2 py-2 rounded-r border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+              >
+                <span class="sr-only">{{ t("next") }}</span
+                ><i class="bx bx-chevron-right"></i>
+              </button>
+            </nav>
+          </div>
         </div>
       </div>
     </div>
 
-    <div v-else class="text-gray-500 italic">{{ t('noListingsFound') }}</div>
+    <div v-else class="text-gray-500 italic">{{ t("noListingsFound") }}</div>
   </div>
 </template>
 
 <script setup>
-definePageMeta({ layout: "dashboard" });
-
-import { ref, computed, onMounted } from "vue";
-import { formatDistanceToNow, parseISO, format } from "date-fns";
+import { ref, reactive, computed, onMounted } from "vue";
+import { parseISO, formatDistanceToNow } from "date-fns";
+import { fr, enUS } from "date-fns/locale";
+import Breadcrumb from "~/components/Breadcrumb.vue";
 import { API_URL } from "~/utils/config";
 import { useLanguageStore } from "~/stores/language";
 import { translate } from "~/utils/translate";
 import { useRouter } from "vue-router";
-import Breadcrumb from "~/components/Breadcrumb.vue";
+
+definePageMeta({ layout: "dashboard" });
+
 const router = useRouter();
-
 const languageStore = useLanguageStore();
-const t = (key) => {
-  const lang = languageStore.lang;
-  return translate[lang][key] || key;
-};
+const t = (key) => translate[languageStore.lang][key] || key;
 
-const isLoggedIn = ref(true);
 const userPosts = ref([]);
-
-const selectedType = ref("All");
-const filterCategory = (category) => {
-  selectedType.value = category;
-};
-
-const filteredPosts = computed(() =>
-  selectedType.value === "All"
-    ? userPosts.value
-    : userPosts.value.filter((p) => p.type_post?.type === selectedType.value)
-);
-
+const result = ref(0);
 const currentPage = ref(1);
 const itemsPerPage = 4;
-const totalPages = computed(() =>
-  Math.ceil(filteredPosts.value.length / itemsPerPage)
-);
 
-const paginatedPosts = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  return filteredPosts.value.slice(start, start + itemsPerPage);
+const selectedType = ref("All");
+const showDateDropdown = ref(false);
+const showMobileFilters = ref(false);
+const filters = reactive({
+  parcel_name: "",
+  title: "",
+  status: "",
+  dateRange: "all",
 });
 
-const nextPage = () =>
-  currentPage.value < totalPages.value && currentPage.value++;
-const prevPage = () => currentPage.value > 1 && currentPage.value--;
+const dateOptions = {
+  all: "Tous",
+  "7days": "Derniers 7 jours",
+  month: "Ce mois",
+  year: "Cette année",
+};
 
-// Fonctions utilitaires
-const truncated = (text, length = 60) =>
-  text.length > length ? text.slice(0, length) + "..." : text;
+const dateLabel = computed(() => dateOptions[filters.dateRange] || "Tous");
 
-// ⚡ Récupérer les posts de l'utilisateur depuis l'API
+const statusColors = {
+  brouillon: {
+    border: "border-gray-400",
+    text: "text-gray-700",
+    bg: "bg-gray-200/30",
+  },
+  published: {
+    border: "border-blue-600",
+    text: "text-blue-600",
+    bg: "bg-blue-600/10",
+  },
+  négociation: {
+    border: "border-[#f4a261]",
+    text: "text-[#f4a261]",
+    bg: "bg-[#f4a261]/10",
+  },
+  vendu: {
+    border: "border-[#10b481]",
+    text: "text-[#10b481]",
+    bg: "bg-[#10b481]/10",
+  },
+  supprimé: {
+    border: "border-red-600",
+    text: "text-red-600",
+    bg: "bg-red-600/10",
+  },
+};
+
+const sortKey = ref(null);
+const sortAsc = ref(true);
+
+function sortBy(key) {
+  if (sortKey.value === key) sortAsc.value = !sortAsc.value;
+  else {
+    sortKey.value = key;
+    sortAsc.value = true;
+  }
+}
+
+const filterCategory = (category) => {
+  selectedType.value = category;
+  currentPage.value = 1;
+};
+const categoryClass = (category) => [
+  "relative pb-1 font-medium text-gray-700 hover:text-[#10b481] transition-colors text-sm",
+  selectedType.value === category
+    ? "after:absolute after:-bottom-0.5 after:left-0 after:w-full after:h-0.5 after:bg-[#10b481]"
+    : "",
+];
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return "-";
+  const date = parseISO(dateStr.replace(/\.(\d{3})\d+Z$/, ".$1Z"));
+  const diffDays = Math.floor(
+    (Date.now() - date.getTime()) / (1000 * 60 * 60 * 24)
+  );
+  if (diffDays > 7)
+    return date.toLocaleDateString(
+      languageStore.lang === "fr" ? "fr-FR" : "en-US",
+      { year: "numeric", month: "short", day: "numeric" }
+    );
+  return formatDistanceToNow(date, {
+    addSuffix: true,
+    locale: languageStore.lang === "fr" ? fr : enUS,
+  });
+};
+
 const fetchUserPosts = async () => {
   try {
     const res = await fetch(`${API_URL}/api/posts/my_posts/`, {
@@ -254,44 +513,112 @@ const fetchUserPosts = async () => {
         Authorization: `Bearer ${localStorage.getItem("access_token")}`,
       },
     });
-    if (!res.ok) throw new Error("Erreur lors de la récupération des posts");
     const data = await res.json();
     userPosts.value = data;
-    console.log("Post:", JSON.stringify(userPosts.value, null, 2));
+    result.value = data.length;
   } catch (err) {
     console.error(err);
   }
 };
 
-// Charger les posts au montage
-onMounted(() => {
-  fetchUserPosts();
-});
-
-// Rafraîchir
+onMounted(fetchUserPosts);
 const refreshPosts = () => fetchUserPosts();
 
-const formatDate = (dateStr) => {
-  if (!dateStr) return "Date inconnue";
+const filteredPosts = computed(() => {
+  return userPosts.value
+    .filter(
+      (p) =>
+        selectedType.value === "All" || p.type_post?.type === selectedType.value
+    )
+    .filter((p) => !filters.status || p.current_status === filters.status)
+    .filter((p) => {
+      if (!filters.query) return true;
+      const q = filters.query.toLowerCase();
+      const productName = p.product.product?.toLowerCase() || "";
+      const title = p.product.title?.toLowerCase() || "";
+      return productName.includes(q) || title.includes(q);
+    })
+    .filter((p) => {
+      if (filters.dateRange === "all") return true;
+      const date = new Date(p.created_at);
+      const now = new Date();
+      if (filters.dateRange === "7days")
+        return (now - date) / (1000 * 60 * 60 * 24) <= 7;
+      if (filters.dateRange === "month")
+        return (
+          date.getMonth() === now.getMonth() &&
+          date.getFullYear() === now.getFullYear()
+        );
+      if (filters.dateRange === "year")
+        return date.getFullYear() === now.getFullYear();
+      return true;
+    })
+    .sort((a, b) => {
+      if (!sortKey.value) return 0;
+      const keys = sortKey.value.split(".");
+      let valA = keys.reduce((acc, k) => acc?.[k], a) || "";
+      let valB = keys.reduce((acc, k) => acc?.[k], b) || "";
+      if (typeof valA === "string") valA = valA.toLowerCase();
+      if (typeof valB === "string") valB = valB.toLowerCase();
+      if (valA < valB) return sortAsc.value ? -1 : 1;
+      if (valA > valB) return sortAsc.value ? 1 : -1;
+      return 0;
+    });
+});
 
-  try {
-    const date = parseISO(dateStr);
-    const diffDays = Math.floor((new Date() - date) / (1000 * 60 * 60 * 24));
-
-    return diffDays > 7
-      ? format(date, "dd/MM/yyyy")
-      : formatDistanceToNow(date, { addSuffix: true });
-  } catch (e) {
-    console.error("Invalid date:", dateStr);
-    return "Date invalide";
-  }
+const totalPages = computed(() =>
+  Math.ceil(filteredPosts.value.length / itemsPerPage)
+);
+const paginatedPosts = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage;
+  return filteredPosts.value.slice(start, start + itemsPerPage);
+});
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) currentPage.value++;
 };
+const prevPage = () => {
+  if (currentPage.value > 1) currentPage.value--;
+};
+const goToPage = (page) => {
+  currentPage.value = page;
+};
+
+const visiblePages = computed(() => {
+  const pages = [];
+  if (totalPages.value <= 15) {
+    for (let i = 1; i <= totalPages.value; i++) pages.push(i);
+  } else {
+    if (currentPage.value <= 7) {
+      pages.push(
+        ...Array.from({ length: 8 }, (_, i) => i + 1),
+        "...",
+        totalPages.value
+      );
+    } else if (currentPage.value >= totalPages.value - 6) {
+      pages.push(
+        1,
+        "...",
+        ...Array.from({ length: 8 }, (_, i) => totalPages.value - 7 + i)
+      );
+    } else {
+      pages.push(
+        1,
+        "...",
+        currentPage.value - 2,
+        currentPage.value - 1,
+        currentPage.value,
+        currentPage.value + 1,
+        currentPage.value + 2,
+        "...",
+        totalPages.value
+      );
+    }
+  }
+  return pages;
+});
 </script>
 
 <style scoped>
-tr:hover {
-  background-color: rgba(16, 180, 129, 0.08);
-}
 .animate-spin-once {
   animation: spin 0.7s linear;
 }
@@ -299,5 +626,14 @@ tr:hover {
   100% {
     transform: rotate(360deg);
   }
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-5px);
 }
 </style>

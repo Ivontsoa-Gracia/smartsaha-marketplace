@@ -1,25 +1,31 @@
 <template>
   <section
-    class="h-[410px] relative flex items-center bg-center bg-cover"
-    style="background-image: url('/img/hero8.png')"
+    class="h-screen relative flex items-center bg-center bg-cover bg-gradient-to-b from-[#fff] to-[#fff]/40 text-[#222831]"
   >
+    <div class="absolute inset-0">
+      <img
+        src="/img/image5.jpg"
+        alt="SmartSaha Marketplace"
+        class="w-full h-full object-cover opacity-30"
+      />
+    </div>
     <div
-      class="container mx-auto px-6 lg:px-20 relative z-10 flex flex-col justify-center h-full"
+      class="container mx-auto px-6 lg:px-10 relative z-10 flex flex-col justify-center h-full"
     >
-      <div class="max-w-xl text-left text-white">
+      <div class="max-w-lg text-left text-white">
         <h1
-          class="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-6 drop-shadow-lg"
+          class="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-6 drop-shadow-lg text-[#10b481]"
         >
-          {{ t('accroche') }}
+          {{ t("accroche") }}
         </h1>
-        <p class="text-base md:text-lg lg:text-xl mb-8 drop-shadow-md">
-          {{ t('textacrroche') }}
+        <p class="text-base md:text-lg lg:text-lg mb-8 drop-shadow-md text-gray-700">
+          {{ t("textacrroche") }}
         </p>
         <div class="flex flex-col sm:flex-row gap-4">
           <button
-            class="border border-white text-white hover:bg-white/20 px-6 py-3 rounded font-normal transition"
+            class="flex items-center justify-center gap-2 bg-[#10b481] text-white py-3 px-6 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl outline-none"
           >
-            {{ t('btnStart') }}
+            {{ t("btnStart") }}
           </button>
         </div>
       </div>

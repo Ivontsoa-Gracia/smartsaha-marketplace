@@ -8,7 +8,7 @@
       <div
         v-for="cat in categories"
         :key="cat.id"
-        class="relative h-40 sm:h-48 lg:h-48 rounded overflow-hidden cursor-pointer group shadow-md hover:shadow-xl transition-shadow duration-300"
+        class="relative h-40 sm:h-48 lg:h-48 rounded-2xl overflow-hidden cursor-pointer group shadow-md hover:shadow-xl transition-shadow duration-300"
         @click="$emit('selectCategory', cat)"
       >
         <div

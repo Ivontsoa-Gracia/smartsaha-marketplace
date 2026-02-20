@@ -1,49 +1,91 @@
 <template>
-  <div class="min-h-screen flex flex-col overflow-x-hidden">
-    <header
-      class="fixed top-0 left-0 right-0 z-50 flex items-center px-4 sm:px-8 h-20 bg-[#fefefe] backdrop-blur-md shadow-sm"
-    >
-      <div class="flex items-center gap-2">
-        <button class="sm:hidden p-2 text-gray-800" @click="toggleMobileMenu">
-          <i class="bx bx-menu text-2xl"></i>
-        </button>
+  <div class="flex h-screen bg-gray-50 overflow-hidden">
+    <div
+      v-if="isMobileOpen"
+      class="fixed inset-0 bg-black/40 z-30 md:hidden"
+      @click="isMobileOpen = false"
+    ></div>
 
-        <NuxtLink to="/" class="flex items-center gap-3">
-          <img
-            src="/marketplace_png.png"
-            alt="Logo"
-            class="h-10 w-auto rounded-md"
-          />
-          <div class="leading-tight">
-            <h1 class="text-xl font-semibold text-gray-800">AgriTrade</h1>
-            <p class="text-xs text-gray-500 tracking-wide">
-              SmartSaha Marketplace
-            </p>
+    <aside
+      :class="[
+        'fixed md:relative z-40 h-full bg-[#112830] text-white flex flex-col transition-all duration-300 ease-in-out',
+        isCollapsed && !isMobile ? 'w-22' : 'w-64',
+        isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
+      ]"
+    >
+      <div class="flex items-center py-6 px-2 relative">
+        <div
+          :class="[
+            'flex items-center w-full gap-1',
+            isCollapsed && !isMobile ? 'justify-between' : 'justify-between',
+          ]"
+        >
+          <div
+            class="flex items-center justify-center px-3 relative gap-3 "
+          >
+            <img
+              src="/logo.png"
+              alt="Logo"
+              class="w-12 h-12 object-contain flex-shrink-0 rounded-2xl"
+            />
+
+            <div v-if="!isCollapsed || isMobile" class="leading-tight">
+              <h1 class="text-xl font-semibold">SmartSaha</h1>
+              <p class="text-xs text-white/70 tracking-wide">
+                Agricultural Marketplace
+              </p>
+            </div>
           </div>
-        </NuxtLink>
+
+          <button
+          v-if="!isMobile"
+            @click="toggleCollapse"
+            class="absolute top-1/2 -translate-y-1/2 right-0 translate-x-1/2 z-50 flex items-center justify-center w-6 h-6 rounded-full bg-[#10b481] text-white shadow-lg hover:bg-[#10b481] hover:text-white transition-all duration-200"
+          >
+            <i
+              :class="[
+                'bx text-sm',
+                isCollapsed ? 'bx-chevron-right' : 'bx-chevron-left',
+              ]"
+            ></i>
+          </button>
+
+          <button
+            v-if="isMobile"
+            @click="isMobileOpen = false"
+            class="md:hidden p-1 rounded hover:bg-[#0e9a6c]"
+          >
+            <i class="bx bx-chevron-left text-lg"></i>
+          </button>
+        </div>
       </div>
 
-      <div class="hidden sm:flex items-center gap-6 ml-auto">
-        <div class="relative">
+      <nav class="flex-1 px-2 space-y-1 overflow-y-auto">
+        <div
+          class="flex md:hidden items-center gap-2 py-3 border-b border-white/20 relative"
+        >
           <button
             @click="open = !open"
-            class="flex items-center gap-2 py-1.5 px-3 transition"
+            class="flex items-center gap-3 py-1.5 px-3 w-full rounded transition bg-transparent"
           >
-            <img :src="currentLocale.flag" class="w-5 h-5 rounded-full" />
+            <img
+              :src="currentLocale.flag"
+              class="w-5 h-5 rounded-full ring-1 ring-white"
+            />
             <span class="text-sm font-medium">{{ currentLocale.name }}</span>
-            <i class="bx bx-chevron-down text-sm"></i>
+            <i class="bx bx-chevron-down ml-auto"></i>
           </button>
 
           <transition name="fade">
             <ul
               v-if="open"
-              class="absolute mt-2 w-40 bg-white border border-gray-100 rounded-lg shadow-md overflow-hidden"
+              class="absolute top-full left-0 mt-2 w-full bg-[#112830] border border-white/20 rounded shadow-md overflow-hidden z-50"
             >
               <li
                 v-for="loc in locales"
                 :key="loc.code"
                 @click="selectLocale(loc.code)"
-                class="flex items-center gap-2 px-3 py-2 hover:bg-[#10b481]/10 cursor-pointer"
+                class="flex items-center gap-2 px-3 py-2 hover:bg-[#10B481]/10 cursor-pointer"
               >
                 <img :src="loc.flag" class="w-5 h-5 rounded-full" />
                 <span class="text-sm">{{ loc.name }}</span>
@@ -52,226 +94,319 @@
           </transition>
         </div>
 
-        <div class="flex items-center gap-4">
-          <div class="relative">
-            <button
-              @click="goToNotif"
-              class="relative w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100 transition focus:outline-none focus:ring-2 focus:ring-[#10b481]/30"
-            >
-              <i class="bx bx-bell text-xl text-gray-700"></i>
-
-              <span
-                v-if="unreadNotifCount > 0"
-                class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-semibold bg-red-600 text-white rounded-full shadow"
-              >
-                {{ unreadNotifCount > 9 ? "9+" : unreadNotifCount }}
-              </span>
-            </button>
-          </div>
-
-          <div class="relative">
-            <button
-              @click="goToChat"
-              class="relative w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100 transition focus:outline-none focus:ring-2 focus:ring-[#10b481]/30"
-            >
-              <i class="bx bx-message-dots text-xl text-gray-700"></i>
-
-              <span
-                v-if="unreadCount > 0"
-                class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-semibold bg-red-600 text-white rounded-full shadow"
-              >
-                {{ unreadCount > 9 ? "9+" : unreadCount }}
-              </span>
-            </button>
-          </div>
-        </div>
-
-        <div class="relative">
-          <div class="relative">
-            <div
-              class="flex items-center gap-2 p-2 pl-1 rounded-lg cursor-pointer"
-              @click="toggleDropdown"
-            >
-              <div
-                class="w-10 h-10 bg-[#10b481] text-white flex items-center justify-center font-semibold rounded-full"
-              >
-                {{ user?.username?.charAt(0).toUpperCase() }}
-              </div>
-
-              <div>
-                <p class="text-sm font-semibold text-gray-800">
-                  {{ user?.username }}
-                </p>
-                <p class="text-xs text-gray-500">{{ user?.email }}</p>
-              </div>
-
-              <i class="bx bx-chevron-down text-sm"></i>
-            </div>
-
-            <ul
-              v-if="dropdownOpen"
-              class="absolute right-0 mt-2 w-48 bg-white border border-gray-100 rounded-lg shadow-md overflow-hidden"
-            >
-              <li class="px-4 py-2 text-sm hover:bg-gray-50">
-                <button @click="goToDashboard" class="w-full text-left">
-                  {{ t("dashboard") }}
-                </button>
-              </li>
-              <li class="px-4 py-2 text-sm hover:bg-gray-50">
-                <button @click="logout">{{ t("logout") }}</button>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <transition name="slide">
-      <aside
-        v-if="isMobileMenuOpen"
-        class="fixed inset-0 z-50 bg-[#112830]/95 backdrop-blur-sm flex flex-col sm:hidden"
-      >
-        <div
-          class="flex justify-between items-center p-4 border-b border-gray-700"
+        <NuxtLink
+          to="/"
+          :class="[
+            'flex items-center transition-all duration-200 cursor-pointer',
+            isCollapsed && !isMobile
+              ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]'
+              : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]',
+          ]"
         >
-          <h2 class="text-white font-bold text-lg">
-            <div class="flex items-center gap-3">
-              <div
-                class="h-10 w-10 rounded-full bg-gradient-to-br from-[#f4a261] to-[#f4a261] flex items-center justify-center"
-              >
-                <i class="bx bxs-user text-white text-lg"></i>
-              </div>
-              <div class="flex flex-col">
-                <p class="text-white font-semibold text-sm">
-                  {{ user?.username }}
-                </p>
-                <p class="text-gray-300 text-xs font-light">
-                  {{ user?.email }}
-                </p>
-              </div>
-            </div>
-          </h2>
-          <button @click="toggleMobileMenu" class="text-white text-2xl">
-            <i class="bx bx-x"></i>
-          </button>
-        </div>
+          <i class="bx bx-bx bx-store text-xl"></i>
+          <span v-if="!isCollapsed || isMobile" class="font-medium">
+            Marketplace
+          </span>
+        </NuxtLink>
 
-        <div class="flex flex-col gap-4 px-4 py-4 border-b border-gray-700">
-          <div>
-            <select
-              v-model="languageStore.lang"
-              class="w-full p-2 rounded bg-[#112830] text-white"
+        <!-- menu administration -->
+        <template v-if="isStaffUser">
+          <NuxtLink
+            to="/admin"
+            :class="[
+              'flex items-center transition-all duration-200 cursor-pointer',
+              isCollapsed && !isMobile
+                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]'
+                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]',
+            ]"
+          >
+            <i class="bx bx-bar-chart-alt-2 text-xl"></i>
+
+            <span v-if="!isCollapsed || isMobile" class="font-medium">
+              Dashboard
+            </span>
+          </NuxtLink>
+
+          <NuxtLink
+            to="/admin/posts"
+            :class="[
+              'flex items-center transition-all duration-200 cursor-pointer',
+              isCollapsed && !isMobile
+                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]'
+                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]',
+            ]"
+          >
+            <i class="bx bx-clipboard text-xl"></i>
+            <span v-if="!isCollapsed || isMobile" class="font-medium">
+              Gestion annonces
+            </span>
+          </NuxtLink>
+
+          <NuxtLink
+            to="/admin/users"
+            :class="[
+              'flex items-center transition-all duration-200 cursor-pointer',
+              isCollapsed && !isMobile
+                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]'
+                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]',
+            ]"
+          >
+            <i class="bx bx-user text-xl"></i>
+            <span v-if="!isCollapsed || isMobile" class="font-medium">
+              Gestion utilisateur
+            </span>
+          </NuxtLink>
+
+          <NuxtLink
+            to="/admin/products"
+            :class="[
+              'flex items-center transition-all duration-200 cursor-pointer',
+              isCollapsed && !isMobile
+                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]'
+                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]',
+            ]"
+          >
+            <i class="bx bx-package text-xl"></i>
+            <span v-if="!isCollapsed || isMobile" class="font-medium">
+              Gestion produits
+            </span>
+          </NuxtLink>
+
+          <NuxtLink
+            to="/admin/categories"
+            :class="[
+              'flex items-center transition-all duration-200 cursor-pointer',
+              isCollapsed && !isMobile
+                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]'
+                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]',
+            ]"
+          >
+            <i class="bx bx-category text-xl"></i>
+            <span v-if="!isCollapsed || isMobile" class="font-medium">
+              Gestion categories
+            </span>
+          </NuxtLink>
+        </template>
+
+        <template v-else>
+          <!-- menu utilisateur -->
+          <NuxtLink
+            to="/dashboard"
+            :class="[
+              'flex items-center transition-all duration-200 cursor-pointer',
+              isCollapsed && !isMobile
+                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]'
+                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]',
+            ]"
+          >
+            <i class="bx bx-bar-chart-alt-2 text-xl"></i>
+
+            <span v-if="!isCollapsed || isMobile" class="font-medium">
+              Dashboard
+            </span>
+          </NuxtLink>
+
+          <NuxtLink
+            to="/dashboard/post"
+            :class="[
+              'flex items-center transition-all duration-200 cursor-pointer',
+              isCollapsed && !isMobile
+                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]'
+                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]',
+            ]"
+          >
+            <i class="bx bx-clipboard text-xl"></i>
+
+            <span v-if="!isCollapsed || isMobile" class="font-medium">
+              Annonces
+            </span>
+          </NuxtLink>
+
+          <NuxtLink
+            to="/dashboard/bid"
+            :class="[
+              'flex items-center transition-all duration-200 cursor-pointer',
+              isCollapsed && !isMobile
+                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]'
+                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]',
+            ]"
+          >
+            <i class="bx bx-receipt text-xl"></i>
+
+            <span v-if="!isCollapsed || isMobile" class="font-medium">
+              Proposition
+            </span>
+          </NuxtLink>
+
+          <NuxtLink
+            to="/dashboard/post/transaction"
+            :class="[
+              'flex items-center transition-all duration-200 cursor-pointer',
+              isCollapsed && !isMobile
+                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]'
+                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]',
+            ]"
+          >
+            <i class="bx bx-credit-card text-xl"></i>
+            <span v-if="!isCollapsed || isMobile" class="font-medium">
+              Payments
+            </span>
+          </NuxtLink>
+        </template>
+
+        <NuxtLink
+          @click="goToChat"
+          :class="[
+            'flex items-center relative transition-all duration-200 cursor-pointer mb-4',
+            isCollapsed && !isMobile
+              ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]'
+              : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]',
+          ]"
+        >
+          <!-- Icon -->
+          <div class="relative inline-block">
+            <!-- Icône tournée -->
+            <i class="bx bx-send-alt transform -rotate-45 text-xl"></i>
+
+            <!-- Badge miniature (collapsed) -->
+            <span
+              v-if="unreadCount > 0 && isCollapsed && !isMobile"
+              class="absolute -top-1.5 -right-2 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-semibold bg-red-600 text-white rounded-full shadow"
             >
-              <option v-for="loc in locales" :key="loc.code" :value="loc.code">
-                {{ loc.name }}
-              </option>
-            </select>
+              {{ unreadCount > 9 ? "9+" : unreadCount }}
+            </span>
+          </div>
+
+          <!-- Texte -->
+          <span v-if="!isCollapsed || isMobile" class="font-medium">
+            Messagerie
+          </span>
+
+          <!-- Badge pleine largeur (full sidebar) -->
+          <span
+            v-if="unreadCount > 0 && (!isCollapsed || isMobile)"
+            class="ml-auto min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-semibold bg-red-600 text-white rounded-full shadow"
+          >
+            {{ unreadCount > 9 ? "9+" : unreadCount }}
+          </span>
+        </NuxtLink>
+
+        <div class="border-t border-white/10 pt-2">
+          <NuxtLink
+            to="/"
+            :class="[
+              'flex items-center transition-all duration-200 cursor-pointer',
+              isCollapsed && !isMobile
+                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]'
+                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]',
+            ]"
+          >
+            <i class="bx bx-cog text-xl"></i>
+            <span v-if="!isCollapsed || isMobile" class="font-medium">
+              Settings
+            </span>
+          </NuxtLink>
+
+          <NuxtLink
+            @click="logout"
+            :class="[
+              'flex items-center transition-all duration-200 cursor-pointer',
+              isCollapsed && !isMobile
+                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]'
+                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]',
+            ]"
+          >
+            <i class="bx bx-log-out text-xl"></i>
+            <span v-if="!isCollapsed || isMobile" class="font-medium">
+              Sign out
+            </span>
+          </NuxtLink>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col w-full">
+      <header
+        :class="[
+          'flex items-center justify-between bg-gray-50 px-4 sm:px-12 py-4 sm:py-7 transition-shadow duration-200',
+          isScrolled ? 'shadow' : '',
+        ]"
+      >
+        <button class="md:hidden text-gray-700" @click="isMobileOpen = true">
+          <i class="bx bx-menu text-2xl"></i>
+        </button>
+
+        <h2 class="text-lg font-semibold text-gray-800 hidden sm:flex">
+          <Breadcrumb />
+        </h2>
+
+        <div class="flex items-center gap-5">
+          <div class="relative hidden sm:flex">
+            <button
+              @click="open = !open"
+              class="flex items-center gap-2 py-1.5 px-3 transition"
+            >
+              <img :src="currentLocale.flag" class="w-5 h-5 rounded-full" />
+              <span class="text-sm font-medium">{{ currentLocale.name }}</span>
+              <i class="bx bx-chevron-down text-sm"></i>
+            </button>
+
+            <transition name="fade">
+              <ul
+                v-if="open"
+                class="absolute mt-2 w-40 bg-white border border-gray-100 rounded-lg shadow-md overflow-hidden"
+              >
+                <li
+                  v-for="loc in locales"
+                  :key="loc.code"
+                  @click="selectLocale(loc.code)"
+                  class="flex items-center gap-2 px-3 py-2 hover:bg-[#10b481]/10 cursor-pointer"
+                >
+                  <img :src="loc.flag" class="w-5 h-5 rounded-full" />
+                  <span class="text-sm">{{ loc.name }}</span>
+                </li>
+              </ul>
+            </transition>
+          </div>
+          <button
+            @click="goToNotif"
+            class="relative w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition focus:outline-none focus:ring-2 focus:ring-[#10b481]/30"
+          >
+            <i class="bx bx-bell text-xl text-gray-700"></i>
+
+            <span
+              v-if="unreadNotifCount > 0"
+              class="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-1 flex items-center justify-center text-[10px] font-semibold bg-red-600 text-white rounded-full shadow"
+            >
+              {{ unreadNotifCount > 9 ? "9+" : unreadNotifCount }}
+            </span>
+          </button>
+
+          <div class="flex items-center gap-3">
+            <img
+              v-if="user?.avatar_url"
+              :src="user?.avatar_url"
+              alt="avatar"
+              class="w-8 sm:w-10 h-8 sm:h-10 rounded-full object-cover ring-2 ring-[#10B481]/50"
+            />
+
+            <div
+              v-else
+              class="w-8 sm:w-10 h-8 sm:h-10 bg-[#10b481] text-white rounded-full flex items-center justify-center font-bold text-lg ring-2 ring-[#10B481]/50"
+            >
+              {{ user?.username.charAt(0).toUpperCase() }}
+            </div>
           </div>
         </div>
-
-        <nav class="flex-1 overflow-y-auto py-4 px-2 flex flex-col gap-2">
-          <button
-            v-for="item in sidebarLinks"
-            :key="item.to"
-            @click="
-              router.push(item.to);
-              toggleMobileMenu();
-            "
-            class="flex items-center gap-3 px-4 py-3 text-white hover:bg-[#10b481]/20 rounded w-full text-left"
-          >
-            <i :class="item.icon + ' text-xl'"></i>
-            <span>{{ item.label }}</span>
-          </button>
-          <button
-            @click="router.push('/help')"
-            class="flex items-center gap-3 px-4 py-3 text-white hover:bg-[#10b481]/20 rounded w-full text-left"
-          >
-            <i class="bxr bx-info-circle text-xl text-white"></i>
-            <span>{{ t("help") }}</span>
-          </button>
-          <button
-            @click="logout"
-            class="flex items-center gap-3 px-3 py-2 hover:bg-red-500/20 rounded text-white"
-          >
-            <i class="bx-light bx bx-log-out text-xl"></i>
-            <span>{{ t("logout") }}</span>
-          </button>
-        </nav>
-      </aside>
-    </transition>
-
-    <div class="flex flex-1 pt-16">
-      <aside
-        class="hidden sm:flex peer group fixed top-20 left-0 h-[calc(100vh-4rem)] flex-col justify-between bg-[#112830] shadow-lg w-20 hover:w-56 transition-all duration-300 z-40"
-      >
-        <nav class="flex flex-col space-y-2 py-4">
-          <template v-for="item in sidebarLinks" :key="item.label">
-            <div v-if="item.dropdown" class="relative">
-              <button
-                @click="
-                  dropdownStates[item.label] = !dropdownStates[item.label]
-                "
-                class="group relative flex items-center gap-3 px-4 py-2 text-white transition-all duration-300 hover:bg-white/10"
-              >
-                <div class="flex items-center gap-3">
-                  <i :class="item.icon + ' text-xl ml-2 font-light'"></i>
-                  <span
-                    class="font-light opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  >
-                    {{ item.label }}
-                  </span>
-                </div>
-                <i
-                  :class="
-                    dropdownStates[item.label]
-                      ? 'bx bx-chevron-up'
-                      : 'bx bx-chevron-down'
-                  "
-                  class="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                ></i>
-              </button>
-
-              <div
-                v-if="dropdownStates[item.label]"
-                class="ml-2 flex flex-col space-y-1 mt-1 overflow-hidden transition-all duration-300"
-              >
-                <button
-                  v-for="sub in item.dropdown"
-                  :key="sub.label"
-                  @click="router.push(sub.to)"
-                  class="flex items-center gap-2 px-4 py-2 text-white hover:bg-white/20 rounded w-full text-left"
-                >
-                  <i :class="sub.icon + ' text-lg'"></i>
-                  <span
-                    class="font-light opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    >{{ sub.label }}</span
-                  >
-                </button>
-              </div>
-            </div>
-
-            <button
-              v-else
-              @click="router.push(item.to)"
-              class="group relative flex items-center gap-3 px-4 py-2 text-white transition-all duration-300 hover:bg-white/10"
-            >
-              <span
-                class="absolute left-0 top-1/2 -translate-y-1/2 h-[60%] border-l-[3px] border-white bg-white/10 opacity-0 hover:opacity-100 group-focus:opacity-100 transition-all duration-300"
-              ></span>
-              <i :class="item.icon + ' text-xl ml-2 font-light'"></i>
-              <span
-                class="font-light opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                >{{ item.label }}</span
-              >
-            </button>
-          </template>
-        </nav>
-      </aside>
+      </header>
 
       <main
-        class="flex-1 sm:ml-20 transition-all duration-300 peer-hover:ml-56"
+        ref="mainContent"
+        class="overflow-auto flex-1"
+        @scroll="handleScroll"
       >
-        <slot />
+        <NuxtPage />
       </main>
     </div>
   </div>
@@ -283,6 +418,7 @@ import { API_URL } from "~/utils/config";
 import { useLanguageStore } from "~/stores/language";
 import { translate } from "~/utils/translate";
 import { useRouter } from "vue-router";
+import Breadcrumb from "~/components/Breadcrumb.vue";
 const router = useRouter();
 
 const languageStore = useLanguageStore();
@@ -307,88 +443,83 @@ const selectLocale = (code: string) => {
   open.value = false;
 };
 
-const user = ref(null);
-const isLoggedIn = ref(false);
+const isScrolled = ref(false);
+const mainContent = ref(null);
 
-const currentLang = ref("EN");
-const langDropdownOpen = ref(false);
-
-const dropdownStates = reactive<{ [key: string]: boolean }>({});
-
-const sidebarLinks = computed(() => {
-  if (!user.value) return [];
-
-  const baseLinks = [
-    { label: t("dashboard"), icon: "bxr bx-dashboard", to: "/dashboard" },
-    { label: t("posts"), icon: "bxr bx-newspaper", to: "/dashboard/post" },
-    { label: t("bid"), icon: "bxr bx-price-tag", to: "/dashboard/bid" },
-    {
-      label: t("chatbox"),
-      icon: "bx-chat",
-      to: "/dashboard/chatbox",
-      newTab: true,
-    },
-  ];
-
-  const links: any[] = [];
-
-  if (user.value.id_categorie_user_id === 4) {
-    links.push({
-      label: t("gererCompte"),
-      icon: "bx bx-user-circle",
-      dropdown: baseLinks,
-      open: false,
-    });
-
-    dropdownStates[t("gererCompte")] = false;
-
-    links.push(
-      { label: t("posts"), icon: "bxr bx-newspaper", to: "/admin/posts" },
-      { label: t("category"), icon: "bx-category", to: "/admin/categories" },
-      { label: t("product"), icon: "bx bx-package", to: "/admin/products" },
-      { label: t("user"), icon: "bxr bx-user", to: "/admin/users" }
-    );
-  } else {
-    links.push(...baseLinks);
-  }
-
-  return links;
-});
-
-const isMobileMenuOpen = ref(false);
-const toggleMobileMenu = () => {
-  isMobileMenuOpen.value = !isMobileMenuOpen.value;
+const handleScroll = () => {
+  if (!mainContent.value) return;
+  // Shadow si on scroll plus de 5px
+  isScrolled.value = mainContent.value.scrollTop > 5;
 };
 
-let userId = 0;
-
-async function checkUser() {
-  const token = localStorage.getItem("access_token");
-  if (!token) return;
-
-  try {
-    const res = await fetch(`${API_URL}/api/me/`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    if (!res.ok) throw new Error("Unauthorized");
-
-    const data = await res.json();
-
-    user.value = data;
-    userId = data.id;
-    console.log("User data:", data);
-
-    isLoggedIn.value = true;
-  } catch {
-    isLoggedIn.value = false;
-    user.value = null;
+// Si tu veux recalculer à l'initial pour un scroll déjà existant
+onMounted(() => {
+  if (mainContent.value) {
+    isScrolled.value = mainContent.value.scrollTop > 5;
   }
-}
+});
+
+const isCollapsed = ref(false);
+const isMobileOpen = ref(false);
+const isMobile = ref(false);
+
+const toggleCollapse = () => {
+  isCollapsed.value = !isCollapsed.value;
+};
 
 onMounted(() => {
-  checkUser();
+  const checkScreen = () => {
+    isMobile.value = window.innerWidth < 768;
+  };
+
+  checkScreen();
+  window.addEventListener("resize", checkScreen);
 });
+
+const postMenuOpen = ref(false);
+const bidMenuOpen = ref(false);
+
+const togglePostMenu = () => {
+  postMenuOpen.value = !postMenuOpen.value;
+};
+
+const toggleBidMenu = () => {
+  bidMenuOpen.value = !bidMenuOpen.value;
+};
+
+const notifications = ref([]);
+const user = ref(null);
+const isLoggedIn = ref(false);
+const unreadCount = ref(0);
+
+function goToChat() {
+  window.location.href = "/dashboard/chatbox";
+}
+
+function goToNotif() {
+  window.location.href = "/dashboard/notification";
+}
+
+const unreadNotifCount = computed(
+  () => notifications.value.filter((n) => !n.is_read).length
+);
+
+async function fetchNotifications() {
+  try {
+    const token = localStorage.getItem("access_token");
+    if (!token) throw new Error("Not authenticated");
+
+    const res = await fetch(`${API_URL}/api/notifications/`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) throw new Error("Failed to fetch notifications");
+
+    notifications.value = await res.json();
+  } catch (err) {
+    console.error(err);
+  } finally {
+  }
+}
 
 async function countUnreadMessages(currentUserId: number) {
   const token = localStorage.getItem("access_token");
@@ -428,73 +559,61 @@ async function countUnreadMessages(currentUserId: number) {
   }
 }
 
-const unreadCount = ref(0);
-
 onMounted(async () => {
   unreadCount.value = await countUnreadMessages(userId);
 });
 
-function goToChat() {
-  window.location.href = "/dashboard/chatbox";
+let userId = 0;
+const isStaffUser = ref(false);
+
+function isStaff(user: any): boolean {
+  if (!user || !user.value || !user.value.id_categorie_user) return false;
+  const role = user.value.id_categorie_user.categorie;
+  return role === "Admin" || role === "Staff"; // ajouter d'autres rôles si besoin
 }
 
-function goToNotif() {
-  window.location.href = "/dashboard/notification";
+async function checkUser() {
+  const token = localStorage.getItem("access_token");
+  if (!token) return;
+
+  try {
+    const res = await fetch(`${API_URL}/api/me/`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!res.ok) throw new Error("Unauthorized");
+
+    const data = await res.json();
+
+    user.value = data;
+    userId = data.id;
+    console.log("User data:", data);
+
+    isLoggedIn.value = true;
+    isStaffUser.value = isStaff(user);
+  } catch {
+    isLoggedIn.value = false;
+    user.value = null;
+  }
 }
 
 const logout = () => {
   localStorage.removeItem("access_token");
   window.location.href = "/signin";
 };
-const dropdownOpen = ref(false);
-
-function toggleDropdown() {
-  dropdownOpen.value = !dropdownOpen.value;
-}
-
-const notifications = ref([]);
-
-const unreadNotifCount = computed(
-  () => notifications.value.filter((n) => !n.is_read).length
-);
-
-async function fetchNotifications() {
-  try {
-    const token = localStorage.getItem("access_token");
-    if (!token) throw new Error("Not authenticated");
-
-    const res = await fetch(`${API_URL}/api/notifications/`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) throw new Error("Failed to fetch notifications");
-
-    notifications.value = await res.json();
-  } catch (err) {
-    console.error(err);
-  } finally {
-  }
-}
 
 onMounted(() => {
   fetchNotifications();
+  checkUser();
 });
-
-function goToDashboard() {
-  if (user.value?.id_categorie_user_id === 4) {
-    router.push("/admin");
-  } else {
-    router.push("/dashboard");
-  }
-}
 </script>
 
 <style>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s;
+::-webkit-scrollbar {
+  width: 2px;
 }
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 10px;
 }
 </style>

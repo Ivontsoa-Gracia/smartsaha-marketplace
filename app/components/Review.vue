@@ -19,7 +19,7 @@
           ]"
         >
           <div
-            class="backdrop-blur-xl bg-gray-100/20 border border-gray-100 rounded p-8 text-center shadow-sm transition-all duration-300 group-hover:scale-105"
+            class="backdrop-blur-xl bg-white border border-gray-100 rounded-2xl p-8 text-center shadow-sm transition-all duration-300 group-hover:scale-105"
           >
             <div class="flex justify-center mb-5">
               <div

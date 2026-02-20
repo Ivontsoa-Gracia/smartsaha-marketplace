@@ -40,7 +40,7 @@
       <div class="flex justify-end mb-6">
         <button
           @click="toggleProductForm"
-          class="px-4 py-2 rounded text-white bg-[#10B481] hover:bg-[#0c745f] text-sm transition"
+          class="btn-primary"
         >
         <i :class="showProductForm ? 'bx bx-x' : 'bx bx-plus'"></i>
           {{ showProductForm ? t('close') : t('add') }}
@@ -95,7 +95,7 @@
           <div class="md:col-span-3 flex justify-end">
             <button
               type="submit"
-              class="px-6 py-2 rounded text-white bg-[#10B481] text-sm hover:bg-[#0c745f] transition"
+              class="btn-primary"
             >
               {{ editProductId ? t('edit') : t('add') }}
             </button>
@@ -141,8 +141,9 @@
       <div class="flex justify-end mb-6">
         <button
           @click="toggleUnitForm"
-          class="px-4 py-2 rounded text-white bg-[#10B481] hover:bg-[#0c745f] text-sm transition"
+          class="btn-primary"
         >
+        <i :class="showUnitForm ? 'bx bx-x' : 'bx bx-plus'"></i>
           {{ showUnitForm ? "Fermer" : t('add') }}
         </button>
       </div>
@@ -178,7 +179,7 @@
           <div class="md:col-span-3 flex justify-end">
             <button
               type="submit"
-              class="px-6 py-2 rounded text-white bg-[#10B481] text-sm hover:bg-[#0c745f] transition"
+              class="btn-primary"
             >
               {{ editUnitId ? t('edit') : t('add') }}
             </button>

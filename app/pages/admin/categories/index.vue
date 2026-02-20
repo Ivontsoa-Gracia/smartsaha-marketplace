@@ -16,7 +16,7 @@
 
       <button
         @click="toggleForm"
-        class="inline-flex items-center gap-2 px-5 py-2.5 rounded bg-[#10B481] text-white text-sm font-medium hover:bg-[#0c745f] transition shadow"
+        class="inline-flex items-center gap-2 btn-primary"
       >
         <i :class="showForm ? 'bx bx-x' : 'bx bx-plus'"></i>
         {{ showForm ? t("close") : t("addCategory") }}
@@ -47,7 +47,7 @@
 
           <button
             type="submit"
-            class="sm:w-44 w-full bg-[#10B481] text-white py-2.5 rounded text-sm font-semibold hover:bg-[#0c745f] transition disabled:opacity-60"
+            class="btn-primary"
             :disabled="loading"
           >
             {{ loading ? t("loading") : editId ? t("edit") : t("add") }}
