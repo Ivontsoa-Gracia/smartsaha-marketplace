@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-8 p-12 bg-gray-50/60 min-h-screen">
+  <div class="space-y-8 p-12 min-h-screen bg-[#FAFAF9]">
     <Breadcrumb />
     <div
       class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
@@ -10,7 +10,7 @@
 
       <button
         @click="toggleUserForm"
-        class="px-4 py-2 rounded bg-[#10B481] text-white text-sm hover:bg-[#0d946e] transition flex items-center gap-2"
+        class="btn-primary flex items-center gap-2"
       >
         <i :class="showUserForm ? 'bx bx-x' : 'bx bx-plus'"></i>
         {{ showUserForm ? "" : t("add") }}
@@ -155,26 +155,58 @@
     </div>
 
     <!-- LISTE USERS - CARDS STYLE -->
-    <div class="space-y-1 mt-6">
-      <div class="grid grid-cols-12 px-4 py-2 text-gray-600 font-medium">
-        <div class="col-span-3">{{ t("user") }}</div>
-        <div class="col-span-2">{{ t("category") }}</div>
-        <div class="col-span-1 text-center">{{ t("verified") }}</div>
-        <div class="col-span-1 text-center">{{ t("actif") }}</div>
-        <div class="col-span-3 text-center">{{ t("justificatif") }}</div>
-        <div class="col-span-2 text-right">{{ t("actions") }}</div>
+    <div class="overflow-x-auto bg-white">
+      <div class="grid grid-cols-12 bg-[#FAFAF9]">
+        <div
+          class="col-span-3 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b"
+        >
+          {{ t("user") }}
+        </div>
+        <div
+          class="col-span-2 px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider border-b text-center"
+        >
+          {{ t("category") }}
+        </div>
+        <div
+          class="col-span-1 px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider border-b text-center"
+        >
+          {{ t("verified") }}
+        </div>
+        <div
+          class="col-span-1 px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider border-b text-center"
+        >
+          {{ t("actif") }}
+        </div>
+        <div
+          class="col-span-3 px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider border-b text-center"
+        >
+          {{ t("justificatif") }}
+        </div>
+        <div
+          class="col-span-2 px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider border-b text-right"
+        >
+          {{ t("actions") }}
+        </div>
       </div>
 
       <div
         v-for="u in paginatedUsers"
         :key="u.id"
-        class="grid grid-cols-12 items-center px-5 py-4 bg-white border border-gray-200 rounded shadow-sm hover:shadow-md hover:border-[#10b481]/40 transition"
+        class="grid grid-cols-12 items-center px-5 py-4 bg-white border-b border-gray-200 rounded shadow-sm hover:shadow-md hover:bg-gray-50 transition"
       >
         <div
           class="col-span-3 flex items-center gap-2 cursor-pointer"
           @click="goToProfile(u)"
         >
+          <img
+            v-if="u.avatar_url"
+            :src="u.avatar_url"
+            alt="avatar"
+            class="w-10 h-10 rounded-full object-cover"
+          />
+
           <div
+            v-else
             class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg"
             :class="getAvatarColor(u.username)"
           >
@@ -187,8 +219,10 @@
           </div>
         </div>
 
-        <div class="col-span-2">
-          <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded text-sm">
+        <div class="col-span-2 flex justify-center">
+          <span
+            class="px-3 py-1 bg-[#10b481]/10 border border-[#10b481] text-[#10b481] rounded-full text-xs"
+          >
             {{ u.id_categorie_user?.categorie }}
           </span>
         </div>
@@ -214,22 +248,31 @@
         </div>
 
         <div class="col-span-3 truncate text-center">
-          <a
-            :href="u.justificatif_url"
-            target="_blank"
+          <button
+            v-if="u.justificatif_url"
+            @click="openDoc(u.justificatif_url)"
             class="text-gray-600 text-sm hover:underline hover:text-[#10b481]"
           >
-            {{ u.justificatif_url ? t("viewDoc") : "—" }}
-          </a>
+            {{ t("viewDoc") }}
+          </button>
+          <span v-else>—</span>
         </div>
 
         <div class="col-span-2 flex justify-end gap-3">
           <button
             v-if="!u.is_verified"
-            class="px-4 py-1.5 rounded bg-[#10b481] text-white text-sm hover:bg-[#0e9a72] transition"
+            class="btn-neutre"
             @click="verifyUser(u.id)"
           >
             {{ t("verify") }}
+          </button>
+
+          <button
+            v-if="!u.is_active"
+            class="btn-primary"
+            @click="activeUser(u.id)"
+          >
+            {{ t("activer") }}
           </button>
 
           <button
@@ -240,39 +283,145 @@
           </button>
         </div>
       </div>
-      <div class="flex justify-center items-center gap-2 mt-6">
-        <button
-          class="px-3 py-1.5 border rounded bg-white shadow-sm hover:bg-gray-100 disabled:opacity-40"
-          :disabled="currentPage === 1"
-          @click="goToPage(currentPage - 1)"
+      <div class="bg-white px-4 py-3 flex items-center justify-between sm:px-6">
+        <div class="flex-1 flex justify-between sm:hidden">
+          <button
+            @click="prevPage"
+            :disabled="currentPage === 1"
+            class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+          >
+            {{ t("prev") }}
+          </button>
+          <button
+            @click="nextPage"
+            :disabled="currentPage === totalPages"
+            class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+          >
+            {{ t("next") }}
+          </button>
+        </div>
+        <div
+          class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between"
         >
-          <i class="bx bx-chevron-left text-xl"></i>
-        </button>
+          <div>
+            <p class="text-sm text-gray-700">
+              {{ t("affichage") }}
+              <span class="font-medium">{{ currentPage }}</span> {{ t("a") }}
+              <span class="font-medium">{{ totalPages }}</span> {{ t("sur") }}
+              <span class="font-medium">{{ result }}</span> {{ t("résultats") }}
+            </p>
+          </div>
+          <div>
+            <nav
+              class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+              aria-label="Pagination"
+            >
+              <button
+                @click="prevPage"
+                :disabled="currentPage === 1"
+                class="relative inline-flex items-center px-2 py-2 rounded-l border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+              >
+                <span class="sr-only">{{ t("prev") }}</span>
+                <i class="bx bx-chevron-left"></i>
+              </button>
 
-        <button
-          v-for="page in totalPages"
-          :key="page"
-          class="px-4 py-1.5 rounded border shadow-sm text-sm font-medium"
-          :class="
-            page === currentPage
-              ? 'bg-[#10b481] text-white border-[#10b481]'
-              : 'bg-white text-gray-700 hover:bg-gray-100'
-          "
-          @click="goToPage(page)"
-        >
-          {{ page }}
-        </button>
+              <button
+                v-for="page in visiblePages"
+                :key="page"
+                @click="goToPage(page)"
+                :class="[
+                  'relative inline-flex items-center px-4 py-2 border text-sm font-medium',
+                  currentPage === page
+                    ? 'z-10 bg-[#10b481]/10 border-[#10b481] text-[#10b481]'
+                    : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50',
+                ]"
+                v-if="page !== '...'"
+              >
+                {{ page }}
+              </button>
+              <span v-else class="px-2">...</span>
 
-        <button
-          class="px-3 py-1.5 border rounded bg-white shadow-sm hover:bg-gray-100 disabled:opacity-40"
-          :disabled="currentPage === totalPages"
-          @click="goToPage(currentPage + 1)"
-        >
-          <i class="bx bx-chevron-right text-xl"></i>
-        </button>
+              <button
+                @click="nextPage"
+                :disabled="currentPage === totalPages"
+                class="relative inline-flex items-center px-2 py-2 rounded-r border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+              >
+                <span class="sr-only">{{ t("next") }}</span>
+                <i class="bx bx-chevron-right"></i>
+              </button>
+            </nav>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+  <!-- Modal justificatif -->
+  <transition name="fade">
+    <div
+      v-if="showDocModal"
+      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+    >
+      <div
+        class="bg-white p-16 rounded-lg max-w-[90vw] max-h-[90vh] overflow-auto relative"
+      >
+        <button
+          @click="showDocModal = false"
+          class="absolute top-4 right-4 text-gray-500 hover:text-gray-900 text-2xl"
+        >
+          &times;
+        </button>
+
+        <div
+          v-if="currentDocUrl"
+          class="w-full h-full flex justify-center items-center"
+        >
+          <iframe
+            v-if="isPdf(currentDocUrl)"
+            :src="currentDocUrl"
+            class="w-full h-full"
+            frameborder="0"
+          ></iframe>
+          <img
+            v-else
+            :src="currentDocUrl"
+            alt="Justificatif"
+            class="max-w-full max-h-full object-contain"
+          />
+        </div>
+      </div>
+    </div>
+  </transition>
+
+  <transition name="slide-right">
+    <div
+      v-if="notification.visible"
+      class="fixed bottom-4 right-4 z-[9999] bg-[#112830] rounded shadow-xl px-6 py-4 flex items-center gap-4 w-80 text-left border-l-4 transition-all duration-300"
+      :class="
+        notification.type === 'success' ? 'border-[#10b481]' : 'border-red-500'
+      "
+    >
+      <div
+        :class="notification.type === 'success' ? 'bg-[#10b481]' : 'bg-red-500'"
+        class="w-12 h-12 rounded-full flex items-center justify-center text-white text-2xl"
+      >
+        <i
+          :class="notification.type === 'success' ? 'bx bx-check' : 'bx bx-x'"
+        ></i>
+      </div>
+      <div>
+        <p class="font-medium text-sm text-gray-100">
+          {{ notification.message }}
+        </p>
+        <p class="text-gray-300 text-xs">
+          {{
+            notification.type === "success"
+              ? "Success!"
+              : "Something went wrong."
+          }}
+        </p>
+      </div>
+    </div>
+  </transition>
 </template>
 
 <script setup lang="ts">
@@ -354,6 +503,19 @@ function toggleShowVerified() {
   showVerified.value = !showVerified.value;
 }
 
+const notification = ref({ visible: false, message: "", type: "success" });
+
+const showNotification = (
+  message: string,
+  type: "success" | "error" = "success",
+  duration = 3000
+) => {
+  notification.value.message = message;
+  notification.value.type = type;
+  notification.value.visible = true;
+  setTimeout(() => (notification.value.visible = false), duration);
+};
+
 async function fetchUsers() {
   const token = localStorage.getItem("access_token");
   const res = await fetch(`${API_URL}/api/users/`, {
@@ -365,6 +527,7 @@ async function fetchUsers() {
 
   if (res.ok) {
     users.value = await res.json();
+    result.value = users.value.length;
     console.log("Users:", JSON.stringify(users.value, null, 2));
   } else if (res.status === 401) {
     message.value = "Non autorisé : veuillez vous reconnecter.";
@@ -425,6 +588,7 @@ async function submitUser() {
       ? "Utilisateur modifié !"
       : "Utilisateur ajouté !";
     messageClass.value = "bg-green-100 text-green-800";
+
     await fetchUsers();
     resetForm();
     showUserForm.value = false;
@@ -470,11 +634,30 @@ async function verifyUser(userId: number) {
   });
 
   if (res.ok) {
-    alert("Utilisateur vérifié !");
+    showNotification("Utilisateur vérifié!", "success");
     fetchUsers();
   } else {
     const data = await res.json();
-    alert("Erreur : " + JSON.stringify(data));
+    showNotification("Erreur : " + JSON.stringify(data), "success");
+  }
+}
+
+async function activeUser(userId: number) {
+  const token = localStorage.getItem("access_token");
+  const res = await fetch(`${API_URL}/api/users/${userId}/activer/`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (res.ok) {
+    showNotification("Utilisateur vérifié!", "success");
+    fetchUsers();
+  } else {
+    const data = await res.json();
+    showNotification("Erreur : " + JSON.stringify(data), "success");
   }
 }
 
@@ -490,6 +673,46 @@ const totalPages = computed(() =>
   Math.ceil(filteredUsers.value.length / itemsPerPage)
 );
 
+const result = computed(() => filteredUsers.value.length);
+
+const nextPage = () =>
+  currentPage.value < totalPages.value && currentPage.value++;
+const prevPage = () => currentPage.value > 1 && currentPage.value--;
+
+const visiblePages = computed(() => {
+  const pages = [];
+  if (totalPages.value <= 15) {
+    for (let i = 1; i <= totalPages.value; i++) pages.push(i);
+  } else {
+    if (currentPage.value <= 7) {
+      pages.push(
+        ...Array.from({ length: 8 }, (_, i) => i + 1),
+        "...",
+        totalPages.value
+      );
+    } else if (currentPage.value >= totalPages.value - 6) {
+      pages.push(
+        1,
+        "...",
+        ...Array.from({ length: 8 }, (_, i) => totalPages.value - 7 + i)
+      );
+    } else {
+      pages.push(
+        1,
+        "...",
+        currentPage.value - 2,
+        currentPage.value - 1,
+        currentPage.value,
+        currentPage.value + 1,
+        currentPage.value + 2,
+        "...",
+        totalPages.value
+      );
+    }
+  }
+  return pages;
+});
+
 function goToPage(page: number) {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page;
@@ -499,4 +722,39 @@ function goToPage(page: number) {
 function goToProfile(user: { id: any }) {
   router.push(`/admin/users/${user.id}`);
 }
+
+const showDocModal = ref(false);
+const currentDocUrl = ref("");
+
+function openDoc(url: string) {
+  currentDocUrl.value = url;
+  showDocModal.value = true;
+}
+
+function isPdf(url: string) {
+  return url.endsWith(".pdf");
+}
 </script>
+
+<style>
+/* Pour les scrollbars modernes */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+.scrollbar-thumb-rounded {
+  scrollbar-color: #9ca3af #f3f4f6; /* thumb color / track color */
+}
+.scrollbar-thumb-rounded::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.scrollbar-thumb-rounded::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 8px;
+}
+.scrollbar-thumb-rounded::-webkit-scrollbar-thumb {
+  background-color: #9ca3af;
+  border-radius: 8px;
+  border: 2px solid #f3f4f6;
+}
+</style>

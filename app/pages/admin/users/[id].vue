@@ -7,8 +7,16 @@
       ></div>
     </div>
     <div class="flex items-center gap-4 mb-10">
+      <img
+        v-if="user.avatar_url"
+        :src="user.avatar_url"
+        alt="avatar"
+        class="w-24 h-24 rounded-full object-cover"
+      />
+
       <div
-        class="w-24 h-24 rounded-full flex items-center justify-center text-3xl font-bold shadow-md"
+        v-else
+        class="w-24 h-24 rounded-full flex items-center justify-center font-bold text-lg"
         :class="getAvatarColor(user.username)"
       >
         {{ user.username.charAt(0).toUpperCase() }}
@@ -33,7 +41,7 @@
 
           <button
             v-if="!user.is_verified"
-            class="px-4 py-1.5 rounded bg-[#10b481] text-white text-sm font-medium hover:bg-[#0e9a72] transition"
+            class="btn-primary"
             @click="verifyUser(user.id)"
           >
             {{ t("verify") }}
@@ -115,7 +123,7 @@
         </div>
 
         <div
-          class="relative overflow-hidden rounded bg-gray-900 p-5 text-white"
+          class="relative overflow-hidden rounded bg-[#112830] p-5 text-white"
         >
           <i
             class="bx bx-news absolute -right-4 -top-4 text-7xl opacity-10"

@@ -2,7 +2,7 @@
     <section class="py-16 px-4 md:px-12 bg-[#f9f9f9]">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div
-          class="relative h-[300px] rounded overflow-hidden shadow-md group cursor-pointer p-4 flex flex-col justify-end"
+          class="relative h-[300px] rounded-2xl overflow-hidden shadow-md group cursor-pointer p-4 flex flex-col justify-end"
           style="background-image: url('/img/image1.jpg'); background-size: cover; background-position: center;"
         >
           <div class="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition"></div>
@@ -13,7 +13,7 @@
         </div>
   
         <div
-          class="relative h-[300px] rounded overflow-hidden shadow-md group cursor-pointer p-4 flex flex-col justify-end"
+          class="relative h-[300px] rounded-2xl overflow-hidden shadow-md group cursor-pointer p-4 flex flex-col justify-end"
           style="background-image: url('/img/image2.jpg'); background-size: cover; background-position: center;"
         >
           <div class="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition"></div>

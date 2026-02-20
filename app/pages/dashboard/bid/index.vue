@@ -1,6 +1,5 @@
 <template>
-  <div class="space-y-8 p-12 bg-gray-50/60 min-h-screen">
-    <Breadcrumb />
+  <div class="space-y-8 p-4 sm:p-12 bg-gray-50/60 min-h-screen">
 
     <h1 class="text-2xl font-bold mb-6">Mes Enchères</h1>
 

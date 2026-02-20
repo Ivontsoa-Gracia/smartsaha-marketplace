@@ -5,47 +5,87 @@
     <div class="w-full max-w-md p-8 sm:p-10">
       <div class="text-center mb-10">
         <img
-          src="/marketplace_png.png"
+          src="/logo.png"
           alt="SmartSaha logo"
-          class="h-14 sm:h-16 mx-auto mb-4"
+          class="h-14 sm:h-16 mx-auto mb-4 rounded-2xl"
         />
         <h1
           class="text-3xl sm:text-4xl font-bold text-gray-100 dark:text-white mb-2"
         >
-          Welcome back
+          Bon retour
         </h1>
       </div>
 
       <form @submit.prevent="submitSignin" class="space-y-6">
-        <div class="space-y-2">
+        <div class="relative">
+          <i
+            class="bx bx-user text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2 text-lg"
+          ></i>
+
           <input
             id="username"
             v-model="form.username"
             type="text"
-            placeholder="Enter your username"
+            placeholder=" "
             required
-            class="w-full px-4 py-3 rounded border border-white/20 bg-[#1D333B] text-gray-100 focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition"
+            class="peer w-full px-4 py-3 pl-10 rounded-lg border border-white/20 bg-[#112830] text-gray-100 focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition"
           />
+
+          <label
+            for="username"
+            class="absolute left-10 text-gray-400 pointer-events-none transition-all duration-200 peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:-top-3 peer-focus:text-sm peer-focus:text-emerald-400 bg-[#112830] px-1"
+            :class="form.username ? '-top-3 text-sm text-emerald-400 px-2' : ''"
+          >
+            Nom d’utilisateur
+          </label>
+
+          <p
+            v-if="fieldErrors.username"
+            class="text-sm text-red-400 mt-2 flex items-center gap-1"
+          >
+            <i class="bx bx-error-circle text-base"></i>
+            {{ fieldErrors.username }}
+          </p>
         </div>
 
-        <div class="relative space-y-2 justify-center">
+        <div class="relative">
+          <i
+            class="bx bx-lock text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2 text-lg"
+          ></i>
+
           <input
             id="password"
             v-model="form.password"
             :type="showPassword ? 'text' : 'password'"
-            placeholder="Enter your password"
+            placeholder=" "
             required
             minlength="6"
-            class="w-full px-4 py-3 pr-12 rounded border border-white/20 bg-[#1D333B] text-gray-100 focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition"
+            class="peer w-full px-4 py-3 pl-10 pr-12 rounded-lg border border-white/20 bg-[#112830] text-gray-100 focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition"
           />
+
+          <label
+            for="password"
+            class="absolute left-10 text-gray-400 pointer-events-none transition-all duration-200 peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:-top-3 peer-focus:text-sm peer-focus:text-emerald-400 bg-[#112830] px-1"
+            :class="form.password ? '-top-3 text-sm text-emerald-400 px-2 ' : ''"
+          >
+            Mot de passe
+          </label>
 
           <i
             :class="[
-              'bx text-xl absolute top-4 right-4 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-white transition',
+              'bx text-xl absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-400 hover:text-white transition',
               showPassword ? 'bx-hide' : 'bx-show',
             ]"
             @click="showPassword = !showPassword"
           ></i>
+
+          <p
+            v-if="fieldErrors.password"
+            class="text-sm text-red-400 mt-2 flex items-center gap-1"
+          >
+            <i class="bx bx-error-circle text-base"></i>
+            {{ fieldErrors.password }}
+          </p>
         </div>
 
         <div class="flex items-center justify-between text-sm hidden">
@@ -66,16 +106,16 @@
 
         <button
           type="submit"
-          class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-semibold py-3 rounded shadow-md transition-all duration-200 flex items-center justify-center gap-3"
+          class="w-full bg-[#10b481] hover:bg-emerald-700 active:scale-[0.98] text-white font-semibold py-3 rounded-lg shadow-md transition-all duration-200 flex items-center justify-center gap-3"
           :disabled="loading"
         >
           <template v-if="loading">
             <span
               class="w-5 h-5 border-4 border-white border-t-transparent rounded-full animate-spin"
             ></span>
-            <span>Signing in...</span>
+            <span>Connexion...</span>
           </template>
-          <template v-else>Sign In</template>
+          <template v-else>Se connecter</template>
         </button>
 
         <div class="flex items-center my-4 hidden">
@@ -95,12 +135,12 @@
       </form>
 
       <p class="text-center text-sm text-gray-500 dark:text-gray-400 mt-8">
-        Don’t have an account?
+        Vous n’avez pas de compte ?
         <NuxtLink
           to="/signup"
           class="text-emerald-600 dark:text-emerald-400 font-medium hover:underline"
         >
-          Create one
+          Créez-en un
         </NuxtLink>
       </p>
     </div>
@@ -178,6 +218,10 @@ const router = useRouter();
 const isLoading = ref(false);
 const notification = ref({ visible: false, message: "", type: "success" });
 const showPassword = ref(false);
+const fieldErrors = ref({
+  username: "",
+  password: "",
+});
 
 const showNotification = (
   message: string,
@@ -196,6 +240,9 @@ const loading = ref(false);
 
 const submitSignin = async () => {
   isLoading.value = true;
+  fieldErrors.value.username = "";
+  fieldErrors.value.password = "";
+
   try {
     const response = await fetch(`${API_URL}/api/token/`, {
       method: "POST",
@@ -204,11 +251,15 @@ const submitSignin = async () => {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      showNotification(error.detail, "error");
-      setTimeout(() => {}, 3000);
-      loading.value = false;
+      if (response.status === 400 || response.status === 401) {
+        fieldErrors.value.username = "Username incorrect";
+        fieldErrors.value.password = "Password incorrect";
+      } else {
+        showNotification("Something went wrong", "error");
+      }
+
       isLoading.value = false;
+      loading.value = false;
       return;
     }
 
@@ -222,4 +273,14 @@ const submitSignin = async () => {
     loading.value = false;
   }
 };
+
+watch(
+  () => form.value.username,
+  () => (fieldErrors.value.username = "")
+);
+
+watch(
+  () => form.value.password,
+  () => (fieldErrors.value.password = "")
+);
 </script>

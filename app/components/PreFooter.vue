@@ -8,7 +8,7 @@
          {{ t('ready') }}
         </span>
 
-        <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-800 leading-tight mb-6">
+        <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#112830] leading-tight mb-6">
           {{ t("preFttitle") }}
         </h2>
 
@@ -18,7 +18,7 @@
 
         <div class="flex flex-wrap gap-5">
           <button
-            class="text-white px-6 py-3 rounded bg-[#10b481] hover:border-white/40 transition-all duration-300"
+            class="flex items-center justify-center gap-2 bg-[#10b481] text-white py-3 px-6 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl outline-none"
           >
             {{ t("btnStart") }}
           </button>
@@ -27,12 +27,12 @@
 
       <div class="relative flex justify-center lg:justify-end">
         <div
-          class="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded p-10 shadow-lg max-w-md w-full"
+          class="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-10 shadow-lg max-w-md w-full"
         >
           <img
             src="/img/image3.jpg"
             alt="Marketplace preview"
-            class="rounded object-cover mb-6"
+            class="rounded-2xl object-cover mb-6"
           />
 
           <div class="text-center">

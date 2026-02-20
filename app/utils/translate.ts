@@ -219,6 +219,9 @@ export const translate = {
     featuresText3: "Engage in secure and transparent negotiations with buyers and sellers directly through our platform.",
     featuresTitle4: "Built on trust & reviews",
     featuresText4: "Our review system ensures that you can trade with confidence, knowing the reputation of your trading partners.",
+    affichage: "Showing",
+    a: "to",
+    résultats: "results",
   },
   
   fr: {
@@ -433,7 +436,10 @@ export const translate = {
     whores2: "Nous croyons en l'autonomisation des communautés rurales grâce au commerce équitable, à la transparence des transactions et à l'inclusion numérique — aidant les petits producteurs à atteindre les marchés mondiaux facilement.",
     mission: "Notre mission & vision",
     missionRes1: "Nous nous engageons à transformer la chaîne de valeur agricole grâce à l'innovation, la transparence et des partenariats durables.",
-    signin: "Se connecter"
+    signin: "Se connecter",
+    affichage: "Affichage de",
+    a: "à",
+    résultats: "résultats",
 
   },
   mg: {
@@ -647,7 +653,10 @@ export const translate = {
     whores2: "Mino izahay fa ny fanomezan-kery ny vondrom-piarahamonina ambanivohitra amin'ny alalan'ny varotra ara-drariny, fifanakalozana mangarahara, ary fampidirana nomerika — manampy ny tantsaha madinika hahatratra ny tsena maneran-tany mora foana.",
     mission: "Ny iraka & vina",
     missionRes1: "Manolo-tena hanova ny rojo lanjan'ny fambolena izahay amin'ny alalan'ny fanavaozana, mangarahara, ary fiaraha-miasa maharitra.",
-    signin: "Hiditra"
+    signin: "Hiditra",
+    affichage: "Fampisehoana",
+    a: "hatramin'ny",
+    résultats: "vokatra",
 
   }
   

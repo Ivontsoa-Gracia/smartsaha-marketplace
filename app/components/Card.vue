@@ -1,169 +1,529 @@
 <template>
   <div
-    class="bg-white rounded shadow-sm p-6 min-w-[600px] border border-gray-100"
+    v-if="isMobile"
+    class="relative w-full min-h-[440px] bg-white rounded-3xl overflow-hidden shadow-lg p-1"
   >
-    <div class="flex justify-between items-center mb-3">
-      <div class="flex items-center gap-2 mb-4">
+    <div class="relative h-64 group">
+      <img
+        v-if="post.image_url"
+        :src="post.image_url"
+        class="absolute inset-0 w-full h-full object-cover rounded-2xl"
+      />
+      <div
+        v-else
+        class="absolute inset-0 bg-gray-200 flex items-center justify-center text-gray-500 rounded-2xl"
+      >
+        No image
+      </div>
+
+      <div
+        class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-transparent rounded-2xl"
+      ></div>
+
+      <div class="absolute top-3 right-3 flex items-center gap-3 z-10">
+        <button
+          @click="addToFavorite"
+          :disabled="favoriteLoading"
+          class="w-8 h-8 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow hover:scale-110 transition"
+          :class="isFavorite ? 'text-red-600' : 'text-gray-600'"
+        >
+          <i
+            :class="isFavorite ? 'bx bxs-heart' : 'bx bx-heart'"
+            class="text-xl"
+          ></i>
+        </button>
+      </div>
+
+      <div class="absolute top-3 left-3 z-10 flex items-center gap-3">
+        <img
+          v-if="post.user?.avatar_url"
+          :src="post.user?.avatar_url"
+          alt="avatar"
+          class="w-10 h-10 rounded-full object-cover"
+        />
+
         <div
-          class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg cursor-pointer"
+          v-else
+          class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg cursor-pointer shadow"
           :class="getAvatarColor(post.user?.username)"
           @click="goToProfile(post.user)"
         >
-          {{ post.user?.username?.charAt(0).toUpperCase() }}
-        </div>
-        <div class="flex flex-col">
-          <span class="font-semibold text-gray-800">{{
-            post.user?.username
-          }}</span>
-          <div class="flex items-center gap-1 text-gray-400 text-xs">
-            <span>{{ formattedDate }}</span>
-          </div>
-        </div>
-      </div>
-
-      <span
-        class="px-2 py-2 text-xs font-semibold text-white rounded-full flex items-center justify-center hidden"
-        :class="
-          post.type_post?.type === 'Selling' ? 'bg-[#10b481]' : 'bg-[#f4a261]'
-        "
-      >
-        <i
-          :class="
-            post.type_post?.type === 'Selling'
-              ? 'bxr  bx-cart'
-              : 'bxr  bx-badge-check'
-          "
-        ></i>
-      </span>
-
-      <div class="relative">
-        <button
-          @click="toggleReportMenu"
-          class="text-gray-400 hover:text-gray-700"
-        >
-          <i class="bx bx-dots-vertical-rounded text-xl"></i>
-        </button>
-
-        <div
-          v-if="showReportMenu"
-          class="absolute right-0 mt-2 w-36 bg-white border rounded shadow-md z-10"
-        >
-          <button
-            @click="openReportModal"
-            class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-          >
-            Signaler
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <h2 class="text-xl font-semibold text-gray-800 mb-6">
-      {{ post.title || "No title" }}
-    </h2>
-
-    <div class="flex gap-6 items-stretch">
-      <div
-        class="rounded overflow-hidden cursor-pointer flex-1"
-        @click="openModal"
-      >
-        <img
-          v-if="post.image_url"
-          :src="post.image_url"
-          class="w-full h-40 object-cover rounded"
-        />
-        <div
-          v-else
-          class="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500 rounded"
-        >
-          No image
-        </div>
-      </div>
-
-      <div
-        class="flex-1 flex flex-col gap-2 text-gray-700 text-sm justify-between"
-      >
-        <div class="flex items-center gap-2">
-          <i class="bxr bx-location-alt-2 text-gray-500"></i>
-          <span>{{ post.location || "Unknown" }}</span>
+          {{ post.user?.username.charAt(0).toUpperCase() }}
         </div>
 
-        <div class="flex items-center gap-2">
-          <i class="bx bx-package text-gray-500"></i>
-          <span>{{ post.product?.product }}</span>
-        </div>
+        <div class="text-white">
+          <div class="flex items-center justify-center gap-1 font-semibold">
+            <span class="leading-none text-sm">
+              {{ post.user?.username }}
+            </span>
 
-        <div class="flex flex-wrap gap-3 mt-3">
-          <div
-            class="flex items-center gap-2 bg-gray-50 border border-gray-100 backdrop-blur-sm text-gray-800 px-3 py-2 rounded shadow-sm text-sm"
-          >
-            <i class="bx bx-wallet text-base"></i>
-            <span>{{ post?.price }} {{ post?.currency?.symbol }}</span>
+            <i
+              v-if="post.user?.is_verified"
+              class="bx bxs-badge-check text-white text-md align-middle"
+              title="Utilisateur vérifié"
+            ></i>
           </div>
 
-          <div
-            class="flex items-center gap-2 bg-blue-50 text-[#112830] px-4 py-2 rounded shadow-sm text-sm font-semibold"
-          >
-            <i class="bx bx-package text-base"></i>
-            <span
-              >{{ post?.quantity }}
-              {{ post?.product?.unit?.abbreviation }}</span
-            >
+          <div class="text-[10px] text-white/80">
+            {{ formattedDate(props.post.updated_at) }}
           </div>
         </div>
       </div>
     </div>
 
-    <div class="mt-6">
-      <p class="text-gray-700 inline">
+    <div class="text-left text-gray-900 mt-auto p-3 flex flex-col">
+      <h2 class="text-lg font-bold leading-snug">
+        {{ post.title || "Sans titre" }}
+      </h2>
+
+      <p class="text-sm text-gray-700 mt-1">
         {{
           showFullDescription
             ? post.description
-            : post.description?.slice(0, 100) +
-              (post.description?.length > 100 ? "..." : "")
+            : post.description?.slice(0, 70) +
+              (post.description?.length > 70 ? "..." : "")
         }}
+        <button
+          v-if="post.description?.length > 70"
+          @click="toggleDescription"
+          class="text-[#10b481] ml-1 hover:underline text-xs"
+        >
+          {{ showFullDescription ? "Voir moins" : "Voir plus" }}
+        </button>
       </p>
-      <button
-        v-if="post.description?.length > 100"
-        @click="toggleDescription"
-        class="text-blue-600 text-sm ml-2 inline"
-      >
-        {{ showFullDescription ? t("viewLess") : t("viewMore") }}
-      </button>
-    </div>
 
-    <div class="flex justify-end mt-4">
+      <div class="flex flex-wrap gap-2 mt-2">
+        <span
+          class="flex items-center gap-1 bg-[#F3F4F6] px-3 py-1 rounded-full text-xs text-gray-600"
+        >
+          <i class="bx bx-cube text-sm"></i> {{ post.product?.product }}
+        </span>
+        <span
+          class="flex items-center gap-1 bg-[#F3F4F6] px-3 py-1 rounded-full text-xs text-gray-600"
+        >
+          <i class="bx bx-package text-sm"></i> {{ post.quantity }}
+          {{ post.product?.unit?.abbreviation }}
+        </span>
+        <span
+          class="flex items-center gap-1 bg-[#F3F4F6] px-3 py-1 rounded-full text-xs text-gray-600"
+        >
+          <i class="bx bx-wallet text-sm"></i> {{ post.price }}
+          {{ post.currency?.symbol }}
+        </span>
+      </div>
+
       <button
         v-if="
           (post?.current_status === 'published' ||
             post?.current_status === 'négociation') &&
           post?.can_receive_bids
         "
-        :class="
-          post.type_post?.type === 'Selling' ? 'bg-[#10b481]' : 'bg-[#f4a261]'
-        "
-        class="px-4 py-2 text-white text-sm font-semibold rounded hover:brightness-110 transition"
         @click="openModal"
+        :class="[
+          'w-full mt-3 ',
+          post.type_post?.type === 'Selling' ? 'btn-primary' : 'btn-primary',
+        ]"
       >
-        {{
-          post.type_post?.type === "Selling"
-            ? t("btnPlaceBid")
-            : t("btnMakeOffer")
-        }}
+        <span class="flex items-center justify-center gap-2">
+          <i
+            :class="
+              post.type_post?.type === 'Selling' ? 'bx bx-basket' : 'bx bx-gift'
+            "
+          ></i>
+          {{
+            post.type_post?.type === "Selling"
+              ? t("btnPlaceBid")
+              : t("btnMakeOffer")
+          }}
+        </span>
       </button>
+    </div>
+
+    <transition name="fade">
+  <div
+    v-if="modalOpen"
+    class="fixed inset-0 bg-black/70 flex justify-center items-center z-50 p-4"
+  >
+    <div
+      class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-y-auto max-h-[90vh] relative p-4"
+    >
+      <button
+        @click="closeModal"
+        class="absolute top-4 right-4 text-gray-400 text-xl hover:text-gray-700 transition"
+      >
+        <i class="bx bx-x"></i>
+      </button>
+
+      <div class="flex flex-col md:flex-row gap-6 relative">
+        <div class="md:w-1/2 relative">
+          <div
+            class="absolute top-0 left-0 flex justify-between items-start"
+          >
+            <div class="flex flex-col gap-2">
+              <div class="flex items-center gap-3 z-10">
+                <img
+                  v-if="post.user?.avatar_url"
+                  :src="post.user?.avatar_url"
+                  alt="avatar"
+                  class="w-10 h-10 rounded-full object-cover"
+                />
+
+                <div
+                  v-else
+                  class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg cursor-pointer shadow"
+                  :class="getAvatarColor(post.user?.username)"
+                  @click="goToProfile(post.user)"
+                >
+                  {{ post.user?.username.charAt(0).toUpperCase() }}
+                </div>
+
+                <div class="text-white">
+                  <div class="flex items-center text-gray-900 justify-center gap-1 font-semibold">
+                    <span class="leading-none text-sm">
+                      {{ post.user?.username }}
+                    </span>
+
+                    <i
+                      v-if="post.user?.is_verified"
+                      class="bx bxs-badge-check text-[#10b481] text-md align-middle"
+                      title="Utilisateur vérifié"
+                    ></i>
+                  </div>
+
+                  <div class="text-[10px] text-gray-600">
+                    {{ formattedDate(post.updated_at) }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="md:w-1/2 flex flex-col justify-between gap-4 mt-8">
+          <div>
+            <h2 class="text-lg font-bold leading-snug">
+              {{ post.title || "Sans titre" }}
+            </h2>
+
+            <p class="text-sm text-gray-700 mt-1">
+              {{
+                showFullDescription
+                  ? post.description
+                  : post.description?.slice(0, 60) +
+                    (post.description?.length > 60 ? "..." : "")
+              }}
+              <button
+                v-if="post.description?.length > 60"
+                @click="toggleDescription"
+                class="text-[#10b481] ml-1 hover:underline text-xs"
+              >
+                {{ showFullDescription ? "Voir moins" : "Voir plus" }}
+              </button>
+            </p>
+
+            <div class="flex flex-wrap gap-2 mt-2">
+              <span
+                class="flex items-center gap-1 bg-[#F3F4F6] px-3 py-1 rounded-full text-xs text-gray-600"
+              >
+                <i class="bx bx-cube text-sm"></i>
+                {{ post.product?.product }}
+              </span>
+              <span
+                class="flex items-center gap-1 bg-[#F3F4F6] px-3 py-1 rounded-full text-xs text-gray-600"
+              >
+                <i class="bx bx-package text-sm"></i>
+                {{ post.quantity }}
+                {{ post.product?.unit?.abbreviation }}
+              </span>
+              <span
+                class="flex items-center gap-1 bg-[#F3F4F6] px-3 py-1 rounded-full text-xs text-gray-600"
+              >
+                <i class="bx bx-wallet text-sm"></i>
+                {{ post.price }}
+                {{ post.currency?.symbol }}
+              </span>
+            </div>
+          </div>
+
+          <div class="mt-2 flex flex-col gap-3 text-sm">
+            <input
+              v-model="price"
+              type="number"
+              placeholder="Enter your bid/offer price"
+              class="w-full p-3 border border-gray-200 rounded-lg outline-none focus:ring-1 focus:ring-[#10b481]/50 shadow-sm"
+            />
+            <textarea
+              v-model="message"
+              placeholder="Write your message... (optional)"
+              class="w-full p-3 border border-gray-200 rounded-lg resize-none outline-none focus:ring-1 focus:ring-[#10b481]/50 shadow-sm"
+              rows="4"
+            ></textarea>
+            <button
+              :disabled="loading"
+              @click="sendBid"
+              :class="[
+                'flex items-center justify-center gap-2 w-full',
+                post.type_post?.type === 'Selling'
+                  ? 'btn-primary'
+                  : 'btn-third',
+                loading ? 'opacity-60 cursor-not-allowed' : '',
+              ]"
+            >
+              <i
+                :class="
+                  post.type_post?.type === 'Selling'
+                    ? 'bx bx-basket'
+                    : 'bx bx-gift'
+                "
+                class="text-lg"
+              ></i>
+              <span>
+                {{
+                  loading
+                    ? "Processing..."
+                    : post.type_post?.type === "Selling"
+                    ? t("btnPlaceBid")
+                    : t("btnMakeOffer")
+                }}
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</transition>
+
+  </div>
+
+  <div
+    v-else
+    class="bg-white rounded-3xl shadow-sm p-1 w-full sm:min-w-[600px] border border-gray-100"
+  >
+    <div class="relative h-72 group">
+      <img
+        v-if="post.image_url"
+        :src="post.image_url"
+        class="absolute inset-0 w-full h-full object-cover rounded-2xl"
+      />
+      <div
+        v-else
+        class="absolute inset-0 bg-gray-200 flex items-center justify-center text-gray-500 rounded-2xl"
+      >
+        No image
+      </div>
+
+      <div
+        class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-transparent rounded-2xl"
+      ></div>
+
+      <div class="absolute top-6 right-6 flex items-center gap-3 z-10">
+        <button
+          @click="addToFavorite"
+          :disabled="favoriteLoading"
+          class="w-10 h-10 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow hover:scale-110 transition"
+          :class="isFavorite ? 'text-red-600' : 'text-gray-600'"
+        >
+          <i
+            :class="isFavorite ? 'bx bxs-heart' : 'bx bx-heart'"
+            class="text-xl"
+          ></i>
+        </button>
+
+        <div class="relative">
+          <button
+            @click="toggleReportMenu"
+            class="w-10 h-10 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow hover:scale-110 transition"
+          >
+            <i class="bx bx-dots-vertical-rounded text-xl text-gray-600"></i>
+          </button>
+
+          <div
+            v-if="showReportMenu"
+            class="absolute right-0 mt-2 w-36 bg-white rounded shadow-lg border z-20"
+          >
+            <button
+              @click="openReportModal"
+              class="w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-50 rounded"
+            >
+              Signaler
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="absolute top-6 left-6 z-10 flex items-center gap-3">
+        <img
+          v-if="post.user?.avatar_url"
+          :src="post.user?.avatar_url"
+          alt="avatar"
+          class="w-12 h-12 rounded-full object-cover"
+        />
+
+        <div
+          v-else
+          class="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg cursor-pointer shadow"
+          :class="getAvatarColor(post.user?.username)"
+          @click="goToProfile(post.user)"
+        >
+          {{ post.user?.username.charAt(0).toUpperCase() }}
+        </div>
+
+        <div class="text-white">
+          <div class="flex items-center justify-center gap-1 font-semibold">
+            <span class="leading-none">
+              {{ post.user?.username }}
+            </span>
+
+            <i
+              v-if="post.user?.is_verified"
+              class="bx bxs-badge-check text-white text-lg align-middle"
+              title="Utilisateur vérifié"
+            ></i>
+          </div>
+
+          <div class="text-xs text-white/80">
+            {{ formattedDate(props.post.updated_at) }}
+          </div>
+        </div>
+      </div>
+
+      <div class="absolute bottom-4 left-6 flex flex-row gap-3">
+        <span
+          class="rounded-full px-3 py-1 text-xs text-gray-600 shadow z-10"
+          :class="
+            post.type_post?.type === 'Selling' ? 'bg-white/90' : 'bg-white/90'
+          "
+        >
+          {{ post.type_post?.type }}
+        </span>
+        <div
+          class="flex items-center gap-1 rounded-full bg-white/90 px-3 py-1 text-xs text-gray-600 shadow z-10"
+        >
+          <i class="bx bx-location-plus"></i>
+          <span>{{ post.location || "Localisation inconnue" }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-6 space-y-2">
+      <h2 class="text-xl font-bold text-gray-900 leading-snug">
+        {{ post.title || "Sans titre" }}
+      </h2>
+
+      <p class="text-gray-700 text-sm leading-relaxed">
+        {{
+          showFullDescription
+            ? post.description
+            : post.description?.slice(0, 120) +
+              (post.description?.length > 120 ? "..." : "")
+        }}
+        <button
+          v-if="post.description?.length > 120"
+          @click="toggleDescription"
+          class="text-[#10b481] ml-1 hover:underline"
+        >
+          {{ showFullDescription ? "Voir moins" : "Voir plus" }}
+        </button>
+      </p>
+
+      <div
+        class="flex-1 flex flex-col gap-2 text-gray-700 text-sm justify-between pt-4"
+      >
+        <div
+          class="w-full grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-200 bg-white overflow-hidden"
+        >
+          <div class="px-2 flex flex-col gap-1 text-gray-700">
+            <div
+              class="flex items-center justify-start gap-2 text-gray-900 font-semibold"
+            >
+              <i class="bx bx-cube text-lg text-gray-700"></i>
+              <span class="text-sm text-gray-700">{{
+                post.product?.product
+              }}</span>
+            </div>
+          </div>
+
+          <div class="px-2 flex flex-col gap-1 text-gray-700">
+            <div
+              class="flex items-center justify-center gap-2 text-gray-900 font-semibold"
+            >
+              <i class="bx bx-package text-lg text-gray-700"></i>
+              <span class="text-sm text-gray-700">
+                {{ post.quantity }} {{ post.product?.unit?.abbreviation }}
+              </span>
+            </div>
+          </div>
+
+          <div class="px-2 flex flex-col gap-1 text-gray-700">
+            <div
+              class="flex items-center justify-end gap-2 text-gray-900 font-semibold"
+            >
+              <i class="bx bx-wallet text-lg text-gray-700"></i>
+              <span class="text-sm text-gray-700">
+                {{ post.price }} {{ post.currency?.symbol }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between gap-4 w-full pt-6">
+        <div class="flex flex-wrap gap-2">
+          <span
+            v-for="label in post.labels"
+            :key="label.id"
+            :style="{
+              backgroundColor: `${label.color}20`,
+              borderColor: label.color,
+              color: label.color,
+            }"
+            class="px-3 py-1 rounded-full text-xs font-semibold border whitespace-nowrap"
+          >
+            {{ label.name }}
+          </span>
+        </div>
+
+        <button
+          v-if="
+            (post?.current_status === 'published' ||
+              post?.current_status === 'négociation') &&
+            post?.can_receive_bids
+          "
+          @click="openModal"
+          :class="[
+            'flex items-center gap-2 shadow-lg',
+            post.type_post?.type === 'Selling' ? 'btn-primary' : 'btn-third',
+          ]"
+        >
+          <i
+            :class="
+              post.type_post?.type === 'Selling' ? 'bx bx-basket' : 'bx bx-gift'
+            "
+            class="text-lg"
+          ></i>
+          <span class="whitespace-nowrap">
+            {{
+              post.type_post?.type === "Selling"
+                ? t("btnPlaceBid")
+                : t("btnMakeOffer")
+            }}
+          </span>
+        </button>
+      </div>
     </div>
 
     <transition name="fade">
       <div
         v-if="modalOpen"
-        class="fixed inset-0 bg-black/70 flex justify-center items-center z-50 p-4"
+        class="fixed inset-0 bg-black/70 flex justify-center items-center z-50 p-"
       >
         <div
-          class="bg-white w-full max-w-4xl rounded shadow-2xl overflow-y-auto max-h-[90vh] relative p-6"
+          class="bg-white w-full max-w-4xl rounded-3xl shadow-2xl overflow-y-auto max-h-[90vh] relative p-6"
         >
           <button
             @click="closeModal"
-            class="absolute top-4 right-4 text-gray-400 text-3xl hover:text-gray-700 transition"
+            class="absolute top-4 right-4 text-gray-400 text-xl hover:text-gray-700 transition"
           >
             <i class="bx bx-x"></i>
           </button>
@@ -174,126 +534,225 @@
                 v-if="post.image_url"
                 :src="post.image_url"
                 alt="product"
-                class="w-full h-80 md:h-[32rem] object-cover rounded shadow-md"
+                class="w-full h-80 md:h-[32rem] object-cover rounded-2xl shadow-md"
               />
               <div
                 v-else
-                class="w-full h-80 md:h-[32rem] bg-gray-100 rounded flex items-center justify-center text-gray-400 font-medium"
+                class="w-full h-80 md:h-[32rem] bg-gray-100 rounded-2xl flex items-center justify-center text-gray-400 font-medium"
               >
                 No image available
               </div>
+              <div
+                class="absolute inset-0 rounded-2xl pointer-events-none"
+                style="
+                  background: linear-gradient(
+                    to bottom,
+                    rgba(17, 40, 48, 0.4),
+                    rgba(17, 40, 48, 0),
+                    rgba(17, 40, 48, 0.4)
+                  );
+                "
+              ></div>
 
               <div
                 class="absolute top-4 left-4 right-4 flex justify-between items-start"
               >
                 <div class="flex flex-col gap-2">
                   <div class="flex items-center gap-2">
+                    <img
+                      v-if="post.user?.avatar_url"
+                      :src="post.user?.avatar_url"
+                      alt="avatar"
+                      class="w-12 h-12 rounded-full cursor-pointer shadow object-cover"
+                    />
+
                     <div
-                      class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg"
+                      v-else
+                      class="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg cursor-pointer shadow"
                       :class="getAvatarColor(post.user?.username)"
+                      @click="goToProfile(post.user)"
                     >
-                      {{ post.user?.username?.charAt(0).toUpperCase() }}
+                      {{ post.user?.username.charAt(0).toUpperCase() }}
                     </div>
-                    <div class="flex flex-col">
-                      <span class="font-semibold text-white">{{
-                        post.user?.username
-                      }}</span>
-                      <div
-                        class="flex items-center gap-1 text-gray-300 text-xs"
-                      >
-                        <span>{{ formattedDate }}</span>
+
+                    <div class="text-white">
+                      <div class="font-semibold leading-tight">
+                        {{ post.user?.username }}
+                      </div>
+                      <div class="text-xs text-white/80">
+                        {{ formattedDate(props.post.updated_at) }}
                       </div>
                     </div>
                   </div>
                 </div>
+              </div>
 
-                <div>
-                  <span
-                    class="inline-block px-3 py-1 rounded-full text-xs text-white"
-                    :class="{
-                      'bg-[#10b481]': post.type_post?.type === 'Selling',
-                      'bg-orange-500': post.type_post?.type === 'Buying',
-                      'bg-gray-500': !post.type_post?.type,
-                    }"
+              <div class="absolute top-4 right-4 flex items-center gap-3 z-10">
+                <button
+                  @click="addToFavorite"
+                  :disabled="favoriteLoading"
+                  class="w-10 h-10 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow hover:scale-110 transition"
+                  :class="isFavorite ? 'text-red-600' : 'text-gray-600'"
+                >
+                  <i
+                    :class="isFavorite ? 'bx bxs-heart' : 'bx bx-heart'"
+                    class="text-xl"
+                  ></i>
+                </button>
+
+                <div class="relative">
+                  <button
+                    @click="toggleReportMenu"
+                    class="w-10 h-10 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow hover:scale-110 transition"
                   >
-                    {{ post.type_post?.type || "Unknown" }}
-                  </span>
+                    <i
+                      class="bx bx-dots-vertical-rounded text-xl text-gray-600"
+                    ></i>
+                  </button>
+
+                  <div
+                    v-if="showReportMenu"
+                    class="absolute right-0 mt-2 w-36 bg-white rounded shadow-lg border z-20"
+                  >
+                    <button
+                      @click="openReportModal"
+                      class="w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-50 rounded"
+                    >
+                      Signaler
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              <div
-                class="absolute bottom-4 left-4 bg-black/50 backdrop-blur-sm text-white px-3 py-2 rounded flex items-center gap-2 text-sm shadow-md"
-              >
-                <i class="bxr bx-location-alt-2"></i>
-                <span class="">{{ post.location || "Not specified" }}</span>
+              <div class="absolute bottom-4 left-4 flex flex-row gap-3">
+                <span
+                  class="rounded-full px-3 py-1 text-xs text-gray-600 shadow z-10"
+                  :class="
+                    post.type_post?.type === 'Selling'
+                      ? 'bg-white/90'
+                      : 'bg-white/90'
+                  "
+                >
+                  {{ post.type_post?.type }}
+                </span>
+                <div
+                  class="flex items-center gap-1 rounded-full bg-white/90 px-3 py-1 text-xs text-gray-600 shadow z-10"
+                >
+                  <i class="bx bx-location-plus"></i>
+                  <span>{{ post.location || "Localisation inconnue" }}</span>
+                </div>
               </div>
             </div>
 
             <div class="md:w-1/2 flex flex-col justify-between gap-4">
               <div>
                 <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
-                  {{ post.product?.product || "Product Name" }}
+                  {{ post.title || "Product Name" }}
                 </h2>
 
-                <p class="text-gray-700 mb-3">
+                <p class="text-gray-700 mb-3 text-sm">
                   {{ post.description || "No description available." }}
                 </p>
 
-                <div class="flex flex-col gap-2 text-gray-700 font-medium">
-                  <div class="flex flex-wrap gap-3 mt-3">
-                    <div
-                      class="flex items-center gap-2 bg-gray-50 border border-gray-100 backdrop-blur-sm text-gray-800 px-3 py-2 rounded shadow-sm text-sm"
-                    >
-                      <i class="bx bx-wallet text-base"></i>
-                      <span
-                        >{{ post?.price }} {{ post?.currency?.symbol }}</span
+                <div
+                  class="flex-1 flex flex-col gap-2 text-gray-700 text-sm justify-between pt-4"
+                >
+                  <div
+                    class="w-full grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-200 bg-white overflow-hidden"
+                  >
+                    <div class="px-2 flex flex-col gap-1 text-gray-700">
+                      <div
+                        class="flex items-center justify-start gap-2 text-gray-900 font-semibold"
                       >
+                        <i class="bx bx-cube text-lg text-gray-700"></i>
+                        <span class="text-sm text-gray-700">{{
+                          post.product?.product
+                        }}</span>
+                      </div>
                     </div>
 
-                    <div
-                      class="flex items-center gap-2 bg-blue-50 text-[#112830] px-4 py-2 rounded shadow-sm text-sm font-semibold"
-                    >
-                      <i class="bx bx-package text-base"></i>
-                      <span
-                        >{{ post?.quantity }}
-                        {{ post?.product?.unit?.abbreviation }}</span
+                    <div class="px-2 flex flex-col gap-1 text-gray-700">
+                      <div
+                        class="flex items-center justify-center gap-2 text-gray-900 font-semibold"
                       >
+                        <i class="bx bx-package text-lg text-gray-700"></i>
+                        <span class="text-sm text-gray-700">
+                          {{ post.quantity }}
+                          {{ post.product?.unit?.abbreviation }}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="px-2 flex flex-col gap-1 text-gray-700">
+                      <div
+                        class="flex items-center justify-end gap-2 text-gray-900 font-semibold"
+                      >
+                        <i class="bx bx-wallet text-lg text-gray-700"></i>
+                        <span class="text-sm text-gray-700">
+                          {{ post.price }} {{ post.currency?.symbol }}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div class="mt-4 flex flex-col gap-3">
+              <div class="flex flex-wrap gap-2">
+                <span
+                  v-for="label in post.labels"
+                  :key="label.id"
+                  :style="{
+                    backgroundColor: `${label.color}20`,
+                    borderColor: label.color,
+                    color: label.color,
+                  }"
+                  class="px-3 py-1 rounded-full text-xs font-semibold border whitespace-nowrap"
+                >
+                  {{ label.name }}
+                </span>
+              </div>
+
+              <div class="mt-4 flex flex-col gap-3 text-sm">
                 <input
                   v-model="price"
                   type="number"
                   placeholder="Enter your bid/offer price"
-                  class="w-full p-3 border border-gray-200 rounded focus:ring-2 focus:ring-[#10b481] focus:border-[#10b481] shadow-sm"
+                  class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#10b481] focus:border-[#10b481] shadow-sm"
                 />
                 <textarea
                   v-model="message"
                   placeholder="Write your message... (optional)"
-                  class="w-full p-3 border border-gray-200 rounded resize-none focus:ring-2 focus:ring-[#10b481] focus:border-[#10b481] shadow-sm"
+                  class="w-full p-3 border border-gray-200 rounded-lg resize-none focus:ring-2 focus:ring-[#10b481] focus:border-[#10b481] shadow-sm"
                   rows="4"
                 ></textarea>
                 <button
                   :disabled="loading"
+                  @click="sendBid"
                   :class="[
-                    'w-full text-white font-semibold py-3 rounded transition shadow-md',
+                    'flex items-center justify-center gap-2 w-full',
                     post.type_post?.type === 'Selling'
-                      ? 'bg-[#10b481] hover:bg-[#0e9a72]'
-                      : 'bg-[#f4a261] hover:bg-[#e07b3c]',
+                      ? 'btn-primary'
+                      : 'btn-third',
                     loading ? 'opacity-60 cursor-not-allowed' : '',
                   ]"
-                  @click="sendBid"
                 >
-                  {{
-                    loading
-                      ? "Processing..."
-                      : post.type_post?.type === "Selling"
-                      ? t("btnPlaceBid")
-                      : t("btnMakeOffer")
-                  }}
+                  <i
+                    :class="
+                      post.type_post?.type === 'Selling'
+                        ? 'bx bx-basket'
+                        : 'bx bx-gift'
+                    "
+                    class="text-lg"
+                  ></i>
+                  <span>
+                    {{
+                      loading
+                        ? "Processing..."
+                        : post.type_post?.type === "Selling"
+                        ? t("btnPlaceBid")
+                        : t("btnMakeOffer")
+                    }}
+                  </span>
                 </button>
               </div>
             </div>
@@ -302,6 +761,7 @@
       </div>
     </transition>
   </div>
+
   <transition name="fade">
     <div
       v-if="reportModalOpen"
@@ -344,21 +804,46 @@
       </div>
     </div>
   </transition>
+  <transition name="slide-right">
+    <div
+      v-if="notification.visible"
+      class="fixed bottom-4 right-4 z-[9999] bg-[#112830] rounded shadow-xl px-6 py-4 flex items-center gap-4 w-96 text-left border-l-4 transition-all duration-300"
+      :class="
+        notification.type === 'success' ? 'border-[#10b481]' : 'border-red-500'
+      "
+    >
+      <div
+        :class="notification.type === 'success' ? 'bg-[#10b481]' : 'bg-red-500'"
+        class="w-12 h-12 rounded-full flex items-center justify-center text-white text-2xl"
+      >
+        <i
+          :class="notification.type === 'success' ? 'bx bx-check' : 'bx bx-x'"
+        ></i>
+      </div>
+      <div>
+        <p class="font-medium text-sm text-gray-100">
+          {{ notification.message }}
+        </p>
+        <p class="text-gray-300 text-xs">
+          {{
+            notification.type === "success"
+              ? "Succès !"
+              : "Une erreur est survenue."
+          }}
+        </p>
+      </div>
+    </div>
+  </transition>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineProps } from "vue";
-import {
-  formatDistanceToNow,
-  parseISO,
-  format,
-  differenceInDays,
-} from "date-fns";
-import { fr } from "date-fns/locale";
+import { ref, computed, defineProps, onMounted, onUnmounted } from "vue";
 import { API_URL } from "~/utils/config";
 import { useLanguageStore } from "~/stores/language";
 import { translate } from "~/utils/translate";
 import { useRouter } from "vue-router";
+import { parseISO, formatDistanceToNow } from "date-fns";
+import { fr, enUS } from "date-fns/locale";
 const router = useRouter();
 
 const languageStore = useLanguageStore();
@@ -366,6 +851,35 @@ const t = (key: string) => {
   const lang = languageStore.lang;
   return translate[lang][key] || key;
 };
+
+const notification = ref({ visible: false, message: "", type: "success" });
+
+const showNotification = (
+  message: string,
+  type = "success",
+  duration = 3000
+) => {
+  notification.value = { visible: true, message, type };
+  setTimeout(() => (notification.value.visible = false), duration);
+};
+
+const isMobile = ref(false);
+
+function checkMobile() {
+  isMobile.value = window.innerWidth <= 640; // ≤640px = sm breakpoint Tailwind
+}
+
+onMounted(() => {
+  checkMobile();
+  window.addEventListener("resize", checkMobile);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", checkMobile);
+});
+
+const isFavorite = ref(false);
+const favoriteLoading = ref(false);
 
 const avatarColors = [
   "bg-red-200 text-red-700",
@@ -476,22 +990,67 @@ function closeModal() {
   modalOpen.value = false;
 }
 
-// Format date
-const formattedDate = computed(() => {
-  if (!props.post.created_at) return "";
-  const date = new Date(props.post.created_at);
-  const daysDiff = differenceInDays(new Date(), date);
+const formattedDate = (dateStr: string) => {
+  if (!dateStr) return "-";
 
-  if (daysDiff <= 3) {
-    return formatDistanceToNow(date, { addSuffix: true, locale: fr });
-  } else {
-    return format(date, "dd MMM yyyy", { locale: fr });
+  try {
+    // Tronquer les microsecondes si présentes
+    const cleanDateStr = dateStr.replace(/\.(\d{3})\d+Z$/, ".$1Z");
+
+    const date = parseISO(cleanDateStr);
+
+    const diffDays = Math.floor(
+      (Date.now() - date.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    if (diffDays > 7) {
+      return date.toLocaleDateString(
+        languageStore.lang === "fr" ? "fr-FR" : "en-US",
+        {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        }
+      );
+    }
+
+    return formatDistanceToNow(date, {
+      addSuffix: true,
+      locale: languageStore.lang === "fr" ? fr : enUS,
+    });
+  } catch (e) {
+    console.error("Invalid date:", dateStr);
+    return "-";
   }
-});
+};
+
+function formatApiError(err: { [x: string]: any; non_field_errors: any[] }) {
+  if (!err || typeof err !== "object") {
+    return "Une erreur est survenue.";
+  }
+
+  // Cas Django REST : non_field_errors
+  if (Array.isArray(err.non_field_errors)) {
+    return err.non_field_errors.join(", ");
+  }
+
+  // Cas erreurs par champ { price: ["..."] }
+  const messages = [];
+
+  for (const key in err) {
+    if (Array.isArray(err[key])) {
+      messages.push(err[key].join(", "));
+    } else if (typeof err[key] === "string") {
+      messages.push(err[key]);
+    }
+  }
+
+  return messages.length ? messages.join(" | ") : "Erreur inconnue.";
+}
 
 async function sendBid() {
   if (!price.value || Number(price.value) <= 0) {
-    alert("Veuillez entrer un prix valide.");
+    showNotification("Veuillez entrer un prix valide.", "error");
     return;
   }
 
@@ -502,39 +1061,11 @@ async function sendBid() {
   }
 
   loading.value = true;
+  const postId = props.post.id;
+  let chatId = null;
 
   try {
-    if (!token) {
-      window.location.href = "/signin";
-      return;
-    }
-
-    const postId = props.post.id;
-
-    // 1️⃣ CRÉATION DU CHAT
-    const chatResponse = await fetch(`${API_URL}/api/chats/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        id_post: postId,
-        id_status_id: 1, // par défaut
-      }),
-    });
-
-    if (!chatResponse.ok) {
-      const err = await chatResponse.json();
-      alert("Erreur création du chat : " + JSON.stringify(err));
-      loading.value = false;
-      return;
-    }
-
-    const chatData = await chatResponse.json();
-    const chatId = chatData.id; // ← récupère l’ID du chat
-
-    // 2️⃣ CRÉATION DU BID (optionnel avant/après)
+    // Créer le BID EN PREMIER
     const bidResponse = await fetch(
       `${API_URL}/api/posts/${postId}/place_bid/`,
       {
@@ -552,16 +1083,34 @@ async function sendBid() {
 
     if (!bidResponse.ok) {
       const err = await bidResponse.json();
-      alert("Erreur : " + JSON.stringify(err));
-      loading.value = false;
+      showNotification(formatApiError(err), "error");
       return;
     }
 
-    // 3️⃣ CRÉATION DU MESSAGE AUTOMA-TIQUE
+    // Créer le CHAT (uniquement si le bid est OK)
+    const chatResponse = await fetch(`${API_URL}/api/chats/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        id_post: postId,
+        id_status_id: 1,
+      }),
+    });
+
+    if (!chatResponse.ok) {
+      throw new Error("Erreur création du chat");
+    }
+
+    const chatData = await chatResponse.json();
+    chatId = chatData.id;
+
+    // Créer le MESSAGE
     const finalMessage =
-      message.value && message.value.trim() !== ""
-        ? message.value
-        : `Bonjour, je propose ${price.value} ${props.post.currency?.symbol}`;
+      message.value?.trim() ||
+      `Bonjour, je propose ${price.value} ${props.post.currency?.symbol}`;
 
     const msgResponse = await fetch(`${API_URL}/api/messages/`, {
       method: "POST",
@@ -577,27 +1126,106 @@ async function sendBid() {
     });
 
     if (!msgResponse.ok) {
-      const err = await msgResponse.json();
-      alert("Message non envoyé : " + JSON.stringify(err));
-      loading.value = false;
-      return;
+      throw new Error("Erreur envoi message");
     }
 
-    alert("Votre offre & message ont été envoyés !");
+    // SUCCÈS TOTAL
+    showNotification("Votre offre et message ont été envoyés !", "success");
     price.value = null;
     message.value = "";
     modalOpen.value = false;
-  } catch (err) {
-    console.error(err);
-    alert("Erreur interne.");
-  }
+  } catch (error) {
+    console.error(error);
 
-  loading.value = false;
+    // ROLLBACK : supprimer le chat si créé
+    if (chatId) {
+      await fetch(`${API_URL}/api/chats/${chatId}/`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    }
+
+    showNotification(
+      "Une erreur est survenue. Aucune action n’a été enregistrée.",
+      "error"
+    );
+  } finally {
+    loading.value = false;
+  }
 }
 
 function goToProfile(user: { id: any }) {
   router.push(`/user/${user.id}`);
 }
+
+async function checkFavorite() {
+  const token = localStorage.getItem("access_token");
+  if (!token) return;
+
+  try {
+    const res = await fetch(
+      `${API_URL}/api/favorites/?id_post=${props.post.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (res.ok) {
+      const data = await res.json();
+      // si le backend renvoie un tableau
+      isFavorite.value = Array.isArray(data) && data.length > 0;
+    }
+  } catch (e) {
+    console.error("Erreur check favorite", e);
+  }
+}
+
+async function addToFavorite() {
+  if (favoriteLoading.value || isFavorite.value) return;
+
+  const token = localStorage.getItem("access_token");
+  if (!token) {
+    window.location.href = "/signin";
+    return;
+  }
+
+  favoriteLoading.value = true;
+
+  try {
+    const res = await fetch(`${API_URL}/api/favorites/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        id_post: props.post.id,
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      showNotification(formatApiError(err), "error");
+      return;
+    }
+
+    isFavorite.value = true;
+    showNotification("Ajouté aux favoris", "success");
+  } catch (e) {
+    console.error(e);
+    showNotification("Erreur lors de l’ajout aux favoris", "error");
+  } finally {
+    favoriteLoading.value = false;
+  }
+}
+
+onMounted(() => {
+  checkFavorite();
+});
 </script>
 
 <style scoped>

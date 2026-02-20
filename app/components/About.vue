@@ -1,75 +1,52 @@
 <template>
-    <section class="bg-[#f9f9f9] py-8 px-3 md:px-8">
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div
-          class="group bg-white min-h-[100px] h-auto flex items-center gap-5 px-6 py-3 rounded shadow-sm border border-[#e0e0e0] hover:shadow-md hover:-translate-y-1 transition-all duration-300"
-        >
+  <section class="relative -mt-4 sm:-mt-20 z-20 px-4 sm:px-6 lg:px-16">
+    <div class="max-w-7xl mx-auto">
+      <div
+        class="bg-[#10B481] rounded-2xl shadow-[0_20px_60px_rgba(16,180,129,0.15)] px-6 sm:px-8 py-8"
+      >
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-0 relative">
           <div
-            class="bg-[#112830]/10 text-[#112830] p-4 rounded-full text-3xl flex items-center justify-center group-hover:bg-[#10b481]/20 transition-colors"
+            v-for="(item, index) in [
+              { title: t('abouttitle1'), text: t('abouttext1') },
+              { title: t('abouttitle2'), text: t('abouttext2') },
+              { title: t('abouttitle3'), text: t('abouttext3') },
+            ]"
+            :key="index"
+            class="flex flex-col items-center text-center relative px-4 py-6 border-b border-white/30 sm:border-b-0 last:border-b-0 sm:border-r last:border-r-0"
           >
-            <i class="bx bx-globe"></i>
-          </div>
-          <div class="text-left">
-            <h3 class="text-lg font-semibold text-[#222831]">{{ t('abouttitle1') }}</h3>
-            <p class="text-sm text-[#7a7a7a]">
-              {{ t('abouttext1') }}
-            </p>
-          </div>
-        </div>
-  
-        <div
-          class="group bg-white min-h-[100px] h-auto flex items-center gap-5 px-6 py-3 rounded shadow-sm border border-[#e0e0e0] hover:shadow-md hover:-translate-y-1 transition-all duration-300"
-        >
-          <div
-            class="bg-[#c99383]/10 text-[#c99383] p-4 rounded-full text-3xl flex items-center justify-center group-hover:bg-[#c99383]/20 transition-colors"
-          >
-            <i class="bx bx-badge-check"></i>
-          </div>
-          <div class="text-left">
-            <h3 class="text-lg font-semibold text-[#222831]">{{ t('abouttitle2') }}</h3>
-            <p class="text-sm text-[#7a7a7a]">
-              {{ t('abouttext2') }}
-            </p>
-          </div>
-        </div>
-  
-        <div
-          class="group bg-white min-h-[100px] h-auto flex items-center gap-5 px-6 py-3 rounded shadow-sm border border-[#e0e0e0] hover:shadow-md hover:-translate-y-1 transition-all duration-300"
-        >
-          <div
-            class="bg-[#6d4c41]/10 text-[#6d4c41] p-4 rounded-full text-3xl flex items-center justify-center group-hover:bg-[#6d4c41]/20 transition-colors"
-          >
-            <i class="bx bx-transfer-alt"></i>
-          </div>
-          <div class="text-left">
-            <h3 class="text-lg font-semibold text-[#222831]">{{ t('abouttitle3') }}</h3>
-            <p class="text-sm text-[#7a7a7a]">
-              {{ t('abouttext3') }}
+            <h3
+              class="text-base sm:text-lg font-semibold text-white mb-1 z-10 relative"
+            >
+              {{ item.title }}
+            </h3>
+            <p
+              class="text-xs sm:text-sm text-white/80 leading-relaxed z-10 relative"
+            >
+              {{ item.text }}
             </p>
           </div>
         </div>
       </div>
-    </section>
-  </template>
-  
-  <script setup lang="ts">
-  import { useLanguageStore } from "~/stores/language";
-  import { translate } from "~/utils/translate";
-  import { useRouter } from "vue-router";
-  const router = useRouter();
-  
-  const languageStore = useLanguageStore();
-  const t = (key: string) => {
-    const lang = languageStore.lang;
-    return translate[lang][key] || key;
-  };
-  </script>
-  
-  <style scoped>
-  .group:hover i {
-    transform: scale(1.15);
-    transition: transform 0.3s ease;
-  }
-  </style>
-  
+    </div>
+  </section>
+</template>
+
+<script setup lang="ts">
+import { useLanguageStore } from "~/stores/language";
+import { translate } from "~/utils/translate";
+import { useRouter } from "vue-router";
+const router = useRouter();
+
+const languageStore = useLanguageStore();
+const t = (key: string) => {
+  const lang = languageStore.lang;
+  return translate[lang][key] || key;
+};
+</script>
+
+<style scoped>
+.group:hover i {
+  transform: scale(1.15);
+  transition: transform 0.3s ease;
+}
+</style>

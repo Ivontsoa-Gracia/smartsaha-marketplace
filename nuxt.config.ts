@@ -1,13 +1,14 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
-  devtools: { enabled: true },
+  devtools: { enabled: false },
   modules: [
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
     '@nuxtjs/i18n',
     '@nuxtjs/sitemap',
   ],
+  css: ['@/assets/css/main.css'],
 
   site: {
     url: 'https://sales.smart-saha.com',
@@ -16,12 +17,11 @@ export default defineNuxtConfig({
 
   sitemap: {
     gzip: true,
-
-    exclude: [
-      '/signin',
-      '/signup',
-      '/dashboard/**',
-      '/admin/**'
-    ]
+    autoI18n: true,
+    urls: [
+      '/market',
+      '/market/about'
+    ],
   }
+  
 })

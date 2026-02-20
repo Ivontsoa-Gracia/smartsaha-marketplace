@@ -1,72 +1,52 @@
 <template>
   <div class="flex flex-col h-screen">
     <header
-      class="flex items-center justify-between bg-[#fff] shadow px-12 py-3 sticky top-0 z-50"
-    >
-      <div class="flex items-center gap-2">
-        <button class="sm:hidden p-2 text-gray-800" @click="toggleMobileMenu">
+        :class="[
+          'flex items-center justify-between bg-gray-50 px-4 sm:px-12 py-4 sm:py-7 transition-shadow duration-200',
+          isScrolled ? 'shadow' : '',
+        ]"
+      >
+        <button class="md:hidden text-gray-700" @click="isMobileOpen = true">
           <i class="bx bx-menu text-2xl"></i>
         </button>
 
-        <div class="flex items-center gap-2">
-          <button class="sm:hidden p-2 text-gray-800" @click="toggleMobileMenu">
-            <i class="bx bx-menu text-2xl"></i>
+        <h2 class="text-lg font-semibold text-gray-800 hidden sm:flex">
+          <Breadcrumb />
+        </h2>
+
+        <div class="flex items-center gap-5">
+        
+          <button
+            @click="goToNotif"
+            class="relative w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition focus:outline-none focus:ring-2 focus:ring-[#10b481]/30"
+          >
+            <i class="bx bx-bell text-xl text-gray-700"></i>
+
+            <span
+              v-if="unreadNotifCount > 0"
+              class="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-1 flex items-center justify-center text-[10px] font-semibold bg-red-600 text-white rounded-full shadow"
+            >
+              {{ unreadNotifCount > 9 ? "9+" : unreadNotifCount }}
+            </span>
           </button>
 
-          <NuxtLink to="/market" class="flex items-center gap-3">
+          <div class="flex items-center gap-3">
             <img
-              src="/marketplace_png.png"
-              alt="Logo"
-              class="h-10 w-auto rounded-md"
+              v-if="user?.avatar_url"
+              :src="user?.avatar_url"
+              alt="avatar"
+              class="w-8 sm:w-10 h-8 sm:h-10 rounded-full object-cover ring-2 ring-[#10B481]/50"
             />
-            <div class="leading-tight">
-              <h1 class="text-xl font-semibold text-gray-800">AgriTrade</h1>
-              <p class="text-xs text-gray-500 tracking-wide">
-                SmartSaha Marketplace
-              </p>
-            </div>
-          </NuxtLink>
-        </div>
-      </div>
 
-      <div class="flex items-center gap-4">
-        <div class="flex items-center gap-2 cursor-pointer">
-          <div class="relative">
             <div
-              class="flex items-center gap-2 p-2 pl-1 rounded-lg cursor-pointer"
-              @click="toggleDropdown"
+              v-else
+              class="w-8 sm:w-10 h-8 sm:h-10 bg-[#10b481] text-white rounded-full flex items-center justify-center font-bold text-lg ring-2 ring-[#10B481]/50"
             >
-              <div
-                class="w-10 h-10 bg-[#10b481] text-white flex items-center justify-center font-semibold rounded-full"
-              >
-                {{ user?.username?.charAt(0).toUpperCase() }}
-              </div>
-
-              <div>
-                <p class="text-sm font-semibold text-gray-800">
-                  {{ user?.username }}
-                </p>
-                <p class="text-xs text-gray-500">{{ user?.email }}</p>
-              </div>
-
-              <i class="bx bx-chevron-down text-sm"></i>
+              {{ user?.username.charAt(0).toUpperCase() }}
             </div>
-
-            <ul
-              v-if="dropdownOpen"
-              class="absolute right-0 mt-2 w-48 bg-white border border-gray-100 rounded-lg shadow-md overflow-hidden"
-            >
-              <li class="px-4 py-2 text-sm hover:bg-gray-50">
-                <NuxtLink to="/dashboard">{{ t("dashboard") }}</NuxtLink>
-              </li>
-              <li class="px-4 py-2 text-sm hover:bg-gray-50">
-                <button @click="logout">{{ t("logout") }}</button>
-              </li>
-            </ul>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
 
     <div class="flex flex-1 overflow-hidden">
       <aside
@@ -85,7 +65,7 @@
         </h2>
 
         <div
-          class="px-4 mb-6 flex items-center gap-2 relative bg-[#1f3945] rounded"
+          class="px-4 mb-6 flex items-center gap-2 relative bg-[#1f3945] rounded-lg"
         >
           <i class="bx bx-search text-gray-400 text-lg"></i>
 
@@ -106,7 +86,7 @@
           v-for="chat in filteredChats"
           :key="chat.id"
           @click="selectChat(chat)"
-          class="group relative flex items-center gap-3 px-4 py-3 mb-1 rounded cursor-pointer transition-all"
+          class="group relative flex items-center gap-3 px-4 py-3 mb-1 rounded-lg cursor-pointer transition-all"
           :class="[
             selectedChat?.id === chat.id
               ? 'bg-white/10 ring-1 ring-[#10b481]/30'
@@ -120,8 +100,18 @@
             class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-r bg-[#10b481]"
           ></span>
 
+          <!-- Avatar image si existant -->
+          <img
+            v-if="getAvatar(chat)"
+            :src="getAvatar(chat)"
+            alt="avatar"
+            class="relative w-10 h-10 rounded-full shrink-0 cursor-pointer shadow object-cover"
+          />
+
+          <!-- Sinon initiale avec couleur -->
           <div
-            class="relative w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shrink-0"
+            v-else
+            class="relative w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shrink-0 cursor-pointer shadow"
             :class="getAvatarColor(getOtherUsername(chat))"
           >
             {{ getOtherUsername(chat).charAt(0).toUpperCase() }}
@@ -159,7 +149,7 @@
 
               <span
                 v-if="getUnreadCount(chat) > 0"
-                class="min-w-[20px] h-5 px-1.5 flex items-center justify-center text-xs font-bold rounded-full bg-[#10b481] text-white shrink-0"
+                class="min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-semibold bg-[#10b481] text-white rounded-full shadow"
               >
                 {{ getUnreadCount(chat) }}
               </span>
@@ -171,15 +161,31 @@
       <section class="flex-1 flex flex-col bg-[#fff] overflow-hidden">
         <div
           v-if="selectedChat"
-          class="flex items-center justify-between gap-3 p-4 border-b border-gray-200 sticky top-0 bg-white z-10"
+          class="flex items-center justify-between gap-3 px-4 py-4 border-b border-gray-200 sticky top-0 bg-white z-10"
         >
           <div class="flex items-center gap-3">
-            <div
+            <!-- <div
               class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg"
               :class="getAvatarColor(getOtherUsername(selectedChat))"
             >
               {{ getOtherUsername(selectedChat).charAt(0).toUpperCase() }}
+            </div> -->
+
+            <img
+              v-if="getAvatar(selectedChat)"
+              :src="getAvatar(selectedChat)"
+              alt="avatar"
+              class="w-10 h-10 rounded-full cursor-pointer shadow object-cover"
+            />
+
+            <div
+              v-else
+              class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg cursor-pointer shadow"
+              :class="getAvatarColor(getOtherUsername(selectedChat))"
+            >
+              {{ getOtherUsername(selectedChat).charAt(0).toUpperCase() }}
             </div>
+
             <div class="flex flex-col">
               <p class="text-gray-800 font-semibold text-sm">
                 {{ getOtherUsername(selectedChat) }}
@@ -241,29 +247,49 @@
         </div>
         <div
           v-if="acceptedBidNotification"
-          class="flex items-center justify-between gap-3 p-2 px-6 border-b border-yellow-200 sticky top-0 bg-yellow-100 z-10"
+          class="sticky top-0 z-20 flex items-center justify-between gap-4 px-4 py-4 bg-white border-b border-gray-100 shadow-sm"
         >
-          <div class="flex-1">
-            <p class="text-yellow-800 font-semibold text-sm mb-1">
-              {{ t("acceptedBid") }}
-            </p>
-            <p class="text-yellow-700 text-xs">
-              {{ t("bidOf") }}
-              <span class="font-medium"
-                >{{ acceptedBidNotification.price }}
-                {{ acceptedBidNotification.currency_symbol }}</span
-              >
-              {{ t("acceptedAt") }}
-              {{ formatDateTime(acceptedBidNotification.created_at) }}
-            </p>
+          <div class="flex items-start gap-4">
+            <div
+              class="w-10 h-10 rounded-full bg-[#10b481]/10 flex items-center justify-center shrink-0"
+            >
+              <i class="bx bx-check text-[#10b481] text-xl font-bold"></i>
+            </div>
+
+            <div>
+              <p class="text-gray-900 font-semibold text-sm">
+                {{ t("acceptedBid") }}
+              </p>
+
+              <p class="text-gray-500 text-xs mt-1">
+                {{ t("bidOf") }}
+                <span class="font-medium text-gray-900">
+                  {{ acceptedBidNotification.price }}
+                  {{ acceptedBidNotification.currency_symbol }}
+                </span>
+                {{ t("acceptedAt") }}
+                {{ formatDateTime(acceptedBidNotification.created_at) }}
+              </p>
+            </div>
           </div>
-          <button
-            @click="acceptedBidNotification = null"
-            class="text-gray-500 text-md font-bold ml-3"
-            aria-label="Fermer notification"
-          >
-            <i class="bxr bx-x"></i>
-          </button>
+
+          <div class="flex items-center gap-3">
+            <button
+              v-if="isPayer(post, acceptedBidNotification, userId)"
+              @click="goToTransaction(acceptedBidNotification)"
+              class="bg-[#10b481] text-white text-sm px-4 py-2 rounded font-medium transition hover:opacity-90"
+            >
+              Passer à l’étape suivante
+            </button>
+
+            <button
+              @click="acceptedBidNotification = null"
+              class="text-gray-400 hover:text-gray-600 transition"
+              aria-label="Fermer notification"
+            >
+              <i class="bx bx-x text-xl"></i>
+            </button>
+          </div>
         </div>
 
         <div
@@ -284,7 +310,7 @@
             <template v-if="item.type === 'message'">
               <div
                 :class="item.user.id === userId ? 'self-end' : 'self-start'"
-                class="max-w-xs rounded-xl px-4 py-2 text-sm"
+                class="max-w-xs rounded-xl px-4 py-2 text-sm shadow-lg"
                 :style="
                   item.user.id === userId
                     ? 'background:#10b481;color:white;border-bottom-right-radius:0;'
@@ -300,49 +326,85 @@
 
             <template v-else-if="item.type === 'bid'">
               <div
-                class="w-72 rounded shadow-lg border-l-4 border-[#10b481] bg-gray-50 p-4 mb-3 self-start"
+                class="w-72 mb-4 self-start bg-[#f9f9f9] border border-gray-200 rounded-xl text-sm shadow-lg"
               >
-                <div class="flex items-center gap-3 mb-2">
-                  <div
-                    class="w-10 h-10 rounded-full flex items-center justify-center font-bold"
-                    :class="getAvatarColor(item.user.username)"
-                  >
-                    {{ item.user.username[0].toUpperCase() }}
-                  </div>
-                  <div>
-                    <p class="font-semibold">{{ item.user.username }}</p>
-                    <span class="text-xs text-gray-500">{{
-                      formatDate(item.created_at)
-                    }}</span>
+                <div class="px-4 py-3 border-b border-dashed border-gray-300">
+                  <div class="flex justify-between items-center">
+                    <span
+                      class="text-gray-500 uppercase text-xs tracking-widest"
+                    >
+                      Proposition
+                    </span>
+                    <span
+                      class="text-xs font-semibold"
+                      :class="{
+                        'text-[#10b481]':
+                          isPropose(item) || isAccept(item) || isPaied(item),
+                        'text-gray-400': isAnnule(item),
+                        'text-red-600': isArreteOrRefuse(item),
+                      }"
+                    >
+                      {{
+                        isPropose(item)
+                          ? "ACTIVE"
+                          : isAccept(item)
+                          ? "ACCEPTÉE"
+                          : isPaied(item)
+                          ? "PAYÉE"
+                          : isAnnule(item)
+                          ? "ANNULÉE"
+                          : "REFUSÉE"
+                      }}
+                    </span>
                   </div>
                 </div>
 
-                <div class="mt-2 border-t border-gray-200 pt-2">
-                  <!-- <p class="text-gray-700 mb-1">{{ item.message }}</p> -->
-                  <p class="font-bold text-lg">
-                    {{ item.price }} {{ item.currency.symbol }}
-                  </p>
+                <div class="px-4 py-4 space-y-3">
+                  <div class="flex justify-between">
+                    <span class="text-gray-500">Utilisateur</span>
+                    <span class="font-medium text-gray-900">
+                      {{ item.user.username }}
+                    </span>
+                  </div>
+
+                  <div class="flex justify-between">
+                    <span class="text-gray-500">Date</span>
+                    <span class="text-gray-900">
+                      {{ formatDate(item.created_at) }}
+                    </span>
+                  </div>
+
+                  <div
+                    class="border-t border-dashed border-gray-300 my-3"
+                  ></div>
+
+                  <div class="flex justify-between items-center">
+                    <span
+                      class="uppercase text-xs tracking-widest text-gray-500"
+                    >
+                      Montant
+                    </span>
+                    <span class="text-lg font-bold text-gray-900">
+                      {{ item.price }} {{ item.currency.symbol }}
+                    </span>
+                  </div>
                 </div>
 
                 <div
-                  v-if="
-                    post?.user.id === userId &&
-                    (item.current_status?.name || '').toLowerCase() ===
-                      'proposée'
-                  "
-                  class="flex gap-2 mt-3 flex-wrap"
+                  v-if="post?.user.id === userId && isPropose(item)"
+                  class="px-4 py-4 border-t border-dashed border-gray-300 flex justify-between gap-3"
                 >
                   <button
-                    @click="openBidConfirmation(item, 'accept')"
-                    class="flex-1 bg-[#10b481] text-white px-3 py-2 rounded hover:bg-green-700 transition"
+                    @click="openBidConfirmation(item, 'decline')"
+                    class="flex-1 text-gray-400 tracking-wider text-sm hover:text-gray-700"
                   >
-                    Accepter
+                    {{ t("decline") }}
                   </button>
                   <button
-                    @click="openBidConfirmation(item, 'decline')"
-                    class="flex-1 border border-gray-400 text-gray-800 px-3 py-2 rounded bg-white transition"
+                    @click="openBidConfirmation(item, 'accept')"
+                    class="flex-1 bg-[#10b481] text-white px-5 py-2 rounded font-semibold tracking-wider text-sm"
                   >
-                    Refuser
+                    {{ t("accepted") }}
                   </button>
                 </div>
               </div>
@@ -355,15 +417,19 @@
           class="p-4 border-t border-[#f1f1f1] bg-[#fff] flex gap-2"
         >
           <button
-            v-if="post?.current_status !== 'vendu' && post?.user?.id !== userId"
+            v-if="
+              post?.current_status !== 'vendu' &&
+              post?.user?.id !== userId &&
+              !hasStoppedOrCancelledBid
+            "
             @click="openCreateBidModal"
-            class="w-12 h-full flex items-center justify-center rounded border border-gray-200 px-3 py-2 bg-gray-100 outline-none"
+            class="w-12 h-full flex items-center justify-center rounded-lg border border-gray-200 px-3 py-2 bg-gray-100 outline-none"
           >
             <i class="bx bx-plus text-xl text-gray-600"></i>
           </button>
 
           <div
-            class="flex flex-1 items-center gap-3 rounded border border-gray-200 px-3 py-2 bg-gray-100 relative"
+            class="flex flex-1 items-center gap-3 rounded-lg border border-gray-200 px-3 py-2 bg-gray-100 relative"
           >
             <button
               @click="showEmojiPicker = !showEmojiPicker"
@@ -375,7 +441,7 @@
             <emoji-picker
               v-if="showEmojiPicker"
               @emoji-click="addEmoji"
-              class="absolute bottom-20 left-84 z-50 rounded shadow-lg"
+              class="absolute bottom-20 left-84 z-50 rounded-lg shadow-lg"
               style="width: 300px; height: 250px"
               theme="light"
             ></emoji-picker>
@@ -390,7 +456,7 @@
 
           <button
             @click="sendMessage"
-            class="bg-[#10b481] text-white px-3 py-2 rounded font-semibold flex items-center justify-center"
+            class="bg-[#10b481] text-white px-3 py-2 rounded-lg font-semibold flex items-center justify-center"
           >
             <i class="bx bx-send-alt text-xl"></i>
           </button>
@@ -401,22 +467,41 @@
         v-if="post"
         class="hidden lg:flex w-96 border-l border-[#f1f1f1] bg-[#fff] p-4 overflow-y-auto"
       >
-        <div class="rounded shadow-sm border border-white/5 overflow-hidden">
-          <div class="relative">
+        <div class="rounded border border-white/5 overflow-hidden">
+          <div class="relative w-full rounded-2xl overflow-hidden shadow-sm">
             <img
+              v-if="post.image_url"
               :src="post.image_url"
-              alt="Post Image"
-              class="w-full h-48 object-cover"
+              class="w-full h-48 object-cover transition-transform duration-300 hover:scale-105"
+              alt="Post image"
             />
             <div
-              class="absolute top-3 left-3 flex items-center gap-3 bg-white/10 backdrop-blur-md px-2 py-1 shadow-sm text-xs text-white"
+              v-else
+              class="w-full h-48 bg-gray-200 flex items-center justify-center text-gray-500 font-medium"
             >
-              <p>Publié le {{ getPublishedDate() }}</p>
-              <span class="h-4 w-px bg-gray-300"></span>
-              <p class="flex items-center gap-1">
-                <i class="bxr bx-location-alt-2"></i>
-                <span>{{ post?.location }}</span>
-              </p>
+              No image
+            </div>
+
+            <div
+              class="absolute top-3 left-3 flex items-center gap-1 rounded-full bg-white/90 px-3 py-1 text-xs text-gray-700 shadow z-10"
+            >
+              <i class="bx bx-time"></i>
+              <span>{{ t("publishedOn") }} {{ getPublishedDate() }}</span>
+            </div>
+
+            <div class="absolute bottom-3 left-3 flex flex-wrap gap-2">
+              <span
+                class="px-3 py-1 text-xs font-medium rounded-full text-gray-700 bg-white/90 shadow z-10"
+              >
+                {{ post.type_post?.type || "Type inconnu" }}
+              </span>
+
+              <div
+                class="flex items-center gap-1 px-3 py-1 text-xs text-gray-700 font-medium rounded-full bg-white/90 shadow z-10"
+              >
+                <i class="bx bx-location-plus"></i>
+                <span>{{ post.location || "Localisation inconnue" }}</span>
+              </div>
             </div>
           </div>
 
@@ -428,23 +513,49 @@
               {{ post?.description }}
             </p>
 
-            <div class="flex flex-wrap gap-3 mt-3">
+            <div class="flex flex-wrap gap-3 pt-3">
               <div
-                class="flex items-center gap-2 bg-gray-50 border border-gray-100 backdrop-blur-sm text-[#112830] px-3 py-2 rounded shadow-sm text-sm"
+                class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded p-2 text-sm"
               >
-                <i class="bx bx-wallet text-base"></i>
-                <span>{{ post?.price }} {{ post?.currency?.symbol }}</span>
+                <i class="bx bx-package text-gray-500"></i>
+                <span class="text-gray-800">
+                  {{ post?.product?.product }}
+                </span>
               </div>
 
               <div
-                class="flex items-center gap-2 bg-[#10b481]/20 text-[#10b481] px-4 py-2 rounded shadow-sm text-sm font-semibold"
+                class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded p-2 text-sm"
               >
-                <i class="bx bx-package text-base"></i>
-                <span
-                  >{{ post?.quantity }}
-                  {{ post?.product?.unit?.abbreviation }}</span
-                >
+                <i class="bx bx-package text-gray-500"></i>
+                <span class="text-gray-800">
+                  {{ post?.quantity }}
+                  {{ post?.product?.unit?.abbreviation }}
+                </span>
               </div>
+
+              <div
+                class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded p-2 text-sm"
+              >
+                <i class="bx bx-wallet text-gray-500"></i>
+                <span class="text-gray-800">
+                  {{ post?.price }}
+                  {{ post?.currency?.symbol }}
+                </span>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-2 pt-3">
+              <span
+                v-for="label in post?.labels"
+                :key="label.id"
+                :style="{
+                  backgroundColor: `${label.color}20`,
+                  borderColor: label.color,
+                  color: label.color,
+                }"
+                class="px-3 py-1 rounded-full text-xs font-semibold border whitespace-nowrap"
+              >
+                {{ label.name }}
+              </span>
             </div>
           </div>
         </div>
@@ -452,6 +563,7 @@
     </div>
   </div>
 
+  <!-- Popup confirmation accept/decline -->
   <div
     v-if="confirmBidOpen"
     class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-30"
@@ -464,7 +576,7 @@
             : "Confirmer le refus"
         }}
       </h3>
-      <p class="mb-4">
+      <p v-if="!showNegotiateChoice" class="mb-4">
         {{
           bidAction === "accept"
             ? "Voulez-vous vraiment accepter cette enchère ?"
@@ -472,8 +584,26 @@
         }}
       </p>
 
-      <div v-if="bidAction === 'decline'" class="mb-4">
-        <label class="block text-sm mb-1">{{ t("MsgBuyer") }} :</label>
+      <div v-if="showNegotiateChoice" class="mb-4">
+        <p class="mb-2">Voulez-vous continuer la négociation ou l'arrêter ?</p>
+        <div class="flex justify-end gap-3">
+          <button
+            @click="chooseContinueNegotiation"
+            class="px-4 py-2 bg-[#10b481] text-white rounded"
+          >
+            Continuer
+          </button>
+          <button
+            @click="chooseStopNegotiation"
+            class="px-4 py-2 bg-red-600 text-white rounded"
+          >
+            Arrêter
+          </button>
+        </div>
+      </div>
+
+      <div v-if="showReasonInput" class="mb-4">
+        <label class="block text-sm mb-1">Raison :</label>
         <textarea
           v-model="declineMessage"
           class="w-full border rounded p-2"
@@ -483,25 +613,40 @@
 
       <div class="flex justify-end gap-3">
         <button
+          v-if="!showNegotiateChoice"
           @click="cancelBid"
           class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
         >
           Annuler
         </button>
+
         <button
+          v-if="bidAction === 'accept'"
           @click="performBidAction"
-          :class="
-            bidAction === 'accept'
-              ? 'bg-[#10b481] hover:bg-[#10b481]/90'
-              : 'bg-red-600 hover:bg-red-700'
-          "
-          class="px-4 py-2 text-white rounded"
+          class="px-4 py-2 bg-[#10b481] text-white rounded"
         >
-          {{ bidAction === "accept" ? t("btnaccept") : t("btndecline") }}
+          {{ t("btnaccept") }}
+        </button>
+
+        <button
+          v-else-if="!showNegotiateChoice && !showReasonInput"
+          @click="openNegotiateChoice"
+          class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded"
+        >
+          {{ t("btndecline") }}
+        </button>
+
+        <button
+          v-else-if="showReasonInput"
+          @click="performBidAction"
+          class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded"
+        >
+          Envoyer
         </button>
       </div>
     </div>
   </div>
+
   <div
     v-if="openBidModal"
     class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-30"
@@ -533,7 +678,7 @@
 
         <button
           @click="submitBid"
-          class="px-4 py-2 bg-[#10b481] text-white rounded hover:bg-green-700"
+          class="px-4 py-2 bg-[#10b481] text-white rounded"
         >
           {{ t("send") }}
         </button>
@@ -577,13 +722,44 @@
         </button>
         <button
           @click="submitReview"
-          class="px-4 py-2 bg-[#10b481] text-white rounded hover:bg-green-700"
+          class="px-4 py-2 bg-[#10b481] text-white rounded"
         >
           {{ t("send") }}
         </button>
       </div>
     </div>
   </div>
+
+  <transition name="slide-right">
+    <div
+      v-if="notification.visible"
+      class="fixed bottom-4 right-4 z-[9999] bg-[#112830] rounded shadow-xl px-6 py-4 flex items-center gap-4 w-80 text-left border-l-4 transition-all duration-300"
+      :class="
+        notification.type === 'success' ? 'border-[#10b481]' : 'border-red-500'
+      "
+    >
+      <div
+        :class="notification.type === 'success' ? 'bg-[#10b481]' : 'bg-red-500'"
+        class="w-12 h-12 rounded-full flex items-center justify-center text-white text-2xl"
+      >
+        <i
+          :class="notification.type === 'success' ? 'bx bx-check' : 'bx bx-x'"
+        ></i>
+      </div>
+      <div>
+        <p class="font-medium text-sm text-gray-100">
+          {{ notification.message }}
+        </p>
+        <p class="text-gray-300 text-xs">
+          {{
+            notification.type === "success"
+              ? "Success!"
+              : "Something went wrong."
+          }}
+        </p>
+      </div>
+    </div>
+  </transition>
 </template>
 
 <script setup>
@@ -593,12 +769,21 @@ import { useRoute } from "vue-router";
 import { useLanguageStore } from "~/stores/language";
 import { translate } from "~/utils/translate";
 import { useRouter } from "vue-router";
+import { parseISO, formatDistanceToNow } from "date-fns";
+import { fr, enUS } from "date-fns/locale";
 const router = useRouter();
 
 const languageStore = useLanguageStore();
 const t = (key) => {
   const lang = languageStore.lang;
   return translate[lang][key] || key;
+};
+
+const notification = ref({ visible: false, message: "", type: "success" });
+
+const showNotification = (message, type = "success", duration = 3000) => {
+  notification.value = { visible: true, message, type };
+  setTimeout(() => (notification.value.visible = false), duration);
 };
 
 const route = useRoute();
@@ -719,25 +904,39 @@ async function loadPost(postId) {
   openReview(post.value, selectedChat.value);
 }
 
-function formatDate(dateStr) {
-  const date = new Date(dateStr),
-    now = new Date(),
-    diff = now - date,
-    oneDay = 24 * 60 * 60 * 1000;
-  if (date.toDateString() === now.toDateString())
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  else if (diff < 2 * oneDay)
-    return (
-      "Hier " +
-      date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+const formatDate = (dateStr) => {
+  if (!dateStr) return "-";
+
+  try {
+    // Tronquer les microsecondes si présentes
+    const cleanDateStr = dateStr.replace(/\.(\d{3})\d+Z$/, ".$1Z");
+
+    const date = parseISO(cleanDateStr);
+
+    const diffDays = Math.floor(
+      (Date.now() - date.getTime()) / (1000 * 60 * 60 * 24)
     );
-  else
-    return (
-      date.toLocaleDateString() +
-      " " +
-      date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-    );
-}
+
+    if (diffDays > 7) {
+      return date.toLocaleDateString(
+        languageStore.lang === "fr" ? "fr-FR" : "en-US",
+        {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        }
+      );
+    }
+
+    return formatDistanceToNow(date, {
+      addSuffix: true,
+      locale: languageStore.lang === "fr" ? fr : enUS,
+    });
+  } catch (e) {
+    console.error("Invalid date:", dateStr);
+    return "-";
+  }
+};
 
 function getOtherUserId(chat) {
   if (!chat) return null;
@@ -772,6 +971,14 @@ function getOtherUserEmail(chat) {
   const otherId = getOtherUserId(chat);
   const msg = messages.value.find((m) => m.id_user === otherId);
   return msg?.user?.email || "Unknown email";
+}
+
+function getAvatar(chat) {
+  const otherId = getOtherUserId(chat);
+  const msg = messages.value.find((m) => m.id_user === otherId);
+
+  // Retourne uniquement l'URL si elle existe
+  return msg?.user?.avatar_url || null;
 }
 
 function getLastMessage(chat) {
@@ -849,11 +1056,15 @@ const confirmBidOpen = ref(false);
 const bidToConfirm = ref(null);
 const bidAction = ref(null);
 const declineMessage = ref("");
+const showNegotiateChoice = ref(false);
+const showReasonInput = ref(false);
 
 function openBidConfirmation(bid, action) {
   bidToConfirm.value = bid;
   bidAction.value = action;
   declineMessage.value = "";
+  showNegotiateChoice.value = false;
+  showReasonInput.value = false;
   confirmBidOpen.value = true;
 }
 
@@ -862,40 +1073,40 @@ function cancelBid() {
   bidToConfirm.value = null;
   bidAction.value = null;
   declineMessage.value = "";
+  showNegotiateChoice.value = false;
+  showReasonInput.value = false;
+}
+
+function openNegotiateChoice() {
+  showNegotiateChoice.value = true;
+}
+
+function chooseContinueNegotiation() {
+  showNegotiateChoice.value = false;
+  showReasonInput.value = false;
+  declineBid(bidToConfirm.value, true);
+  cancelBid();
+}
+
+function chooseStopNegotiation() {
+  showNegotiateChoice.value = false;
+  showReasonInput.value = true;
 }
 
 async function performBidAction() {
   if (!bidToConfirm.value || !bidAction.value) return;
 
-  try {
-    if (bidAction.value === "accept") {
-      await acceptBid(bidToConfirm.value);
-    } else if (bidAction.value === "decline") {
-      if (!declineMessage.value.trim()) {
-        alert("Veuillez saisir un message pour l'acheteur !");
-        return;
-      }
-      await declineBidWithMessage(bidToConfirm.value, declineMessage.value);
+  if (bidAction.value === "accept") {
+    await acceptBid(bidToConfirm.value);
+  } else if (bidAction.value === "decline") {
+    if (!declineMessage.value.trim()) {
+      // alert("Veuillez saisir un message pour l'acheteur !");
+      showNotification("Veuillez saisir un message pour l'acheteur !", "error");
+      return;
     }
-  } catch (err) {
-    console.error(err);
-  } finally {
+    declineBid(bidToConfirm.value, false);
     cancelBid();
   }
-}
-
-async function declineBidWithMessage(bid, message) {
-  const payload = {
-    continue_negotiation: false,
-    message: message,
-  };
-  const res = await api(
-    `${API_URL}/api/bids/${bid.id}/reject/`,
-    "POST",
-    payload
-  );
-  console.log("Bid rejected:", res);
-  await loadPost(post.value.id);
 }
 
 async function acceptBid(bid) {
@@ -921,60 +1132,31 @@ async function acceptBid(bid) {
       "POST",
       payload
     );
-    console.log("Bid accepted:", res);
+    // console.log("Bid accepted:", res);
+    showNotification("Bid accepted !", "success");
     await loadPost(post.value.id);
   } catch (err) {
-    console.error("Erreur acceptBid :", err);
+    showNotification(err, "error");
   }
 }
 
-async function declineBid(bid) {
-  if (!bid?.id) return console.warn("Enchère invalide !");
-
-  const continueNegotiation = !!confirm(
-    "Voulez-vous continuer la négociation ?"
-  );
-  let msg = "";
-
-  if (!continueNegotiation) {
-    msg = prompt("Veuillez saisir un message pour l'acheteur");
-    if (!msg) return alert("Message requis pour arrêter la négociation !");
-  }
-
+async function declineBid(bid, continueNegotiation) {
   const payload = {
     continue_negotiation: continueNegotiation,
-    message: msg,
+    message: declineMessage.value || "",
   };
-
   try {
     const res = await api(
       `${API_URL}/api/bids/${bid.id}/reject/`,
       "POST",
       payload
     );
-    console.log("Bid rejected:", res);
-
-    if (res.status >= 400) {
-      console.warn("Erreur côté API :", res.status, res.data || res);
-      alert(
-        "Erreur lors du refus de l'enchère : " + JSON.stringify(res.data || res)
-      );
-      return;
-    }
-
-    await loadPost(bid.post_id);
-
-    if (!continueNegotiation) {
-      console.warn("La négociation est terminée avec l'acheteur.");
-      return;
-    }
-    console.warn("La négociation continue avec l'acheteur.");
+    // console.log("Bid rejected:", res);
+    showNotification("Bid rejected!", "succes");
+    await loadPost(post.value.id);
   } catch (err) {
-    console.error("Erreur declineBid :", err.response?.data || err);
-    alert(
-      "Erreur lors du refus de l'enchère : " +
-        JSON.stringify(err.response?.data || err)
-    );
+    // console.error("Erreur declineBid :", err);
+    showNotification(err, "error");
   }
 }
 
@@ -1025,6 +1207,34 @@ function cancelDelete() {
 
 const acceptedBidNotification = ref(null);
 
+// function checkAcceptedBid(post, selectedChat) {
+//   if (!post || !selectedChat) {
+//     acceptedBidNotification.value = null;
+//     return;
+//   }
+
+//   const acceptedBid = post.accepted_bid;
+
+//   if (
+//     !acceptedBid ||
+//     acceptedBid.current_status?.name?.toLowerCase() !== "acceptée"
+//   ) {
+//     acceptedBidNotification.value = null;
+//     return;
+//   }
+
+//   const otherId = getOtherUserId(selectedChat);
+//   const bidsInChat =
+//     post.active_bids?.filter((b) => b.user.id === otherId).map((b) => b.id) ||
+//     [];
+
+//   if (bidsInChat.includes(acceptedBid.id)) {
+//     acceptedBidNotification.value = acceptedBid; // <-- stocke tout l'objet
+//   } else {
+//     acceptedBidNotification.value = null;
+//   }
+// }
+
 function checkAcceptedBid(post, selectedChat) {
   if (!post || !selectedChat) {
     acceptedBidNotification.value = null;
@@ -1041,18 +1251,12 @@ function checkAcceptedBid(post, selectedChat) {
     return;
   }
 
-  const otherId = getOtherUserId(selectedChat);
-  const bidsInChat =
-    post.active_bids?.filter((b) => b.user.id === otherId).map((b) => b.id) ||
-    [];
+  // L'utilisateur courant
+  const currentUserIsPostOwner = post.user?.id === userId;
+  const currentUserIsBidOwner = acceptedBid.user?.id === userId;
 
-  if (bidsInChat.includes(acceptedBid.id)) {
-    acceptedBidNotification.value = {
-      price: acceptedBid.price,
-      currency_symbol: acceptedBid.currency.symbol,
-      created_at: acceptedBid.created_at,
-      username: acceptedBid.user.username,
-    };
+  if (currentUserIsPostOwner || currentUserIsBidOwner) {
+    acceptedBidNotification.value = acceptedBid;
   } else {
     acceptedBidNotification.value = null;
   }
@@ -1187,10 +1391,10 @@ async function submitReview() {
     await api(`${API_URL}/api/reviews/`, "POST", payload);
     reviewPopupOpen.value = false;
 
-    alert("Merci pour votre évaluation !");
+    showNotification("Merci pour votre évaluation !", "success");
   } catch (err) {
     console.error("Erreur review :", err);
-    alert("Impossible d'envoyer la note.");
+    showNotification("Impossible d'envoyer la note.", "error");
   }
 }
 
@@ -1231,6 +1435,91 @@ const filteredChats = computed(() => {
     return username.includes(searchQuery.value.toLowerCase());
   });
 });
+
+const hasStoppedOrCancelledBid = computed(() => {
+  if (!post.value?.active_bids) return false;
+  return post.value.active_bids.some((bid) =>
+    ["arrêtée"].includes((bid.current_status?.name || "").toLowerCase())
+  );
+});
+
+const isPropose = (bid) =>
+  (bid.current_status?.name || "").toLowerCase() === "proposée";
+
+const isAccept = (bid) =>
+  (bid.current_status?.name || "").toLowerCase() === "acceptée";
+
+const isPaied = (bid) =>
+  (bid.current_status?.name || "").toLowerCase() === "payée";
+
+const isAnnule = (bid) =>
+  (bid.current_status?.name || "").toLowerCase() === "annulée";
+
+const isArreteOrRefuse = (bid) => {
+  const status = (bid.current_status?.name || "").toLowerCase();
+  return status === "arrêtée" || status === "refusée";
+};
+
+function goToTransaction(bid) {
+  if (!bid) return;
+
+  const query = { bidId: bid.id };
+
+  router.push({ path: "/dashboard/payment", query });
+}
+
+// Détermine si l'utilisateur doit payer
+function isPayer(post, acceptedBid, currentUserId) {
+  if (!post || !acceptedBid || !currentUserId) return false;
+
+  // Si le post est de type 'buying', le propriétaire du post paye
+  if (post.type_post?.type === "Buying" && post.user?.id === currentUserId) {
+    return true;
+  }
+
+  // Si le post est de type 'selling', le propriétaire du bid accepté paye
+  if (
+    post.type_post?.type === "Selling" &&
+    acceptedBid.user?.id === currentUserId
+  ) {
+    return true;
+  }
+
+  //   console.log("acceptedBidNotification:", JSON.stringify(acceptedBidNotification.value, null, 2));
+  // console.log("userId:", userId);
+  // console.log("post.type_post:", post?.type_post?.type);
+
+  return false;
+}
+const notifications = ref([]);
+function goToNotif() {
+  window.location.href = "/dashboard/notification";
+}
+
+const unreadNotifCount = computed(
+  () => notifications.value.filter((n) => !n.is_read).length
+);
+
+async function fetchNotifications() {
+  try {
+    const token = localStorage.getItem("access_token");
+    if (!token) throw new Error("Not authenticated");
+
+    const res = await fetch(`${API_URL}/api/notifications/`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) throw new Error("Failed to fetch notifications");
+
+    notifications.value = await res.json();
+  } catch (err) {
+    console.error(err);
+  } finally {
+  }
+}
+
+onMounted(() => {
+  fetchNotifications();
+});
 </script>
 
 <style scoped>
@@ -1243,7 +1532,7 @@ const filteredChats = computed(() => {
 }
 
 emoji-picker {
-  --background-color: #1f2937;
+  --background-color: #ffffff;
   --button-background-color: #10b481;
   --button-hover-background-color: #0ea371;
   --button-color: #fff;
