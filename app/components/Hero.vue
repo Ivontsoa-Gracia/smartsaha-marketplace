@@ -14,18 +14,23 @@
     >
       <div class="max-w-lg text-left text-white">
         <h1
-          class="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-6 drop-shadow-lg text-[#10b481]"
+          class="text-hero text-3xl md:text-4xl lg:text-5xl mb-6 drop-shadow-lg text-[#10b481]"
         >
           {{ t("accroche") }}
         </h1>
-        <p class="text-base md:text-lg lg:text-lg mb-8 drop-shadow-md text-gray-700">
+        <p
+          class="text-content md:text-lg lg:text-lg mb-8 drop-shadow-md text-gray-700"
+        >
           {{ t("textacrroche") }}
         </p>
         <div class="flex flex-col sm:flex-row gap-4">
           <button
-            class="flex items-center justify-center gap-2 bg-[#10b481] text-white py-3 px-6 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl outline-none"
+            class="group flex items-center justify-center gap-2 btn-primary"
           >
             {{ t("btnStart") }}
+            <i
+              class="bx bx-right-arrow-alt text-lg transition-transform duration-200 group-hover:translate-x-1"
+            ></i>
           </button>
         </div>
       </div>

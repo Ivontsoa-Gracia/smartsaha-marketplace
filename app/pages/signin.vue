@@ -1,156 +1,197 @@
 <template>
   <div
-    class="min-h-screen flex flex-col items-center justify-center bg-[#112830] transition-colors duration-300"
+    class="relative h-screen flex flex-col lg:flex-row bg-white sm:bg-[#fafaf9] p-4 sm:p-12 overflow-hidden"
   >
-    <div class="w-full max-w-md p-8 sm:p-10">
-      <div class="text-center mb-10">
-        <img
-          src="/logo.png"
-          alt="SmartSaha logo"
-          class="h-14 sm:h-16 mx-auto mb-4 rounded-2xl"
-        />
-        <h1
-          class="text-3xl sm:text-4xl font-bold text-gray-100 dark:text-white mb-2"
-        >
-          Bon retour
-        </h1>
+    <div
+      class="absolute -top-24 -left-32 w-[500px] h-[500px] sm:bg-blue-500 opacity-30 rounded-[60%_40%_55%_45%/50%_60%_40%_50%] blur-3xl"
+    ></div>
+
+    <div
+      class="absolute -top-48 -left-48 w-[1000px] h-[400px] sm:bg-[#10b481] opacity-30 rounded-[60%_40%_55%_45%/50%_60%_40%_50%] blur-3xl"
+    ></div>
+
+    <div
+      class="absolute -top-48 right-[-100px] w-[800px] h-[400px] sm:bg-[#10b481] opacity-30 rounded-[60%_40%_55%_45%/50%_60%_40%_50%] blur-3xl"
+    ></div>
+
+    <div class="hidden lg:flex w-1/2 flex-col p-12 relative overflow-hidden">
+      <div class="flex-1 flex items-center">
+        <div class="relative max-w-md">
+          <h2 class="mb-6 leading-tight">{{ t("welcomeback") }}</h2>
+
+          <p class="content leading-relaxed">
+            {{ t("welcomebacktext") }}
+          </p>
+        </div>
       </div>
 
-      <form @submit.prevent="submitSignin" class="space-y-6">
-        <div class="relative">
-          <i
-            class="bx bx-user text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2 text-lg"
-          ></i>
+      <div class="relative">
+        <div class="flex items-center justify-between">
+          <div class="relative hidden sm:flex">
+            <button
+              @click="open = !open"
+              class="flex items-center gap-2 px-3 py-2 transition"
+            >
+              <img :src="currentLocale.flag" class="w-5 h-5 rounded-full" />
+              <span class="text-sm text-gray-700 small">
+                {{ currentLocale.name }}
+              </span>
+              <i class="bx bx-chevron-down text-sm text-gray-500"></i>
+            </button>
 
-          <input
-            id="username"
-            v-model="form.username"
-            type="text"
-            placeholder=" "
-            required
-            class="peer w-full px-4 py-3 pl-10 rounded-lg border border-white/20 bg-[#112830] text-gray-100 focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition"
-          />
+            <transition name="fade">
+              <ul
+                v-if="open"
+                class="absolute bottom-12 w-44 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden"
+              >
+                <li
+                  v-for="loc in locales"
+                  :key="loc.code"
+                  @click="selectLocale(loc.code)"
+                  class="flex items-center gap-2 px-4 py-3 hover:bg-[#10b481]/10 cursor-pointer transition"
+                >
+                  <img :src="loc.flag" class="w-5 h-5 rounded-full" />
+                  <span class="text-sm text-gray-700">
+                    {{ loc.name }}
+                  </span>
+                </li>
+              </ul>
+            </transition>
+          </div>
 
-          <label
-            for="username"
-            class="absolute left-10 text-gray-400 pointer-events-none transition-all duration-200 peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:-top-3 peer-focus:text-sm peer-focus:text-emerald-400 bg-[#112830] px-1"
-            :class="form.username ? '-top-3 text-sm text-emerald-400 px-2' : ''"
-          >
-            Nom d’utilisateur
-          </label>
-
-          <p
-            v-if="fieldErrors.username"
-            class="text-sm text-red-400 mt-2 flex items-center gap-1"
-          >
-            <i class="bx bx-error-circle text-base"></i>
-            {{ fieldErrors.username }}
-          </p>
+          <ul class="flex gap-6 text-sm">
+            <li class="menu-item transition cursor-pointer">
+              {{ t("terms") }}
+            </li>
+            <li class="menu-item transition cursor-pointer">
+              <NuxtLink to="/market" class="block w-full h-full">
+                {{ t("home") }}
+              </NuxtLink>
+            </li>
+            <li class="menu-item transition cursor-pointer">
+              {{ t("contactus") }}
+            </li>
+          </ul>
         </div>
-
-        <div class="relative">
-          <i
-            class="bx bx-lock text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2 text-lg"
-          ></i>
-
-          <input
-            id="password"
-            v-model="form.password"
-            :type="showPassword ? 'text' : 'password'"
-            placeholder=" "
-            required
-            minlength="6"
-            class="peer w-full px-4 py-3 pl-10 pr-12 rounded-lg border border-white/20 bg-[#112830] text-gray-100 focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition"
-          />
-
-          <label
-            for="password"
-            class="absolute left-10 text-gray-400 pointer-events-none transition-all duration-200 peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:-top-3 peer-focus:text-sm peer-focus:text-emerald-400 bg-[#112830] px-1"
-            :class="form.password ? '-top-3 text-sm text-emerald-400 px-2 ' : ''"
-          >
-            Mot de passe
-          </label>
-
-          <i
-            :class="[
-              'bx text-xl absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-400 hover:text-white transition',
-              showPassword ? 'bx-hide' : 'bx-show',
-            ]"
-            @click="showPassword = !showPassword"
-          ></i>
-
-          <p
-            v-if="fieldErrors.password"
-            class="text-sm text-red-400 mt-2 flex items-center gap-1"
-          >
-            <i class="bx bx-error-circle text-base"></i>
-            {{ fieldErrors.password }}
-          </p>
-        </div>
-
-        <div class="flex items-center justify-between text-sm hidden">
-          <label class="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              class="rounded text-emerald-600 dark:bg-gray-800 focus:ring-emerald-500"
-            />
-            <span class="text-gray-600 dark:text-gray-400">Remember me</span>
-          </label>
-          <NuxtLink
-            to="#"
-            class="text-emerald-600 dark:text-emerald-400 hover:underline"
-          >
-            Forgot password?
-          </NuxtLink>
-        </div>
-
-        <button
-          type="submit"
-          class="w-full bg-[#10b481] hover:bg-emerald-700 active:scale-[0.98] text-white font-semibold py-3 rounded-lg shadow-md transition-all duration-200 flex items-center justify-center gap-3"
-          :disabled="loading"
-        >
-          <template v-if="loading">
-            <span
-              class="w-5 h-5 border-4 border-white border-t-transparent rounded-full animate-spin"
-            ></span>
-            <span>Connexion...</span>
-          </template>
-          <template v-else>Se connecter</template>
-        </button>
-
-        <div class="flex items-center my-4 hidden">
-          <div class="flex-grow h-px bg-gray-200 dark:bg-gray-700"></div>
-          <span class="px-3 text-gray-400 text-sm">or</span>
-          <div class="flex-grow h-px bg-gray-200 dark:bg-gray-700"></div>
-        </div>
-
-        <button
-          type="button"
-          @click="signinWithGoogle"
-          class="w-full border border-white/20 py-3 rounded flex items-center justify-center gap-3 font-medium text-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all hidden"
-        >
-          <i class="bx bxl-google text-lg"></i>
-          <span>Sign in with Google</span>
-        </button>
-      </form>
-
-      <p class="text-center text-sm text-gray-500 dark:text-gray-400 mt-8">
-        Vous n’avez pas de compte ?
-        <NuxtLink
-          to="/signup"
-          class="text-emerald-600 dark:text-emerald-400 font-medium hover:underline"
-        >
-          Créez-en un
-        </NuxtLink>
-      </p>
+      </div>
     </div>
 
     <div
-      class="absolute top-10 left-10 w-32 h-32 bg-emerald-200 dark:bg-emerald-900 rounded-full blur-3xl opacity-30"
-    ></div>
-    <div
-      class="absolute bottom-10 right-10 w-40 h-40 bg-emerald-300 dark:bg-emerald-800 rounded-full blur-3xl opacity-30"
-    ></div>
+      class="flex-1 flex items-center justify-center p-0 sm:px-6 p-2 sm:py-16"
+    >
+      <div
+        class="w-full max-w-md bg-transparent sm:bg-white sm:rounded-3xl sm:shadow-xl p-0 sm:p-12 relative overflow-hidden"
+      >
+        <div class="text-left mb-10">
+          <img src="/logo.png" alt="SmartSaha" class="h-16 rounded-xl mb-4" />
+          <h2 class="mb-2">{{ t("login") }}</h2>
+          <p class="content">{{ t("logintext") }}</p>
+        </div>
+
+        <form @submit.prevent="submitSignin" class="space-y-6">
+          <div class="small">
+            <div class="relative">
+              <i
+                class="bx bx-user text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 text-lg"
+              ></i>
+
+              <input
+                id="username"
+                v-model="form.username"
+                type="text"
+                placeholder=" "
+                required
+                class="peer w-full px-4 py-3 pl-10 small text-gray-700 text-sm rounded-xl border border-gray-200 focus:border-[#10b481] focus:ring-4 focus:ring-[#10b481]/10 outline-none transition-all"
+              />
+
+              <label
+                for="username"
+                class="absolute left-10 small text-gray-400 pointer-events-none transition-all duration-200 peer-placeholder-shown:top-4 peer-placeholder-shown:text-sm peer-focus:-top-3 peer-focus:text-sm peer-focus:text-emerald-400 bg-white px-2"
+                :class="
+                  form.username ? '-top-3 text-sm text-emerald-400 px-2' : ''
+                "
+              >
+                {{ t("username") }}
+              </label>
+            </div>
+
+            <p
+              v-if="fieldErrors.username"
+              class="text-sm text-red-400 mt-2 flex items-center gap-1"
+            >
+              <i class="bx bx-error-circle text-base"></i>
+              {{ fieldErrors.username }}
+            </p>
+          </div>
+
+          <div class="small">
+            <div class="relative">
+              <i
+                class="bx bx-lock text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 text-lg"
+              ></i>
+
+              <input
+                id="password"
+                v-model="form.password"
+                :type="showPassword ? 'text' : 'password'"
+                placeholder=" "
+                required
+                minlength="6"
+                class="peer w-full px-4 py-3 pl-10 small text-gray-700 text-sm pr-12 rounded-xl border border-gray-200 focus:border-[#10b481] focus:ring-4 focus:ring-[#10b481]/10 outline-none transition-all"
+              />
+
+              <label
+                for="password"
+                class="absolute left-10 small text-gray-400 pointer-events-none transition-all duration-200 peer-placeholder-shown:top-4 peer-placeholder-shown:text-sm peer-focus:-top-3 peer-focus:text-sm peer-focus:text-emerald-400 bg-white px-2"
+                :class="
+                  form.password ? '-top-3 text-sm text-emerald-400 px-2 ' : ''
+                "
+              >
+                {{ t("password") }}
+              </label>
+              <i
+                :class="[
+                  'bx text-xl absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-400 transition',
+                  showPassword ? 'bx-hide' : 'bx-show',
+                ]"
+                @click="showPassword = !showPassword"
+              ></i>
+            </div>
+
+            <p
+              v-if="fieldErrors.password"
+              class="text-red-500 text-sm mt-1 flex items-center gap-1"
+            >
+              <i class="bx bx-error-circle text-base"></i>
+              {{ fieldErrors.password }}
+            </p>
+          </div>
+
+          <button
+            type="submit"
+            class="w-full btn-primary flex items-center justify-center gap-3"
+            :disabled="loading"
+          >
+            <template v-if="loading">
+              <span
+                class="w-5 h-5 border-4 border-white border-t-transparent rounded-full animate-spin"
+              ></span>
+            </template>
+            <template v-else>{{ t("signin") }}</template>
+          </button>
+        </form>
+
+        <p class="text-center small text-sm text-gray-500 mt-8">
+          {{ t("dontaccount") }}
+          <NuxtLink
+            to="/signup"
+            class="text-[#10b481] font-medium hover:underline"
+          >
+            {{ t("createone") }}
+          </NuxtLink>
+        </p>
+      </div>
+    </div>
   </div>
 
   <div
@@ -162,48 +203,59 @@
     ></div>
   </div>
 
-  <transition name="fade">
+  <transition name="slide-down">
     <div
       v-if="notification.visible"
-      class="fixed inset-0 flex items-center justify-center z-50 bg-black/20 backdrop-blur-sm"
+      class="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-lg"
     >
       <div
         :class="[
-          'bg-white rounded shadow-2xl px-8 py-6 flex flex-col items-center gap-4 w-[340px] text-center transition-all duration-300',
-          notification.type === 'success'
-            ? 'border-t-4 border-[#10b481]'
-            : 'border-t-4 border-red-500',
+          'flex items-start justify-between gap-4 px-6 py-4 rounded-xl shadow-xl border backdrop-blur-md transition-all',
+          notification.type === 'success' && 'bg-white border-[#10b481]/30',
+          notification.type === 'error' && 'bg-white border-red-400/40',
+          notification.type === 'inactive' && 'bg-white border-white',
         ]"
       >
-        <div
-          v-if="notification.type === 'success'"
-          class="w-16 h-16 rounded-full bg-[#10b481] flex items-center justify-center"
-        >
-          <i class="bx bx-check text-4xl font-extrabold text-white"></i>
-        </div>
-        <div
-          v-else
-          class="w-16 h-16 rounded-full bg-red-500 flex items-center justify-center"
-        >
-          <i class="bx bx-x text-4xl font-extrabold text-white"></i>
+        <div class="flex items-start gap-4">
+          <div
+            :class="[
+              'w-10 h-10 rounded-full flex items-center justify-center',
+              notification.type === 'success' &&
+                'bg-[#10b481]/15 text-[#10b481]',
+              notification.type === 'error' && 'bg-red-100 text-red-500',
+              notification.type === 'inactive' && 'bg-red-500/20 text-red-500',
+            ]"
+          >
+            <i
+              :class="[
+                'text-xl',
+                notification.type === 'success' && 'bx bx-check',
+                notification.type === 'error' && 'bx bx-x',
+                notification.type === 'inactive' && 'bx bx-lock-alt',
+              ]"
+            ></i>
+          </div>
+
+          <div>
+            <p class="text-gray-700 username text-sm">
+              {{ notification.message }}
+            </p>
+
+            <p
+              v-if="notification.type === 'inactive'"
+              class="text-xs text-gray-600 small mt-1"
+            >
+              {{ t("accountinactive") }}
+            </p>
+          </div>
         </div>
 
-        <p
-          :class="[
-            'text-lg font-semibold',
-            notification.type === 'success' ? 'text-[#10b481]' : 'text-red-500',
-          ]"
+        <button
+          @click="closeNotification"
+          class="text-gray-400 hover:text-gray-700 transition"
         >
-          {{ notification.message }}
-        </p>
-
-        <p class="text-gray-500 text-sm">
-          {{
-            notification.type === "success"
-              ? "Redirecting to your dashboard..."
-              : "Please try again."
-          }}
-        </p>
+          <i class="bx bx-x text-xl"></i>
+        </button>
       </div>
     </div>
   </transition>
@@ -213,23 +265,61 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { API_URL } from "~/utils/config";
+import { useLanguageStore } from "~/stores/language";
+import { translate } from "~/utils/translate";
 
 const router = useRouter();
 const isLoading = ref(false);
-const notification = ref({ visible: false, message: "", type: "success" });
 const showPassword = ref(false);
 const fieldErrors = ref({
   username: "",
   password: "",
 });
 
+const languageStore = useLanguageStore();
+const t = (key: string) => {
+  const lang = languageStore.lang;
+  return translate[lang][key] || key;
+};
+
+const locales = [
+  { code: "en", name: "English", flag: "/flags/en.png" },
+  { code: "fr", name: "Français", flag: "/flags/fr.png" },
+  { code: "mg", name: "Malagasy", flag: "/flags/mg.png" },
+];
+
+const open = ref(false);
+const currentLocale = computed(
+  () => locales.find((l) => l.code === languageStore.lang) || locales[0]
+);
+
+const selectLocale = (code: string) => {
+  languageStore.setLang(code);
+  open.value = false;
+};
+
+const notification = ref({
+  visible: false,
+  message: "",
+  type: "success" as "success" | "error" | "inactive",
+});
+
 const showNotification = (
   message: string,
-  type: "success" | "error" = "success",
-  duration = 3000
+  type: "success" | "error" | "inactive" = "success",
+  duration = 5000
 ) => {
   notification.value = { visible: true, message, type };
-  setTimeout(() => (notification.value.visible = false), duration);
+
+  if (duration) {
+    setTimeout(() => {
+      notification.value.visible = false;
+    }, duration);
+  }
+};
+
+const closeNotification = () => {
+  notification.value.visible = false;
 };
 
 const form = ref({
@@ -237,6 +327,40 @@ const form = ref({
   password: "",
 });
 const loading = ref(false);
+
+const user = ref<any>(null);
+let userId = 0;
+const isStaffUser = ref(false);
+
+function isStaff(user: any): boolean {
+  if (!user || !user.id_categorie_user) return false;
+  const role = user.id_categorie_user.categorie;
+  return role === "Admin" || role === "Staff"; 
+}
+
+async function checkUser() {
+  const token = localStorage.getItem("access_token");
+  if (!token) return null;
+
+  try {
+    const res = await fetch(`${API_URL}/api/me/`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!res.ok) throw new Error("Unauthorized");
+
+    const data = await res.json();
+    user.value = data;
+    userId = data.id;
+    isStaffUser.value = isStaff(data);
+
+    return data;
+  } catch {
+    user.value = null;
+    isStaffUser.value = false;
+    return null;
+  }
+}
 
 const submitSignin = async () => {
   isLoading.value = true;
@@ -251,28 +375,43 @@ const submitSignin = async () => {
     });
 
     if (!response.ok) {
-      if (response.status === 400 || response.status === 401) {
-        fieldErrors.value.username = "Username incorrect";
-        fieldErrors.value.password = "Password incorrect";
+      const data = await response.json();
+      console.log("Error response:", data); 
+
+      if (response.status === 401) {
+        fieldErrors.value.username = "Nom d'utilisateur incorrect";
+        fieldErrors.value.password = "Mot de passe incorrect";
+      } else if (response.status === 403) {
+        showNotification(data.detail, "inactive", 7000);
       } else {
         showNotification("Something went wrong", "error");
       }
-
-      isLoading.value = false;
-      loading.value = false;
       return;
     }
 
     const data = await response.json();
     localStorage.setItem("access_token", data.access);
-    router.push("/market");
+
+    const me = await checkUser();
+
+    if (me && isStaffUser.value) {
+      router.push("/admin");
+    } else {
+      router.push("/market");
+    }
   } catch (error) {
     console.error("Network error:", error);
     alert("Network or server error.");
   } finally {
-    loading.value = false;
+    isLoading.value = false;
   }
 };
+
+onMounted(() => {
+  checkUser().then((me) => {
+    if (me && isStaffUser.value) router.push("/admin/dashboard");
+  });
+});
 
 watch(
   () => form.value.username,
@@ -284,3 +423,18 @@ watch(
   () => (fieldErrors.value.password = "")
 );
 </script>
+
+<style scoped>
+.slide-down-enter-active,
+.slide-down-leave-active {
+  transition: all 0.3s ease;
+}
+.slide-down-enter-from {
+  opacity: 0;
+  transform: translate(-50%, -20px);
+}
+.slide-down-leave-to {
+  opacity: 0;
+  transform: translate(-50%, -20px);
+}
+</style>

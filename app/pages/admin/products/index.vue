@@ -1,11 +1,11 @@
 <template>
   <div class="space-y-8 p-12 bg-gray-50/60 min-h-screen">
-    <Breadcrumb />
+    <!-- <Breadcrumb /> -->
     <header class="mb-10 mt-6">
-      <h1 class="text-2xl font-bold text-gray-900 tracking-tight">
+      <h2 class="tracking-tight">
         {{ t('productTitle') }}
-      </h1>
-      <p class="text-gray-500 mt-1 text-sm">
+      </h2>
+      <p class="content mt-1">
         {{ t('productText') }}
       </p>
     </header>
@@ -13,7 +13,7 @@
     <div class="flex border-b border-gray-200 mb-8">
       <button
         @click="showSection('products')"
-        class="px-4 py-2 -mb-px text-sm font-medium transition"
+        class="px-4 py-2 -mb-px text-sm font-medium transition small"
         :class="
           activeSection === 'products'
             ? 'border-b-2 border-[#10B481] text-[#10B481]'
@@ -25,7 +25,7 @@
 
       <button
         @click="showSection('units')"
-        class="ml-6 px-4 py-2 -mb-px text-sm font-medium transition"
+        class="ml-6 px-4 py-2 -mb-px text-sm font-medium transition small"
         :class="
           activeSection === 'units'
             ? 'border-b-2 border-[#10B481] text-[#10B481]'
@@ -60,31 +60,31 @@
           class="grid grid-cols-1 md:grid-cols-3 gap-6"
         >
           <div class="flex flex-col gap-1">
-            <label class="text-sm text-gray-600">{{ t('productName') }}</label>
+            <label class="label">{{ t('productName') }}</label>
             <input
               v-model="productName"
               required
               maxlength="50"
-              class="border border-gray-300 rounded px-3 py-2 text-sm focus:border-[#10B481] outline-none"
+              class="border border-gray-300 rounded px-3 py-2 text-sm focus:border-[#10B481] outline-none content"
               placeholder="Ex : Haricots"
             />
           </div>
 
           <div class="flex flex-col gap-1">
-            <label class="text-sm text-gray-600">{{ t('productDesc') }}</label>
+            <label class="label">{{ t('productDesc') }}</label>
             <input
               v-model="productDescription"
-              class="border border-gray-300 rounded px-3 py-2 text-sm focus:border-[#10B481] outline-none"
+              class="border border-gray-300 rounded px-3 py-2 text-sm focus:border-[#10B481] outline-none content"
               placeholder="Optionnel"
             />
           </div>
 
           <div class="flex flex-col gap-1">
-            <label class="text-sm text-gray-600">{{ t('unit') }}</label>
+            <label class="label">{{ t('unit') }}</label>
             <select
               v-model="productUnit"
               required
-              class="border border-gray-300 rounded px-3 py-2 text-sm focus:border-[#10B481] outline-none"
+              class="border border-gray-300 rounded px-3 py-2 text-sm focus:border-[#10B481] outline-none content"
             >
               <option v-for="u in units" :key="u.id" :value="u.id">
                 {{ u.unit }} ({{ u.abbreviation }})
@@ -107,13 +107,13 @@
         <div
           v-for="p in products"
           :key="p.id"
-          class="flex justify-between items-center border border-gray-200 rounded p-4 bg-white"
+          class="flex justify-between items-center border border-gray-200 rounded-2xl p-4 bg-white"
         >
           <div>
-            <h3 class="font-medium text-gray-800">{{ p.product }}</h3>
-            <p class="text-sm text-gray-500">{{ p.description || "—" }}</p>
+            <h3 class="text-gray-700 small-medium">{{ p.product }}</h3>
+            <p class="text-sm small text-gray-500">{{ p.description || "—" }}</p>
             <span
-              class="inline-block mt-2 text-xs text-gray-700 bg-gray-100 px-3 py-1 rounded"
+              class="inline-block mt-2 text-xs small text-gray-700 bg-[#fafaf9] px-3 py-1 rounded-full"
             >
               {{ p.unit?.abbreviation }}
             </span>
@@ -144,7 +144,7 @@
           class="btn-primary"
         >
         <i :class="showUnitForm ? 'bx bx-x' : 'bx bx-plus'"></i>
-          {{ showUnitForm ? "Fermer" : t('add') }}
+          {{ showUnitForm ? t('close') : t('add') }}
         </button>
       </div>
 
@@ -157,21 +157,21 @@
           class="grid grid-cols-1 md:grid-cols-3 gap-6"
         >
           <div class="flex flex-col gap-1">
-            <label class="text-sm text-gray-600">{{ t('unit') }}</label>
+            <label class="label">{{ t('unit') }}</label>
             <input
               v-model="unitName"
               required
-              class="border border-gray-300 rounded px-3 py-2 text-sm focus:border-[#10B481] outline-none"
+              class="border border-gray-300 rounded px-3 py-2 text-sm focus:border-[#10B481] outline-none content"
               placeholder="Kilogramme"
             />
           </div>
 
           <div class="flex flex-col gap-1">
-            <label class="text-sm text-gray-600">{{ t('abrev') }}</label>
+            <label class="label">{{ t('abrev') }}</label>
             <input
               v-model="unitAbbreviation"
               required
-              class="border border-gray-300 rounded px-3 py-2 text-sm focus:border-[#10B481] outline-none"
+              class="border border-gray-300 rounded px-3 py-2 text-sm focus:border-[#10B481] outline-none content"
               placeholder="kg"
             />
           </div>
@@ -191,11 +191,11 @@
         <div
           v-for="u in units"
           :key="u.id"
-          class="flex justify-between items-center border border-gray-200 rounded p-4 bg-white"
+          class="flex justify-between items-center border border-gray-200 rounded-2xl p-4 bg-white"
         >
           <div>
-            <h3 class="font-medium text-gray-800">{{ u.unit }}</h3>
-            <p class="text-sm text-gray-500">{{ u.abbreviation }}</p>
+            <h3 class="small-medium text-gray-700">{{ u.unit }}</h3>
+            <p class="text-sm small text-gray-500">{{ u.abbreviation }}</p>
           </div>
 
           <div class="flex gap-4 text-xl">

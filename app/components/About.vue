@@ -15,12 +15,12 @@
             class="flex flex-col items-center text-center relative px-4 py-6 border-b border-white/30 sm:border-b-0 last:border-b-0 sm:border-r last:border-r-0"
           >
             <h3
-              class="text-base sm:text-lg font-semibold text-white mb-1 z-10 relative"
+              class="light-subtitle mb-1 z-10 relative"
             >
               {{ item.title }}
             </h3>
             <p
-              class="text-xs sm:text-sm text-white/80 leading-relaxed z-10 relative"
+              class="light-content leading-relaxed z-10 relative"
             >
               {{ item.text }}
             </p>

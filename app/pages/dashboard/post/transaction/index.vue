@@ -1,13 +1,13 @@
 <template>
-  <div class="space-y-8 p-12 bg-gray-50 min-h-screen">
+  <div class="space-y-8 p-12">
     <div class="max-w-7xl mx-auto">
       <!-- Header -->
       <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold">Mes paiements</h1>
+        <h2>Mes paiements</h2>
       </div>
 
       <div
-        class="flex items-center gap-3 border border-gray-200 rounded px-4 py-2 bg-white shadow-sm transition mb-20"
+        class="flex items-center gap-3 border border-gray-200 rounded-xl px-4 py-2 bg-white shadow-sm transition mb-20"
       >
         <!-- Search -->
         <div class="relative flex-1">
@@ -17,7 +17,7 @@
           <input
             v-model="filterSearch"
             type="text"
-            class="w-full pl-10 pr-3 py-2 text-sm bg-transparent focus:outline-none text-gray-800 placeholder-gray-400"
+            class="w-full pl-10 pr-3 py-2 text-sm bg-transparent content focus:outline-none text-gray-800 placeholder-gray-400"
             placeholder="Rechercher utilisateur ou annonce"
           />
         </div>
@@ -28,7 +28,7 @@
         <input
           type="date"
           v-model="filterDate"
-          class="text-sm text-gray-600 bg-transparent focus:outline-none cursor-pointer hover:text-gray-800 transition"
+          class="text-sm text-gray-600 bg-transparent content focus:outline-none cursor-pointer hover:text-gray-800 transition"
         />
 
         <!-- Divider -->
@@ -37,7 +37,7 @@
         <!-- Date filter -->
         <select
           v-model="filterType"
-          class="text-sm text-gray-600 bg-transparent focus:outline-none cursor-pointer hover:text-gray-800 transition"
+          class="text-sm text-gray-600 bg-transparent content focus:outline-none cursor-pointer hover:text-gray-800 transition"
         >
           <option value="all">Tous</option>
           <option value="sent">Paiements effectués</option>
@@ -49,45 +49,46 @@
 
       <div
         v-else-if="payments.length === 0"
-        class="text-center py-10 text-gray-500"
+        class="text-center py-10 text-gray-500 content"
       >
         Aucun paiement trouvé.
       </div>
 
-      <div v-else class="overflow-x-auto bg-white rounded-2xl shadow-sm">
+      <div v-else class="overflow-x-auto bg-white rounded-2xl shadow-sm small">
         <table class="w-full border-collapse">
-          <thead class="bg-gray-50">
+          <thead class="bg-[#fafaf9]">
             <tr>
               <th
+                class="px-6 py-4 text-xs text-gray-500 uppercase tracking-wide border-b text-left"
+              >
+                Utilisateur
+              </th>
+              <th
                 @click="sortBy('transaction_date')"
-                class="cursor-pointer px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wide border-b text-left"
+                class="cursor-pointer px-6 py-4 text-xs text-gray-500 uppercase tracking-wide border-b text-left"
               >
                 Date <i class="bxr bx-carets-up-down"></i>
               </th>
               <th
                 @click="sortBy('bid.post.title')"
-                class="cursor-pointer px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wide border-b text-left"
+                class="cursor-pointer px-6 py-4 text-xs text-gray-500 uppercase tracking-wide border-b text-left"
               >
                 Annonce <i class="bxr bx-carets-up-down"></i>
               </th>
               <th
                 @click="sortBy('amount')"
-                class="cursor-pointer px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wide border-b text-left"
+                class="cursor-pointer px-6 py-4 text-xs text-gray-500 uppercase tracking-wide border-b text-left"
               >
                 Montant <i class="bxr bx-carets-up-down"></i>
               </th>
+
               <th
-                class="px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wide border-b text-left"
-              >
-                Utilisateur
-              </th>
-              <th
-                class="px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wide border-b text-center"
+                class="px-6 py-4 text-xs text-gray-500 uppercase tracking-wide border-b text-center"
               >
                 {{ t("status") }}
               </th>
               <th
-                class="px-6 py-4 text-xs font-semibold text-gray-600 uppercase tracking-wide border-b text-center"
+                class="px-6 py-4 text-xs text-gray-500 uppercase tracking-wide border-b text-center"
               >
                 {{ t("actions") }}
               </th>
@@ -98,10 +99,50 @@
             <tr
               v-for="payment in paginatedPayments"
               :key="payment.id"
-              class="hover:bg-gray-50 transition-colors duration-150"
+              class="hover:bg-[#fafaf9] transition-colors duration-150 content"
             >
+
+            <td class="px-6 py-3 border-b text-sm text-gray-900">
+  <div class="flex items-center gap-3">
+
+    <!-- Argent entrant (↙) -->
+    <template v-if="user?.username === payment.seller">
+      <span class="flex items-center justify-center w-11 h-11 bg-[#10b481]/10 text-[#10b481] rounded-lg">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <!-- Ligne diagonale -->
+          <path stroke-linecap="round" stroke-linejoin="round" d="M7 7v10h10" />
+          <!-- Flèche -->
+          <path stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7" />
+        </svg>
+      </span>
+      <span class="text-gray-700">
+       {{ payment.buyer }}
+      </span>
+    </template>
+
+    <!-- Argent sortant (↗) -->
+    <template v-else-if="user?.username === payment.buyer">
+      <span class="flex items-center justify-center w-11 h-11 bg-red-600/10 text-red-600 rounded-lg">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <!-- Ligne diagonale -->
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 17V7H7" />
+          <!-- Flèche -->
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 7L7 17" />
+        </svg>
+      </span>
+      <span class="text-gray-700">
+        {{ payment.seller }}
+      </span>
+    </template>
+
+    <span v-else>-</span>
+
+  </div>
+</td>
+
               <!-- Date -->
               <td class="px-6 py-3 text-sm text-gray-700 border-b">
+                
                 {{ formatDate(payment.transaction_date) }}
               </td>
 
@@ -112,24 +153,24 @@
 
               <!-- Montant -->
               <td class="px-6 py-3 text-sm text-gray-700 border-b font-medium">
-                {{ payment.amount }} {{ payment.currency }}
+                {{ payment.amount }} {{ payment.bid.currency.symbol }}
               </td>
 
               <!-- Utilisateur -->
-              <td class="px-6 py-3 text-sm text-gray-900 border-b">
+              <!-- <td class="px-6 py-3 text-sm text-gray-900 border-b">
                 <span v-if="user?.username === payment.seller">
-                  De <strong>{{ payment.buyer }}</strong>
+                  De <strong class="small--medium">{{ payment.buyer }}</strong>
                 </span>
                 <span v-else-if="user?.username === payment.buyer">
-                  À <strong>{{ payment.seller }}</strong>
+                  À <strong class="small--medium">{{ payment.seller }}</strong>
                 </span>
                 <span v-else>-</span>
-              </td>
+              </td> -->
 
               <!-- Status -->
               <td class="px-6 py-3 border-b text-center">
                 <span
-                  class="px-3 py-1 rounded-full text-sm font-semibold border"
+                  class="px-3 py-1 rounded-full text-sm border"
                   :class="statusClass(payment.status)"
                 >
                   {{ payment.status }}
@@ -138,47 +179,43 @@
 
               <!-- Actions -->
               <td class="px-6 py-3 border-b text-center">
-                <div class="flex items-center justify-center gap-2">
-                  <button
-                    v-if="
-                      !payment.buyer_confirmation &&
-                      isLoggedIn &&
-                      user?.username === payment.buyer
-                    "
-                    @click="confirmBuyerPayment(payment)"
-                    class="px-4 py-2 bg-[#10b481] text-white text-xs rounded-lg  transition"
-                    title="Confirmer paiement"
-                  >
-                    Confirmer
-                  </button>
+  <div class="flex items-center justify-center gap-2">
 
-                  <button
-                    v-else-if="
-                      !payment.seller_confirmation &&
-                      isLoggedIn &&
-                      user?.username === payment.seller
-                    "
-                    @click="confirmSellerPayment(payment)"
-                    class="px-4 py-2 bg-[#10b481] text-white text-xs rounded-lg  transition"
-                    title="Confirmer paiement"
-                  >
-                    Confirmer
-                  </button>
+    <!-- Boutons de confirmation -->
+    <button
+      v-if="!payment.buyer_confirmation && isLoggedIn && user?.username === payment.buyer"
+      @click="confirmBuyerPayment(payment)"
+      class="btn-primary"
+      title="Confirmer paiement"
+    >
+      Confirmer
+    </button>
 
-                  <button
-                    class="p-2 rounded-full hover:bg-red-100 transition"
-                    title="Supprimer"
-                  >
-                    <i class="bx bx-trash text-red-600 text-lg"></i>
-                  </button>
-                </div>
-              </td>
+    <button
+      v-else-if="!payment.seller_confirmation && isLoggedIn && user?.username === payment.seller"
+      @click="confirmSellerPayment(payment)"
+      class="px-4 py-2 bg-[#10b481] text-white text-xs rounded-lg transition"
+      title="Confirmer paiement"
+    >
+      Confirmer
+    </button>
+
+    <!-- Bouton Supprimer toujours à la fin -->
+    <button
+      class="p-2 rounded-full hover:bg-red-100 transition ml-auto"
+      title="Supprimer"
+    >
+      <i class="bx bx-trash text-red-600 text-lg"></i>
+    </button>
+
+  </div>
+</td>
             </tr>
           </tbody>
         </table>
 
         <div
-          class="bg-white px-4 py-4 flex items-center justify-between sm:px-6"
+          class="bg-white px-4 py-4 flex items-center justify-between sm:px-6 small"
         >
           <div class="flex-1 flex justify-between sm:hidden">
             <button
@@ -217,7 +254,7 @@
                 <button
                   @click="prevPage"
                   :disabled="currentPage === 1"
-                  class="relative inline-flex items-center px-2 py-2 rounded-l border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                  class="relative inline-flex items-center px-2 py-2 rounded-l-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                 >
                   <span class="sr-only">{{ t("prev") }}</span
                   ><i class="bx bx-chevron-left"></i>
@@ -240,7 +277,7 @@
                 <button
                   @click="nextPage"
                   :disabled="currentPage === totalPages"
-                  class="relative inline-flex items-center px-2 py-2 rounded-r border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                  class="relative inline-flex items-center px-2 py-2 rounded-r-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                 >
                   <span class="sr-only">{{ t("next") }}</span
                   ><i class="bx bx-chevron-right"></i>

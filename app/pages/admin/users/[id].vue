@@ -1,6 +1,5 @@
 <template>
-  <div class="space-y-8 p-12 bg-gray-50/60 min-h-screen">
-    <Breadcrumb />
+  <div class="space-y-8 p-12 min-h-screen">
     <div v-if="!user.id" class="text-gray-500">
       <div
         class="w-8 h-8 border-4 border-gray-300 border-t-[#10b481] rounded-full animate-spin"
@@ -11,24 +10,26 @@
         v-if="user.avatar_url"
         :src="user.avatar_url"
         alt="avatar"
-        class="w-24 h-24 rounded-full object-cover"
+        class="w-20 h-20 rounded-full object-cover"
       />
 
       <div
         v-else
-        class="w-24 h-24 rounded-full flex items-center justify-center font-bold text-lg"
+        class="w-20 h-20 rounded-full flex items-center username justify-center font-bold text-4xl"
         :class="getAvatarColor(user.username)"
       >
         {{ user.username.charAt(0).toUpperCase() }}
       </div>
 
       <div>
-        <h1 class="text-3xl font-bold text-gray-900">{{ user.username }}</h1>
-        <p class="text-gray-600">{{ user.email }}</p>
+        <h1 class="text-2xl font-bold username text-gray-900">
+          {{ user.username }}
+        </h1>
+        <p class="text-gray-600 small text-sm">{{ user.email }}</p>
 
         <div class="mt-1 flex items-center gap-8">
           <p
-            class="text-sm flex items-center gap-1"
+            class="text-sm flex items-center gap-1 small"
             :class="user.is_verified ? 'text-[#10b481]' : 'text-red-600'"
           >
             <i
@@ -55,7 +56,7 @@
         class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8"
       >
         <div>
-          <h3 class="text-lg font-semibold text-gray-900">
+          <h3 class="subtitle">
             {{ t("userReview") }}
           </h3>
           <div class="flex items-center gap-1 mt-2">
@@ -69,7 +70,7 @@
                 "
               ></i>
             </template>
-            <span class="text-gray-500 text-sm ml-2">
+            <span class="text-gray-500 text-sm ml-2 small">
               ({{ (user.rating_avg || 0).toFixed(1) }})
             </span>
           </div>
@@ -77,90 +78,97 @@
 
         <button
           @click="toggleSlideReport"
-          class="inline-flex items-center gap-2 px-4 py-2 rounded bg-red-50 text-red-600 text-sm font-medium hover:bg-red-100 transition"
+          class="inline-flex items-center gap-2 btn-neutre transition"
         >
           {{ t("viewReports") }}
           <i class="bxr bx-arrow-right-stroke-circle text-xl"></i>
         </button>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 small">
         <div
-          class="relative overflow-hidden rounded bg-gradient-to-br from-emerald-500 to-emerald-600 p-5 text-white"
+          class="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition duration-300"
         >
-          <i
-            class="bx bx-category absolute -right-4 -top-4 text-7xl opacity-10"
-          ></i>
-          <p
-            class="opacity-80 uppercase tracking-wide text-xs font-semibold mb-1"
-          >
-            {{ t("category") }}
-          </p>
-          <p class="text-lg font-semibold">
+          <div class="flex items-center justify-between">
+            <p
+              class="text-xs font-medium text-gray-400 uppercase tracking-wide"
+            >
+              {{ t("category") }}
+            </p>
+            <div
+              class="w-10 h-10 flex items-center justify-center rounded-xl"
+            ></div>
+          </div>
+          <h2 class="text-xl mt-4">
             {{ user.id_categorie_user?.categorie }}
-          </p>
+          </h2>
         </div>
 
         <div
-          class="relative overflow-hidden rounded p-5 text-white"
-          :class="
-            user.is_active
-              ? 'bg-gradient-to-br from-green-500 to-green-600'
-              : 'bg-gradient-to-br from-red-500 to-red-600'
-          "
+          class="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition duration-300"
         >
-          <i
-            class="bx bx-shield absolute -right-4 -top-4 text-7xl opacity-10"
-          ></i>
-          <p
-            class="opacity-80 uppercase tracking-wide text-xs font-semibold mb-1"
-          >
-            {{ t("status") }}
-          </p>
-          <p class="text-lg font-semibold">
+          <div class="flex items-center justify-between">
+            <p
+              class="text-xs font-medium text-gray-400 uppercase tracking-wide"
+            >
+              {{ t("status") }}
+            </p>
+            <div
+              class="w-10 h-10 flex items-center justify-center rounded-xl"
+            ></div>
+          </div>
+          <h2 class="text-xl mt-4">
             {{ user.is_active ? t("actif") : t("inactif") }}
-          </p>
+          </h2>
         </div>
 
         <div
-          class="relative overflow-hidden rounded bg-[#112830] p-5 text-white"
+          class="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition duration-300"
         >
-          <i
-            class="bx bx-news absolute -right-4 -top-4 text-7xl opacity-10"
-          ></i>
-          <p
-            class="opacity-80 uppercase tracking-wide text-xs font-semibold mb-1"
-          >
-            {{ t("annonces") }}
-          </p>
-          <p class="text-3xl font-bold">
+          <div class="flex items-center justify-between">
+            <p
+              class="text-xs font-medium text-gray-400 uppercase tracking-wide"
+            >
+              {{ t("annonces") }}
+            </p>
+            <div
+              class="w-10 h-10 flex items-center justify-center rounded-xl bg-[#10b481]/10 text-[#10b481]"
+            >
+              <i class="bx bx-clipboard text-lg"></i>
+            </div>
+          </div>
+          <h2 class="text-3xl mt-4">
             {{ posts.length }}
-          </p>
+          </h2>
         </div>
 
         <div
-          class="relative overflow-hidden rounded bg-gradient-to-br from-red-600 to-red-700 p-5 text-white"
+          class="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition duration-300"
         >
-          <i
-            class="bx bx-error-circle absolute -right-4 -top-4 text-7xl opacity-10"
-          ></i>
-          <p
-            class="opacity-80 uppercase tracking-wide text-xs font-semibold mb-1"
-          >
-            {{ t("reports") }}
-          </p>
-          <p class="text-3xl font-bold">
+          <div class="flex items-center justify-between">
+            <p
+              class="text-xs font-medium text-gray-400 uppercase tracking-wide"
+            >
+              {{ t("reports") }}
+            </p>
+            <div
+              class="w-10 h-10 flex items-center justify-center rounded-xl bg-red-600/10 text-red-600"
+            >
+              <i class="bx bx-error text-lg"></i>
+            </div>
+          </div>
+          <h2 class="text-3xl mt-4">
             {{ totalReports }}
-          </p>
+          </h2>
         </div>
       </div>
 
       <div
         class="mt-8 border-t pt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm text-gray-500"
       >
-        <span>
+        <span class="small">
           {{ t("justificatif") }} :
-          <strong class="text-gray-800">
+          <strong class="small-medium">
             {{ user.justificatif_url ? t("available") : t("notAvailable") }}
           </strong>
         </span>
@@ -169,14 +177,14 @@
           v-if="user.justificatif_url"
           :href="user.justificatif_url"
           target="_blank"
-          class="text-[#10b481] font-medium hover:underline"
+          class="text-[#10b481] font-medium hover:underline small"
         >
           {{ t("viewDoc") }}
         </a>
       </div>
     </div>
 
-    <h2 class="text-2xl font-semibold text-gray-900 mb-4">
+    <h2 class="subtitle mb-4">
       {{ t("annonces") }}
     </h2>
 
@@ -197,7 +205,7 @@
   <transition name="fade">
     <div
       v-if="slideReportOpen"
-      class="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm"
+      class="fixed inset-0 z-30 bg-black/20 backdrop-blur-sm"
       @click="toggleSlideReport"
     ></div>
   </transition>
@@ -205,20 +213,20 @@
   <transition name="slide-right">
     <div
       v-if="slideReportOpen"
-      class="fixed top-20 right-0 w-[380px] h-screen bg-white z-40 flex flex-col shadow-xl"
+      class="fixed top-0 right-0 w-[450px] h-screen bg-[#fafaf9] z-40 flex flex-col shadow-xl"
     >
       <div class="flex items-center justify-between px-5 py-4 border-b">
         <div class="flex items-center gap-2">
-          <h2 class="text-lg font-semibold text-gray-800">
+          <h2 class="subtitle">
             {{ t("reportstitle") }}
           </h2>
         </div>
 
         <button
           @click="toggleSlideReport"
-          class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-200 text-gray-500 transition"
+          class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#fafaf9] text-gray-400 transition"
         >
-          ✕
+          <i class="bx bx-x text-lg"></i>
         </button>
       </div>
 
@@ -226,20 +234,20 @@
         <div
           v-for="group in groupedReports"
           :key="group.postId"
-          class="bg-white rounded border border-gray-100 p-4 hover:shadow-sm transition"
+          class="bg-[#fafaf9] rounded-xl border border-gray-100 p-6 hover:shadow-sm transition"
         >
-          <h3 class="text-sm font-semibold text-gray-900 mb-1 line-clamp-2">
+          <h3 class="text-sm small-medium text-gray-700 mb-1 line-clamp-2">
             {{ getPostById(group.postId)?.title || `Post #${group.postId}` }}
           </h3>
 
-          <p class="text-xs text-gray-500 mb-3">
+          <p class="text-xs text-gray-500 mb-3 small">
             {{ group.reports.length }} report(s)
           </p>
 
           <button
             v-if="group.reports.some((r) => r.status === 'pending')"
             @click="openConfirmModal(group.postId)"
-            class="w-full mb-4 px-3 py-2 rounded bg-red-500/90 text-white text-sm font-medium hover:bg-red-600 transition"
+            class="w-full mb-4 btn-decline"
           >
             {{ t("approveReports") }}
           </button>
@@ -251,24 +259,33 @@
               class="flex items-center justify-between text-sm"
             >
               <div class="flex items-center gap-2">
+                <img
+                  v-if="getUserById(r.id_user)?.avatar_url"
+                  :src="getUserById(r.id_user)?.avatar_url"
+                  alt="avatar"
+                  class="w-8 h-8 rounded-full object-cover"
+                />
+
                 <div
-                  class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold shadow"
+                  v-else
+                  class="w-8 h-8 rounded-full flex items-center username justify-center font-bold text-sm"
                   :class="getAvatarColor(getUserById(r.id_user)?.username)"
                 >
-                  {{ getUserById(r.id_user)?.username.charAt(0).toUpperCase() }}
-                </div>
+              {{ getUserById(r.id_user)?.username.charAt(0).toUpperCase() }}
+              </div>
+                
 
-                <span class="text-gray-700 truncate max-w-[170px]">
+                <span class="content truncate max-w-[170px]">
                   {{ r.reason }}
                 </span>
               </div>
 
               <span
-                class="text-xs px-2 py-1 rounded-full justify-center items-center"
+                class="text-xs px-2 py-1 rounded-full justify-center items-center small border"
                 :class="
                   r.status === 'pending'
-                    ? 'bg-yellow-100 text-yellow-700'
-                    : 'bg-green-100 text-green-700'
+                    ? 'bg-[#f4a261]/10 border-[#f4a261] text-[#f4a261]'
+                    : 'bg-[#10b481]/10 border-[#10b481] text-[#10b481]'
                 "
               >
                 {{ r.status }}
@@ -285,28 +302,99 @@
       v-if="confirmModalOpen"
       class="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
     >
-      <div class="bg-white rounded shadow-xl w-full max-w-md p-6">
-        <h3 class="text-xl font-semibold text-gray-900 mb-3">
+      <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
+        <h3 class="subtitle mb-3">
           {{ t("confirmDelete") }}
         </h3>
 
-        <p class="text-gray-600 mb-6" v-html="t('confirmDeleteReport')"></p>
+        <p class="content mb-6" v-html="t('confirmDeleteReport')"></p>
 
         <div class="flex justify-end gap-3">
           <button
             @click="closeConfirmModal"
-            class="px-4 py-2 rounded border text-gray-600 hover:bg-gray-100 transition"
+            class="btn-neutre"
           >
             {{ t("cancel") }}
           </button>
 
           <button
             @click="confirmApprove"
-            class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700 transition"
+            class="btn-decline"
           >
             {{ t("confirm") }}
           </button>
         </div>
+      </div>
+    </div>
+  </transition>
+
+  <transition name="slide-down">
+    <div
+      v-if="notification.visible"
+      class="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-lg"
+    >
+      <div
+        :class="[
+          'flex items-start justify-between gap-4 px-6 py-4 rounded-xl shadow-xl border backdrop-blur-md transition-all',
+          notification.type === 'success' && 'bg-white border-[#10b481]/30',
+          notification.type === 'error' && 'bg-white border-red-400/40',
+          notification.type === 'inactive' && 'bg-white border-white',
+        ]"
+      >
+        <div class="flex items-start gap-4">
+          <div
+            :class="[
+              'w-10 h-10 rounded-full flex items-center justify-center',
+              notification.type === 'success' &&
+                'bg-[#10b481]/15 text-[#10b481]',
+              notification.type === 'error' && 'bg-red-100 text-red-500',
+              notification.type === 'inactive' && 'bg-red-500/20 text-red-500',
+            ]"
+          >
+            <i
+              :class="[
+                'text-xl',
+                notification.type === 'success' && 'bx bx-check',
+                notification.type === 'error' && 'bx bx-x',
+                notification.type === 'inactive' && 'bx bx-lock-alt',
+              ]"
+            ></i>
+          </div>
+
+          <div>
+            <p class="text-gray-700 username text-sm">
+              {{ notification.message }}
+            </p>
+
+            <p
+              v-if="notification.type === 'inactive'"
+              class="text-xs text-gray-600 small mt-1"
+            >
+              {{ t("accountinactive") }}
+            </p>
+
+            <p
+              v-if="notification.type === 'success'"
+              class="text-xs text-gray-600 small mt-1"
+            >
+            Success!
+            </p>
+
+            <p
+              v-if="notification.type === 'error'"
+              class="text-xs text-gray-600 small mt-1"
+            >
+            Something went wrong.
+            </p>
+          </div>
+        </div>
+
+        <button
+          @click="closeNotification"
+          class="text-gray-400 hover:text-gray-700 transition"
+        >
+          <i class="bx bx-x text-xl"></i>
+        </button>
       </div>
     </div>
   </transition>
@@ -364,6 +452,30 @@ function getAvatarColor(username: string) {
   return avatarColors[Math.abs(hash) % avatarColors.length];
 }
 
+const notification = ref({
+  visible: false,
+  message: "",
+  type: "success" as "success" | "error" | "inactive",
+});
+
+const showNotification = (
+  message: string,
+  type: "success" | "error" | "inactive" = "success",
+  duration = 5000
+) => {
+  notification.value = { visible: true, message, type };
+
+  if (duration) {
+    setTimeout(() => {
+      notification.value.visible = false;
+    }, duration);
+  }
+};
+
+const closeNotification = () => {
+  notification.value.visible = false;
+};
+
 const posts = ref<any[]>([]);
 
 function getColor(name?: string) {
@@ -419,11 +531,13 @@ async function verifyUser(userId: number) {
   });
 
   if (res.ok) {
-    alert("Utilisateur vérifié !");
+    showNotification("Utilisateur vérifié !", "success", 7000);
     fetchUser();
   } else {
     const data = await res.json();
     alert("Erreur : " + JSON.stringify(data));
+    showNotification(JSON.stringify(data), "error", 7000);
+
   }
 }
 

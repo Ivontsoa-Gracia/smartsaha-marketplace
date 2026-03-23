@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-8 p-12 bg-gray-50/60 min-h-screen">
-    <Breadcrumb />
-    <h1 class="text-2xl font-bold mb-4">{{ t("validationPosts") }}</h1>
+    <!-- <Breadcrumb /> -->
+    <h2 class="mb-4">{{ t("validationPosts") }}</h2>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
       <div
@@ -274,10 +274,10 @@ function getAvatarColor(username) {
   return avatarColors[Math.abs(hash) % avatarColors.length];
 }
 
-// const draftPosts = computed(() => posts.value);
-const draftPosts = computed(() =>
-  posts.value.filter((post) => post.current_status === "brouillon")
-);
+const draftPosts = computed(() => posts.value);
+// const draftPosts = computed(() =>
+//   posts.value.filter((post) => post.current_status === "brouillon")
+// );
 
 const formattedDate = (dateStr) => {
   if (!dateStr) return "-";
@@ -372,6 +372,7 @@ async function fetchPosts() {
     if (response.ok) posts.value = data;
     else
       showNotification("Erreur: impossible de récupérer les posts.", "error");
+      // console.log("Annonces: " + JSON.stringify(data))
   } catch (err) {
     console.error(err);
     showNotification("Erreur serveur.", "error");

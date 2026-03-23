@@ -1,12 +1,12 @@
 <template>
   <div class="space-y-8 p-12 min-h-screen bg-[#FAFAF9]">
-    <Breadcrumb />
+    <!-- <Breadcrumb /> -->
     <div
       class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
     >
-      <h1 class="text-2xl font-bold text-gray-900 tracking-tight">
+      <h2 class=" tracking-tight">
         {{ t("userTitle") }}
-      </h1>
+      </h2>
 
       <button
         @click="toggleUserForm"
@@ -21,7 +21,7 @@
       v-if="showUserForm"
       class="bg-white border border-gray-200 rounded p-6 space-y-6"
     >
-      <h2 class="text-lg font-semibold text-gray-800">
+      <h2 class="subtitle">
         {{ editUserId ? t("edit") : t("add") }}
       </h2>
 
@@ -30,60 +30,60 @@
         class="grid grid-cols-1 md:grid-cols-2 gap-4"
       >
         <div class="flex flex-col gap-1">
-          <label class="text-sm text-gray-600">{{ t("username") }}</label>
+          <label class="label">{{ t("username") }}</label>
           <div
-            class="flex items-center gap-2 border border-gray-300 rounded px-3 py-2 bg-gray-50"
+            class="flex items-center gap-2 border border-gray-300 rounded px-3 py-2 small"
           >
-            <i class="bx bx-user text-gray-500 text-lg"></i>
+            <i class="bx bx-user text-gray-400 text-lg"></i>
             <input
               v-model="username"
               required
               maxlength="150"
               pattern="^[\\w.@+-]+$"
               placeholder="Ex: john_doe"
-              class="flex-1 bg-transparent outline-none text-gray-900 text-sm"
+              class="flex-1 bg-transparent outline-none content"
             />
           </div>
         </div>
 
         <div class="flex flex-col gap-1">
-          <label class="text-sm text-gray-600">{{ t("email") }}</label>
+          <label class="label">{{ t("email") }}</label>
           <div
-            class="flex items-center gap-2 border border-gray-300 rounded px-3 py-2 bg-gray-50"
+            class="flex items-center gap-2 border border-gray-300 rounded px-3 py-2 small"
           >
-            <i class="bx bx-envelope text-gray-500 text-lg"></i>
+            <i class="bx bx-envelope text-gray-400 text-lg"></i>
             <input
               v-model="email"
               type="email"
               maxlength="254"
               placeholder="Ex: john@example.com"
-              class="flex-1 bg-transparent outline-none text-gray-900 text-sm"
+              class="flex-1 bg-transparent outline-none content"
             />
           </div>
         </div>
 
         <div class="flex flex-col gap-1">
-          <label class="text-sm text-gray-600">{{ t("password") }}</label>
+          <label class="label">{{ t("password") }}</label>
           <div
-            class="flex items-center gap-2 border border-gray-300 rounded px-3 py-2 bg-gray-50"
+            class="flex items-center gap-2 border border-gray-300 rounded px-3 py-2 small"
           >
-            <i class="bx bx-lock text-gray-500 text-lg"></i>
+            <i class="bx bx-lock text-gray-400 text-lg"></i>
             <input
               v-model="password"
               type="password"
               required
               placeholder="Mot de passe"
-              class="flex-1 bg-transparent outline-none text-gray-900 text-sm"
+              class="flex-1 bg-transparent outline-none content"
             />
           </div>
         </div>
 
         <div class="flex flex-col gap-1">
-          <label class="text-sm text-gray-600">{{ t("category") }}</label>
+          <label class="label">{{ t("category") }}</label>
           <select
             v-model="categorieUserId"
             required
-            class="border border-gray-300 rounded px-3 py-2 bg-gray-50 text-gray-900 text-sm focus:ring-2 focus:ring-[#10B481] outline-none transition"
+            class="border border-gray-300 rounded px-3 py-3 content  outline-none transition"
           >
             <option v-for="c in categories" :key="c.id" :value="c.id">
               {{ c.categorie }}
@@ -92,19 +92,19 @@
         </div>
 
         <div class="flex flex-col gap-1">
-          <label class="text-sm text-gray-600">{{
+          <label class="label">{{
             t("justificatifUrl")
           }}</label>
           <div
-            class="flex items-center gap-2 border border-gray-300 rounded px-3 py-2 bg-gray-50"
+            class="flex items-center gap-2 border border-gray-300 rounded px-3 py-2 small"
           >
-            <i class="bx bx-link text-gray-500 text-lg"></i>
+            <i class="bx bx-link text-gray-400 text-lg"></i>
             <input
               v-model="justificatifUrl"
               type="url"
               maxlength="200"
               placeholder="Lien justificatif"
-              class="flex-1 bg-transparent outline-none text-gray-900 text-sm"
+              class="flex-1 bg-transparent outline-none content"
             />
           </div>
         </div>
@@ -131,7 +131,7 @@
     <div class="flex border-b border-gray-200 mb-8">
       <button
         @click="showVerified = false"
-        class="px-4 py-2 -mb-px text-sm font-medium transition flex items-center gap-1"
+        class="px-4 py-2 -mb-px text-sm font-medium transition flex items-center gap-1 small"
         :class="
           !showVerified
             ? 'border-b-2 border-[#10B481] text-[#10B481]'
@@ -143,7 +143,7 @@
 
       <button
         @click="showVerified = true"
-        class="ml-6 px-4 py-2 -mb-px text-sm font-medium transition flex items-center gap-1"
+        class="ml-6 px-4 py-2 -mb-px text-sm font-medium transition flex items-center gap-1 small"
         :class="
           showVerified
             ? 'border-b-2 border-[#10B481] text-[#10B481]'
@@ -158,32 +158,32 @@
     <div class="overflow-x-auto bg-white">
       <div class="grid grid-cols-12 bg-[#FAFAF9]">
         <div
-          class="col-span-3 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b"
+          class="col-span-3 px-6 py-3 text-left text-xs small text-gray-500 uppercase tracking-wider border-b"
         >
           {{ t("user") }}
         </div>
         <div
-          class="col-span-2 px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider border-b text-center"
+          class="col-span-2 px-6 py-3 text-xs small text-gray-500 uppercase tracking-wider border-b text-center"
         >
           {{ t("category") }}
         </div>
         <div
-          class="col-span-1 px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider border-b text-center"
+          class="col-span-1 px-6 py-3 text-xs small text-gray-500 uppercase tracking-wider border-b text-center"
         >
           {{ t("verified") }}
         </div>
         <div
-          class="col-span-1 px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider border-b text-center"
+          class="col-span-1 px-6 py-3 text-xs small text-gray-500 uppercase tracking-wider border-b text-center"
         >
           {{ t("actif") }}
         </div>
         <div
-          class="col-span-3 px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider border-b text-center"
+          class="col-span-3 px-6 py-3 text-xs small text-gray-500 uppercase tracking-wider border-b text-center"
         >
           {{ t("justificatif") }}
         </div>
         <div
-          class="col-span-2 px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider border-b text-right"
+          class="col-span-2 px-6 py-3 text-xs small text-gray-500 uppercase tracking-wider border-b text-right"
         >
           {{ t("actions") }}
         </div>
@@ -207,21 +207,21 @@
 
           <div
             v-else
-            class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg"
+            class="w-10 h-10 rounded-full flex items-center username justify-center font-bold text-lg"
             :class="getAvatarColor(u.username)"
           >
             {{ u.username.charAt(0).toUpperCase() }}
           </div>
 
           <div class="flex flex-col">
-            <span class="font-semibold text-gray-900">{{ u.username }}</span>
-            <span class="text-xs text-gray-500">{{ u.email }}</span>
+            <span class="font-semibold text-gray-900 username ">{{ u.username }}</span>
+            <span class="text-xs text-gray-500 small">{{ u.email }}</span>
           </div>
         </div>
 
         <div class="col-span-2 flex justify-center">
           <span
-            class="px-3 py-1 bg-[#10b481]/10 border border-[#10b481] text-[#10b481] rounded-full text-xs"
+            class="px-3 py-1 bg-[#10b481]/10 border border-[#10b481] text-[#10b481] small rounded-full text-xs"
           >
             {{ u.id_categorie_user?.categorie }}
           </span>
@@ -251,7 +251,7 @@
           <button
             v-if="u.justificatif_url"
             @click="openDoc(u.justificatif_url)"
-            class="text-gray-600 text-sm hover:underline hover:text-[#10b481]"
+            class="content hover:underline hover:text-[#10b481] "
           >
             {{ t("viewDoc") }}
           </button>
@@ -283,7 +283,7 @@
           </button>
         </div>
       </div>
-      <div class="bg-white px-4 py-3 flex items-center justify-between sm:px-6">
+      <div class="bg-white px-4 py-3 flex items-center justify-between sm:px-6 small">
         <div class="flex-1 flex justify-between sm:hidden">
           <button
             @click="prevPage"

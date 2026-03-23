@@ -1,6 +1,6 @@
 <template>
   <div class="py-16 px-4 sm:px-6 lg:px-14 bg-[#f9f9f9]">
-    <h2 class="text-2xl sm:text-3xl font-bold text-[#222831] mb-8 text-center">
+    <h2 class="text-bold mb-8 text-center">
       {{ t('titleCategorie') }}
     </h2>
 
@@ -21,7 +21,7 @@
         ></div>
 
         <div class="absolute inset-0 flex items-center justify-center">
-          <h3 class="text-white text-xl sm:text-2xl lg:text-3xl font-bold text-center drop-shadow-md">
+          <h3 class="light-extra text-center drop-shadow-md">
             {{ t(cat.categorie) }}
           </h3>
         </div>

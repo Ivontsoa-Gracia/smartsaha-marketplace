@@ -1,200 +1,243 @@
 <template>
-  <div
-    class="h-screen flex flex-col items-center justify-center bg-[#112830] relative overflow-hidden"
-  >
-    <div
-      class="absolute top-10 left-10 w-32 h-32 bg-emerald-200 dark:bg-emerald-900 rounded-lg-full blur-3xl opacity-30"
-    ></div>
-    <div
-      class="absolute bottom-10 right-10 w-40 h-40 bg-emerald-300 dark:bg-emerald-800 rounded-lg-full blur-3xl opacity-30"
-    ></div>
-
-    <div class="w-full max-w-3xl p-8 sm:p-10 relative">
-      <div class="text-center mb-10">
-        <img
-          src="/marketplace_png.png"
-          alt="SmartSaha logo"
-          class="h-14 sm:h-16 mx-auto mb-4"
-        />
-        <h1
-          class="text-3xl sm:text-4xl font-bold text-gray-100 dark:text-white mb-2"
-        >
-          Créer un compte
-        </h1>
-      </div>
-
-      <form @submit.prevent="submitSignup" class="space-y-6">
-        <div class="flex gap-4">
-          <div class="relative flex-1">
-            <i
-              class="bx bx-user text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2 text-lg"
-            ></i>
-
-            <input
-              id="username"
-              v-model="form.username"
-              type="text"
-              required
-              placeholder=" "
-              class="peer w-full px-4 py-3 pl-10 rounded-lg border border-white/20 bg-[#112830] text-gray-100 focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition"
-            />
-
-            <label
-              for="username"
-              class="absolute left-10 text-gray-400 pointer-events-none transition-all duration-200 peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:-top-3 peer-focus:text-sm peer-focus:text-emerald-400 bg-[#112830] px-1"
-              :class="form.username ? '-top-3 text-sm text-emerald-400' : ''"
-            >
-              Nom d’utilisateur
-            </label>
+  <div class="min-h-screen flex bg-[#fafaf9]">
+    <!-- LEFT: SCROLLABLE FORM -->
+    <div class="flex-1 overflow-y-auto max-h-screen p-4 sm:p-12">
+      <div class="max-w-2xl mx-auto">
+        <div class="">
+          <div class="text-left mb-16">
+            <img src="/logo.png" class="h-16 mb-6" />
+            <h2 class="">Créer votre compte</h2>
+            <p class="mt-4 content">
+              Rejoignez SmartSaha et commencez à vendre ou acheter en toute
+              sécurité.
+            </p>
           </div>
 
-          <div class="relative flex-1">
-            <i
-              class="bx bx-envelope text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2 text-lg"
-            ></i>
+          <form @submit.prevent="submitSignup">
+            <div class="gap-16">
+              <div class="space-y-8">
+                <div>
+                  <h2
+                    class="text-sm small uppercase tracking-wider text-gray-500 mb-6"
+                  >
+                    Informations du compte
+                  </h2>
 
-            <input
-              id="email"
-              v-model="form.email"
-              type="email"
-              required
-              placeholder=" "
-              class="peer w-full px-4 py-3 pl-10 rounded-lg border border-white/20 bg-[#112830] text-gray-100 focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition"
-            />
+                  <div class="space-y-4">
+                    <div class="grid gap-6 md:grid-cols-2">
+                      <div>
+                        <label class="block label mb-2">
+                          Nom d’utilisateur
+                        </label>
+                        <input
+                          v-model="form.username"
+                          type="text"
+                          required
+                          class="w-full px-4 py-2.5 content rounded-xl border border-[#112830]/15 bg-white focus:border-[#10b481] focus:ring-4 focus:ring-[#10b481]/10 outline-none transition-all"
+                        />
+                      </div>
 
-            <label
-              for="email"
-              class="absolute left-10 text-gray-400 pointer-events-none transition-all duration-200 peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:-top-3 peer-focus:text-sm peer-focus:text-emerald-400 bg-[#112830] px-1"
-              :class="form.email ? '-top-3 text-sm text-emerald-400' : ''"
-            >
-              Adresse e-mail
-            </label>
-          </div>
-        </div>
+                      <div>
+                        <label class="block label mb-2"> Adresse e-mail </label>
+                        <input
+                          v-model="form.email"
+                          type="email"
+                          required
+                          class="w-full px-4 py-2.5 content rounded-xl border border-[#112830]/15 bg-white focus:border-[#10b481] focus:ring-4 focus:ring-[#10b481]/10 outline-none transition-all"
+                        />
+                      </div>
+                    </div>
 
-        <div class="flex gap-4">
-          <div class="relative flex-1">
-            <i
-              class="bx bx-lock text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2 text-lg"
-            ></i>
+                    <div>
+                      <label class="block label mb-2"> Mot de passe </label>
+                      <input
+                        v-model="form.password"
+                        type="password"
+                        required
+                        minlength="6"
+                        class="w-full px-4 py-2.5 content rounded-xl border border-[#112830]/15 bg-white focus:border-[#10b481] focus:ring-4 focus:ring-[#10b481]/10 outline-none transition-all"
+                      />
+                    </div>
 
-            <input
-              id="password"
-              v-model="form.password"
-              type="password"
-              required
-              minlength="6"
-              placeholder=" "
-              class="peer w-full px-4 py-3 pl-10 pr-10 rounded-lg border border-white/20 bg-[#112830] text-gray-100 focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition"
-            />
+                    <div>
+                      <label class="block label mb-3">
+                        Avatar (facultatif)
+                      </label>
 
-            <label
-              for="password"
-              class="absolute left-10 text-gray-400 pointer-events-none transition-all duration-200 peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:-top-3 peer-focus:text-sm peer-focus:text-emerald-400 bg-[#112830] px-1"
-              :class="form.password ? '-top-3 text-sm text-emerald-400' : ''"
-            >
-              Mot de passe
-            </label>
-          </div>
+                      <div
+                        @click="$refs.avatarInput.click()"
+                        class="border-2 border-dashed border-[#112830]/10 rounded-2xl p-8 text-center cursor-pointer bg-white hover:border-[#10b481] hover:bg-[#10b481]/5 transition-all"
+                      >
+                        <p class="text-sm small text-[#112830]/60">
+                          Ajouter une photo de profil
+                        </p>
 
-          <div
-            class="relative flex-1 flex items-center border border-white/20 rounded-lg overflow-hidden bg-[#112830]"
-          >
-            <button
-              type="button"
-              @click="$refs.fileInput.click()"
-              class="flex items-center justify-center w-12 h-12 bg-[#112830] text-[#10b481] hover:bg-[#1D444B] transition"
-              title="Uploader un fichier"
-            >
-              <i class="bx bx-paperclip text-xl"></i>
-            </button>
+                        <p
+                          v-if="avatarFileName"
+                          class="text-[#10b481] small mt-3 text-sm"
+                        >
+                          {{ avatarFileName }}
+                        </p>
+                      </div>
 
-            <input
-              :value="selectedFileName || form.justification"
-              type="text"
-              placeholder="Justificatif"
-              readonly
-              class="flex-1 px-4 py-3 text-gray-100 bg-[#112830] focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition"
-            />
+                      <input
+                        ref="avatarInput"
+                        type="file"
+                        accept="image/*"
+                        @change="handleAvatarUpload"
+                        class="hidden"
+                      />
+                    </div>
+                  </div>
+                </div>
 
-            <input
-              ref="fileInput"
-              type="file"
-              @change="handleFileUpload"
-              accept="image/*,.pdf"
-              class="hidden"
-            />
-          </div>
-        </div>
-        <div class="space-y-2">
-          <p class="text-gray-300 font-medium">Choisissez votre catégorie</p>
+                <div>
+                  <h2
+                    class="text-sm small uppercase tracking-wider text-gray-500 mb-4"
+                  >
+                    Catégorie
+                  </h2>
 
-          <div class="grid grid-cols-3 gap-3">
-            <div
-              v-for="cat in categories"
-              :key="cat.id"
-              @click="selectedCategory = cat.id"
-              :class="[
-                'cursor-pointer px-4 py-3 rounded-lg border transition flex items-center justify-center text-sm font-medium',
-                selectedCategory === cat.id
-                  ? 'bg-[#10b481]/20 border-[#10b481] text-white'
-                  : 'bg-[#112830] border-white/20 text-gray-300 hover:border-emerald-500',
-              ]"
-            >
-              {{ cat.displayName }}
+                  <div class="grid grid-cols-3 gap-2 sm:gap-4">
+                    <div
+                      v-for="cat in categories"
+                      :key="cat.id"
+                      @click="selectedCategory = cat.id"
+                      :class="[
+                        'cursor-pointer px-5 py-2.5 rounded-xl small border flex items-center justify-center text-sm font-medium transition-all duration-200 shadow-sm transform',
+                        selectedCategory === cat.id
+                          ? 'bg-[#10b481] text-white border-[#10b481]'
+                          : 'bg-[#fff] border-[#10b481]/50 text-[#10b481] hover:bg-[#10b481]/10 hover:text-[#10b481]',
+                      ]"
+                    >
+                      {{ cat.displayName }}
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h2
+                    class="text-sm small uppercase tracking-wider text-gray-500 mb-6"
+                  >
+                    Vérification
+                  </h2>
+
+                  <div class="mb-8">
+                    <label class="block label mb-3">
+                      Justificatif (obligatoire)
+                    </label>
+
+                    <div
+                      @click="$refs.fileInput.click()"
+                      class="border-2 border-dashed border-[#112830]/10 rounded-2xl p-8 text-center cursor-pointer bg-white hover:border-[#10b481] hover:bg-[#10b481]/5 transition-all"
+                    >
+                      <p class="text-sm small text-[#112830]/60">
+                        Cliquez pour téléverser un fichier (image ou PDF)
+                      </p>
+
+                      <p
+                        v-if="selectedFileName"
+                        class="text-[#10b481] mt-3 text-sm small"
+                      >
+                        {{ selectedFileName }}
+                      </p>
+                    </div>
+
+                    <input
+                      ref="fileInput"
+                      type="file"
+                      @change="handleFileUpload"
+                      accept="image/*,.pdf"
+                      class="hidden"
+                    />
+                  </div>
+                </div>
+
+                <div class="pt-6 border-t border-[#112830]/10">
+                  <div class="flex items-start gap-3 small">
+                    <input
+                      type="checkbox"
+                      v-model="acceptTerms"
+                      class="mt-1 accent-[#10b481] w-4 h-4 rounded-lg focus:ring-0 cursor-pointer"
+                    />
+                    <p class="text-sm text-[#112830]/60 leading-relaxed">
+                      En créant un compte, vous acceptez nos
+                      <span
+                        class="text-[#10b481] font-medium hover:underline cursor-pointer"
+                      >
+                        Conditions générales </span
+                      >.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
 
-        <div class="flex items-start gap-2 mb-4">
-          <input
-            id="terms"
-            type="checkbox"
-            v-model="acceptTerms"
-            class="mt-1 accent-emerald-500"
-          />
-          <p class="text-sm text-gray-500 dark:text-gray-400">
-            En vous inscrivant, vous acceptez les
-            <a
-              href="#"
-              class="text-[#10b481] dark:text-emerald-400 hover:underline"
-            >
-              Conditions générales </a
-            >.
+            <div class="mt-20 text-center">
+              <button
+                type="submit"
+                :disabled="!acceptTerms"
+                class="px-14 py-4 btn-primary w-full active:scale-[0.98] transition-all duration-200 shadow-lg disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Créer mon compte
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: FIXED PANEL -->
+
+    <div
+      class="hidden lg:flex w-2/5 h-screen sticky top-0 bg-[#fff] rounded-l-[2rem] text-white flex-col justify-center p-12 overflow-hidden relative"
+    >
+      <!-- Flare organiques -->
+      <div
+        class="absolute -top-24 -left-32 w-[500px] h-[500px] sm:bg-blue-500 opacity-30 rounded-[60%_40%_55%_45%/50%_60%_40%_50%] blur-3xl"
+      ></div>
+
+      <div
+        class="absolute top-40 -right-48 w-[400px] h-[600px] sm:bg-blue-400 opacity-30 rounded-[60%_40%_55%_45%/50%_60%_40%_50%] blur-3xl"
+      ></div>
+
+      <div
+        class="absolute -top-48 right-[-100px] w-[800px] h-[400px] sm:bg-[#10b481] opacity-30 rounded-[60%_40%_55%_45%/50%_60%_40%_50%] blur-3xl"
+      ></div>
+
+      <div
+        class="absolute -bottom-48 right-[-100px] w-[800px] h-[400px] sm:bg-[#10b481] opacity-40 rounded-[60%_40%_55%_45%/50%_60%_40%_50%] blur-3xl"
+      ></div>
+
+      <div
+        class="relative z-50 flex flex-col justify-center h-full gap-y-8 px-4 sm:px-0"
+      >
+
+        <div class="flex flex-col justify-center gap-2">
+          <h2 class="leading-snug text-2xl font-bold">
+            Bienvenue sur SmartSaha
+          </h2>
+          <p class="text-gray-700 small text-sm max-w-xs">
+            Marketplace agricole, sécurisez vos ventes et connectez-vous aux
+            meilleurs clients.
           </p>
         </div>
-
-        <button
-          type="submit"
-          :disabled="!acceptTerms"
-          class="w-full bg-[#10b481] disabled:bg-white/10 disabled:cursor-not-allowed hover:bg-emerald-700 active:scale-[0.98] text-white font-semibold py-3 rounded-lg shadow-md transition-all duration-200 flex items-center justify-center"
+        <div
+          class="flex flex-col sm:flex-row items-center gap-1 self-start"
         >
-          S’inscrire
-        </button>
-
-        <button
-  v-if="stripeOnboardingUrl"
-  @click="redirectToStripe"
-  class="mt-4 w-full bg-[#10b481] hover:bg-emerald-700 text-white font-semibold py-3 rounded-lg"
->
-  Compléter mon compte Stripe
-</button>
-
-      </form>
-
-      <p class="text-center text-sm text-gray-500 dark:text-gray-400 mt-8">
-        Vous avez déjà un compte ?
-        <NuxtLink
-          to="/signin"
-          class="text-[#10b481] dark:text-emerald-400 font-medium hover:underline"
-        >
-          Se connecter
-        </NuxtLink>
-      </p>
+          <p class="text-sm small text-[#112830] text-center sm:text-left">
+            Déjà un compte ?
+          </p>
+          <NuxtLink
+            to="/signin"
+            class="text-[#10b481] small text-sm font-medium underline cursor-pointer transition hover:bg-gray-100/10"
+          >
+            Se connecter
+          </NuxtLink>
+        </div>
+      </div>
     </div>
   </div>
-
-
 
   <div
     v-if="isLoading"
@@ -275,7 +318,9 @@
           </div>
         </div>
 
-        <div class="rounded-lg bg-gray-50 border px-4 py-3 text-sm text-gray-700">
+        <div
+          class="rounded-lg bg-gray-50 border px-4 py-2.5 text-sm text-gray-700"
+        >
           <div class="flex justify-between">
             <span>Taille actuelle</span>
             <strong>{{ originalSizeMB }} Mo</strong>
@@ -325,6 +370,119 @@
       </div>
     </div>
   </transition>
+
+  <!-- STRIPE MODAL -->
+  <div
+    v-if="showStripeModal"
+    class="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-md px-6"
+  >
+    <div
+      class="w-full max-w-4xl bg-white rounded-3xl shadow-[0_40px_80px_-20px_rgba(0,0,0,0.25)] overflow-hidden grid md:grid-cols-[1fr_1.3fr]"
+    >
+      <!-- LEFT PANEL -->
+      <div
+        class="relative bg-[#fff] text-white p-12 flex flex-col justify-between overflow-hidden"
+      >
+        <!-- Flare organiques -->
+        <div
+          class="absolute -top-32 -left-32 w-[500px] h-[500px] sm:bg-blue-500 opacity-30 rounded-[60%_40%_55%_45%/50%_60%_40%_50%] blur-3xl"
+        ></div>
+
+        <div
+          class="absolute top-48 -right-64 w-[400px] h-[600px] sm:bg-blue-400 opacity-30 rounded-[60%_40%_55%_45%/50%_60%_40%_50%] blur-3xl"
+        ></div>
+
+        <div
+          class="absolute -top-64 right-[-100px] w-[800px] h-[400px] sm:bg-[#10b481] opacity-30 rounded-[60%_40%_55%_45%/50%_60%_40%_50%] blur-3xl"
+        ></div>
+
+        <div
+          class="absolute -bottom-64 right-[-100px] w-[800px] h-[400px] sm:bg-[#10b481] opacity-40 rounded-[60%_40%_55%_45%/50%_60%_40%_50%] blur-3xl"
+        ></div>
+        <div>
+          <div
+            class="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center mb-8"
+          >
+            <i class="bx bx-credit-card text-3xl text-emerald-400"></i>
+          </div>
+
+          <h3 class="text-2xl font-semibold leading-snug">
+            Activation des paiements
+          </h3>
+
+          <p class="mt-5 text-sm text-white/70 lightcontent leading-relaxed">
+            Pour pouvoir publier des offres et recevoir des paiements en toute
+            sécurité sur la plateforme, la configuration Stripe est une étape
+            obligatoire.
+          </p>
+
+          <div class="mt-8 space-y-3 text-sm text-white/60 lightcontent">
+            <div class="flex items-start gap-2">
+              <span>•</span>
+              <span>Vérification d’identité</span>
+            </div>
+            <div class="flex items-start gap-2">
+              <span>•</span>
+              <span>Ajout d’un compte bancaire</span>
+            </div>
+            <div class="flex items-start gap-2">
+              <span>•</span>
+              <span>Activation des transferts sécurisés</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-xs text-white/50 small mt-12">
+          Traitement sécurisé via Stripe · Conforme aux standards internationaux
+        </div>
+      </div>
+
+      <!-- RIGHT PANEL -->
+      <div class="p-12 flex flex-col justify-between">
+        <div class="space-y-8">
+          <div>
+            <h4 class="text-lg username text-gray-900">
+              Prochaine étape : configuration Stripe
+            </h4>
+
+            <p class="mt-3 content leading-relaxed">
+              Vous allez être redirigé vers l’interface officielle de Stripe.
+              Cette procédure vous permettra de renseigner vos informations
+              légales et bancaires afin d’activer les paiements.
+            </p>
+          </div>
+
+          <div class="bg-gray-50 content rounded-xl p-5 content space-y-2">
+            <p class="font-medium text-gray-800">Informations importantes :</p>
+            <p>• Temps estimé : 2 à 3 minutes</p>
+            <p>• Aucune donnée bancaire n’est stockée sur SmartSaha</p>
+            <p>
+              • Vous pourrez compléter cette étape ultérieurement si nécessaire
+            </p>
+          </div>
+        </div>
+
+        <!-- ACTIONS -->
+        <div
+          class="mt-12 flex justify-between items-center text-sm font-medium"
+        >
+          <button
+            @click="router.push('/signin')"
+            class="text-gray-700 hover:text-gray-700 small transition hover:underline underline-offset-4"
+          >
+            Finaliser plus tard
+          </button>
+
+          <button
+            @click="redirectToStripe"
+            class="text-[#10b481] hover:text-[#10b481] small transition hover:underline underline-offset-4 flex items-center gap-1"
+          >
+            Continuer la configuration →
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -337,9 +495,17 @@ const router = useRouter();
 const form = ref({
   email: "",
   justification: "",
+  avatar_url: "",
   username: "",
   password: "",
 });
+
+const avatarFile = ref<File | null>(null);
+const avatarUrl = ref("");
+const avatarFileName = ref("");
+
+const showPendingScreen = ref(false);
+const showStripeModal = ref(false);
 
 const categories = ref<any[]>([]);
 const selectedCategory = ref<number | null>(null);
@@ -564,6 +730,17 @@ const uploadToCloudinary = async (file: File) => {
   return data.secure_url;
 };
 
+const handleAvatarUpload = async (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  if (!input.files || !input.files[0]) return;
+
+  const file = input.files[0];
+  avatarFile.value = file;
+  avatarFileName.value = file.name;
+
+  avatarUrl.value = await uploadToCloudinary(file);
+};
+
 /* =======================
    SUBMIT
 ======================= */
@@ -591,7 +768,7 @@ const submitSignup = async () => {
       username: form.value.username,
       email: form.value.email,
       justificatif_url: cloudinaryUrl.value,
-      avatar_url: cloudinaryUrl.value,
+      avatar_url: avatarUrl.value || null,
       password: form.value.password,
       id_categorie_user_id: selectedCategory.value,
     };
@@ -612,16 +789,24 @@ const submitSignup = async () => {
     }
 
     if (data.stripe_onboarding_url) {
-    stripeOnboardingUrl.value = data.stripe_onboarding_url;
-  }
+      stripeOnboardingUrl.value = data.stripe_onboarding_url;
+    }
 
-  console.log("Stripe url:", JSON.stringify(stripeOnboardingUrl.value, null, 2));
+    console.log(
+      "Stripe url:",
+      JSON.stringify(stripeOnboardingUrl.value, null, 2)
+    );
 
     showNotification(
       "Inscription réussie. Votre compte est en attente de validation.",
       "success",
       6000
     );
+
+    if (data.stripe_onboarding_url) {
+      stripeOnboardingUrl.value = data.stripe_onboarding_url;
+      showStripeModal.value = true;
+    }
 
     // setTimeout(() => router.push("/signin"), 6000);
   } catch {
@@ -633,9 +818,7 @@ const submitSignup = async () => {
 
 const redirectToStripe = () => {
   if (process.client && stripeOnboardingUrl.value) {
-    window.location.href = stripeOnboardingUrl.value
+    window.location.href = stripeOnboardingUrl.value;
   }
-}
-
-
+};
 </script>

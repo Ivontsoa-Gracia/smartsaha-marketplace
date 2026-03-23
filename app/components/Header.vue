@@ -2,23 +2,22 @@
   <header
     :class="[
       'fixed top-0 left-0 w-full z-50  transition-all duration-300',
-      isScrolled ? 'bg-white/90 shadow-sm backdrop-blur-md' : 'bg-transparent',
+      isScrolled ? 'bg-[#fafaf9]/90 shadow-sm backdrop-blur-md' : 'bg-[#fafaf9]',
     ]"
   >
     <div class="max-w-7xl mx-auto flex items-center justify-between h-20 px-6">
-      <!-- LOGO -->
+      
       <NuxtLink to="/" class="flex items-center gap-4 group">
         <img
-          src="/marketplace_png.png"
+          src="/logo.png"
           alt="Logo"
-          class="h-10 w-auto rounded-xl transition-transform duration-300 group-hover:scale-105"
+          class="w-12 h-12 object-contain flex-shrink-0 rounded-xl"
         />
-        <div class="leading-tight">
-          <h1 class="text-lg font-bold tracking-tight text-gray-900">
-            AgriTrade
-          </h1>
-          <p class="text-[10px] uppercase tracking-wider text-gray-400">
-            SmartSaha Marketplace
+
+        <div v-if="!isMobile" class="leading-tight">
+          <h1 class="text-xl logo text-gray-800">SmartSaha</h1>
+          <p class="sous-logo tracking-wide">
+            Agricultural Marketplace
           </p>
         </div>
       </NuxtLink>
@@ -29,7 +28,7 @@
           v-for="(item, i) in menuItems"
           :key="i"
           :to="item.link"
-          class="relative text-sm font-medium text-gray-600 hover:text-gray-900 transition group"
+          class="relative menu-item transition group"
         >
           {{ t(item.label) }}
           <span
@@ -76,7 +75,6 @@
         <div class="relative">
           <template v-if="isLoggedIn">
             <div class="relative">
-              <!-- Avatar / Toggle -->
               <div
                 class="flex items-center gap-3 cursor-pointer group"
                 @click="toggleDropdown"
@@ -89,7 +87,7 @@
                 />
                 <div
                   v-else
-                  class="w-10 h-10 rounded-full bg-[#10B481] text-white flex items-center justify-center font-bold text-lg transition-transform duration-200 group-hover:scale-105"
+                  class="w-10 h-10 rounded-full bg-[#10B481] text-white flex items-center justify-center username font-bold text-lg transition-transform duration-200 group-hover:scale-105"
                 >
                   {{ user.username.charAt(0).toUpperCase() }}
                 </div>
@@ -121,13 +119,13 @@
                       />
                       <div
                         v-else
-                        class="w-12 h-12 rounded-full bg-[#10B481] flex items-center justify-center font-bold text-lg"
+                        class="w-12 h-12 rounded-full bg-[#10B481] username flex items-center justify-center font-bold text-lg"
                       >
                         {{ user.username.charAt(0).toUpperCase() }}
                       </div>
                       <div class="flex flex-col">
-                        <span class="font-semibold">{{ user.username }}</span>
-                        <span class="text-xs text-gray-300">{{
+                        <span class="username">{{ user.username }}</span>
+                        <span class="text-xs text-gray-300 small">{{
                           user.email
                         }}</span>
                       </div>
@@ -150,7 +148,7 @@
                         class="px-5 py-3 flex items-center gap-3 hover:bg-[#0e9a6c]/30 cursor-pointer transition"
                       >
                         <i :class="item.icon + ' text-xl'"></i>
-                        <NuxtLink :to="item.link" class="w-full">{{
+                        <NuxtLink :to="item.link" class="w-full light-menu">{{
                           t(item.label)
                         }}</NuxtLink>
                       </li>
@@ -164,7 +162,7 @@
                         class="px-5 py-3 flex items-center gap-3 hover:bg-[#0e9a6c]/30 cursor-pointer transition"
                       >
                         <i :class="item.icon + ' text-xl'"></i>
-                        <NuxtLink :to="item.link" class="w-full">{{
+                        <NuxtLink :to="item.link" class="w-full light-menu">{{
                           t(item.label)
                         }}</NuxtLink>
                       </li>
@@ -176,14 +174,14 @@
                       class="px-5 py-3 flex items-center justify-between hover:bg-[#0e9a6c]/30 transition cursor-pointer"
                     >
                       <NuxtLink
-                        to="/chatbox"
-                        class="flex items-center gap-3 w-full"
+                        to="/dashboard/chatbox"
+                        class="flex items-center gap-3 w-full light-menu"
                       >
-                        <i class="bx bx-send-alt -rotate-45 text-xl"></i>
+                        <i class="bx bx-send-alt -rotate-45 text-xl "></i>
                         Messagerie
                       </NuxtLink>
                       <span
-                        class="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-[10px] font-semibold bg-red-600 text-white rounded-full shadow"
+                        class="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-[10px] small bg-red-600 text-white rounded-full shadow"
                       >
                         {{ unreadCount > 9 ? "9+" : unreadCount }}
                       </span>
@@ -194,7 +192,7 @@
                       class="px-5 py-3 flex items-center gap-3 hover:bg-[#0e9a6c]/30 transition cursor-pointer"
                     >
                       <i class="bx bx-cog text-xl"></i>
-                      <NuxtLink to="/settings" class="w-full"
+                      <NuxtLink to="/settings" class="w-full light-menu"
                         >Settings</NuxtLink
                       >
                     </li>
@@ -204,7 +202,7 @@
                       class="px-5 py-3 flex items-center gap-3 hover:bg-red-600/20 transition cursor-pointer"
                     >
                       <i class="bx bx-log-out text-xl"></i>
-                      <button @click="logout" class="w-full text-left">
+                      <button @click="logout" class="w-full text-left light-menu">
                         Sign out
                       </button>
                     </li>
@@ -219,7 +217,7 @@
               <!-- SIGN IN -->
               <NuxtLink
                 to="/signin"
-                class="group flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-gray-900 transition"
+                class="group flex items-center gap-1 menu-item transition"
               >
                 {{ t("signin") }}
                 <i
@@ -241,7 +239,7 @@
 
       <!-- MOBILE BURGER -->
       <button class="md:hidden flex flex-col gap-1.5" @click="toggleMobileMenu">
-        <span class="w-6 h-[2px] bg-gray-800 rounded"></span>
+        <!-- <span class="w-5 h-[2px] bg-gray-800 rounded"></span> -->
         <span class="w-6 h-[2px] bg-gray-800 rounded"></span>
         <span class="w-4 h-[2px] bg-gray-800 rounded"></span>
       </button>
@@ -331,12 +329,12 @@
         </div>
 
         <!-- NAVIGATION -->
-        <nav class="flex flex-col py-4 px-6 gap-3">
+        <nav class="flex flex-col space-y-1 py-4 px-6 gap-3">
           <NuxtLink
             v-for="(item, i) in menuItems"
             :key="i"
             :to="item.link"
-            class="py-2 font-medium text-gray-700 hover:text-[#10B481] transition"
+            class="py-2 menu-item transition"
             @click="mobileMenuOpen = false"
           >
             {{ t(item.label) }}
@@ -344,61 +342,64 @@
 
           <!-- ADDITIONAL USER LINKS IF LOGGED IN -->
           <template v-if="isStaffUser">
+            <NuxtLink
+              v-for="item in staffMenu"
+              :key="item.label"
+              :to="item.link"
+              class="py-2 menu-item transition"
+              @click="mobileMenuOpen = false"
+            >
+              {{ t(item.label) }}
+            </NuxtLink>
+          </template>
+
+          <!-- Utilisateur Menu -->
+          <template v-else>
+            <NuxtLink
+              v-for="item in userMenu"
+              :key="item.label"
+              :to="item.link"
+              class="py-2 menu-item transition"
+              @click="mobileMenuOpen = false"
+            >
+              {{ t(item.label) }}
+            </NuxtLink>
+          </template>
+
+          <!-- Messagerie -->
           <NuxtLink
-            v-for="item in staffMenu"
-            :key="item.label"
-            :to="item.link"
-            class="py-2 font-medium text-gray-700 hover:text-[#10B481] transition"
+            to="/dashboard/chatbox"
+            class="flex items-center justify-between py-2 menu-item transition"
             @click="mobileMenuOpen = false"
           >
-            {{ t(item.label) }}
+            <span>Messagerie</span>
+            <span
+              v-if="unreadCount > 0"
+              class="inline-flex items-center justify-center px-2 py-0.5 text-[10px] font-semibold bg-red-600 text-white rounded-full shadow"
+            >
+              {{ unreadCount > 9 ? "9+" : unreadCount }}
+            </span>
           </NuxtLink>
-        </template>
 
-        <!-- Utilisateur Menu -->
-        <template v-else>
+          <!-- Settings -->
           <NuxtLink
-            v-for="item in userMenu"
-            :key="item.label"
-            :to="item.link"
-            class="py-2 font-medium text-gray-700 hover:text-[#10B481] transition"
+            to="/settings"
+            class="flex items-center py-2 menu-item transition"
             @click="mobileMenuOpen = false"
           >
-            {{ t(item.label) }}
+            Settings
           </NuxtLink>
-        </template>
 
-        <!-- Messagerie -->
-        <NuxtLink
-          to="/chatbox"
-          class="flex items-center justify-between py-2 font-medium text-gray-700 hover:text-[#10B481] transition"
-          @click="mobileMenuOpen = false"
-        >
-          <span>Messagerie</span>
-          <span
-            v-if="unreadCount > 0"
-            class="inline-flex items-center justify-center px-2 py-0.5 text-[10px] font-semibold bg-red-600 text-white rounded-full shadow"
+          <!-- Logout -->
+          <button
+            @click="
+              logout();
+              mobileMenuOpen = false;
+            "
+            class="flex items-center px-4 py-3 rounded-lg hover:bg-red-600/20 text-red-500 transition"
           >
-            {{ unreadCount > 9 ? "9+" : unreadCount }}
-          </span>
-        </NuxtLink>
-
-        <!-- Settings -->
-        <NuxtLink
-          to="/settings"
-          class="flex items-center py-2 font-medium text-gray-700 hover:text-[#10B481] transition"
-          @click="mobileMenuOpen = false"
-        >
-          Settings
-        </NuxtLink>
-
-        <!-- Logout -->
-        <button
-          @click="logout(); mobileMenuOpen = false"
-          class="flex items-center px-4 py-3 rounded-lg hover:bg-red-600/20 text-red-500 transition"
-        >
-          Sign out
-        </button>
+            Sign out
+          </button>
         </nav>
       </div>
     </transition>
@@ -434,6 +435,20 @@ const selectLocale = (code: string) => {
   languageStore.setLang(code);
   open.value = false;
 };
+const isMobile = ref(false);
+
+function checkMobile() {
+  isMobile.value = window.innerWidth <= 640; // ≤640px = sm breakpoint Tailwind
+}
+
+onMounted(() => {
+  checkMobile();
+  window.addEventListener("resize", checkMobile);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", checkMobile);
+});
 
 const isLoggedIn = ref(false);
 const dropdownOpen = ref(false);

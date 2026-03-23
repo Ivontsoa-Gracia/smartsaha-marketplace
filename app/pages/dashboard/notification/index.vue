@@ -1,13 +1,12 @@
 <template>
     <section class="space-y-8 p-12 bg-gray-50/60">
-      <Breadcrumb />
 
       <div class="flex items-center justify-between mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">
+        <h2 class="">
           Notifications
-        </h1>
+        </h2>
   
-        <span class="text-sm text-gray-500">
+        <span class="text-sm small-medium text-gray-700 ">
           {{ unreadCount }} unread
         </span>
       </div>
@@ -34,28 +33,28 @@
             class="w-11 h-11 flex items-center justify-center rounded-full shrink-0"
             :class="notif.is_read ? 'bg-gray-100 text-gray-400' : 'bg-[#10b481]/10 text-[#10b481]'"
           >
-            <i class="bx bx-bell text-xl"></i>
+            <i class="bx bx-bell small text-xl"></i>
           </div>
   
           <div class="flex-1">
             <div class="flex items-center gap-3">
-              <h3 class="font-semibold text-gray-900">
+              <h3 class="subtitle text-base text-gray-700">
                 {{ notif.notification_type || 'Notification' }}
               </h3>
   
               <span
                 v-if="!notif.is_read"
-                class="text-xs px-2 py-0.5 rounded-full bg-[#10b481]/10 text-[#10b481] font-medium"
+                class="text-xs px-2 py-0.5 rounded-full bg-[#10b481]/10 text-[#10b481] small"
               >
                 New
               </span>
             </div>
   
-            <p class="text-gray-600 text-sm mt-1 leading-relaxed">
+            <p class="content mt-1 leading-relaxed">
               {{ notif.message }}
             </p>
   
-            <p class="text-xs text-gray-400 mt-2">
+            <p class="text-xs text-gray-400 small mt-2">
               {{ formatDate(notif.created_at) }}
             </p>
           </div>

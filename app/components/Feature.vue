@@ -2,7 +2,7 @@
   <section class="py-12 bg-gray-50">
     <div class="max-w-7xl mx-auto px-6">
       <div class="flex items-center justify-between mb-10 gap-4">
-        <h2 class="text-2xl sm:text-3xl font-bold text-[#222831]">
+        <h2 class="text-bold text-[#222831]">
           {{ t("titleFeature") }}
         </h2>
 
@@ -13,7 +13,7 @@
               :key="cat"
               @click="filterCategory(cat)"
               :class="[
-                'relative font-medium text-gray-700 hover:text-[#10b481] focus:text-[#10b481] transition-colors',
+                'relative menu-item focus:text-[#10b481] transition-colors',
                 selectedCategory === cat
                   ? 'after:absolute after:-bottom-1 after:left-0 after:w-full after:h-0.5 after:bg-[#10b481]'
                   : '',
@@ -26,13 +26,13 @@
           <div class="flex gap-2">
             <button
               @click="prev"
-              class="bg-white border border-[#e0e0e0] p-1 px-2 rounded hover:bg-gray-100 transition"
+              class="bg-white text-[#6B7280] border border-[#D1D5DB] p-1 px-2 rounded-lg hover:bg-[#E5E7EB] transition"
             >
               <i class="bx bx-chevron-left text-lg"></i>
             </button>
             <button
               @click="next"
-              class="bg-white border border-[#e0e0e0] p-1 px-2 rounded hover:bg-gray-100 transition"
+              class="bg-white text-[#6B7280] border border-[#D1D5DB] p-1 px-2 rounded-lg hover:bg-[#E5E7EB] transition"
             >
               <i class="bx bx-chevron-right text-lg"></i>
             </button>

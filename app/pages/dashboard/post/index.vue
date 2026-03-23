@@ -1,19 +1,18 @@
 <template>
-  <div class="space-y-8 p-4 sm:p-12 bg-gray-50/60 min-h-screen">
+  <div class="space-y-8 p-4 sm:p-12 bg-[#FAFAF9] min-h-screen">
     <div class="flex items-center justify-between flex-wrap gap-3">
-  <h2 class="text-xl font-bold text-gray-800 flex-1 min-w-0">
-    {{ t("myListings") }}
-  </h2>
+      <h2 class="flex-1 min-w-0">
+        {{ t("myListings") }}
+      </h2>
 
-  <button
-    @click="$router.push('/dashboard/post/create')"
-    class="flex items-center justify-center gap-2 btn-primary whitespace-nowrap"
-  >
-    <i class="bx bx-plus text-sm"></i>
-    <span class="text-sm font-medium">{{ t("newListings") }}</span>
-  </button>
-</div>
-
+      <button
+        @click="$router.push('/dashboard/post/create')"
+        class="flex items-center justify-center gap-2 btn-primary whitespace-nowrap"
+      >
+        <i class="bx bx-plus text-sm"></i>
+        <span class="">{{ t("newListings") }}</span>
+      </button>
+    </div>
 
     <div class="sm:hidden">
       <div class="flex items-center gap-3">
@@ -86,7 +85,7 @@
         <input
           v-model="filters.query"
           type="text"
-          class="w-full pl-10 pr-3 py-2 text-sm bg-transparent focus:outline-none text-gray-800 placeholder-gray-400"
+          class="w-full pl-10 pr-3 py-2 text-sm bg-transparent focus:outline-none text-gray-800 placeholder-gray-400 content"
           placeholder="Rechercher par produit ou titre"
         />
       </div>
@@ -97,7 +96,7 @@
       <!-- Status -->
       <select
         v-model="filters.status"
-        class="text-sm text-gray-600 bg-transparent focus:outline-none cursor-pointer hover:text-gray-800 transition"
+        class="text-sm text-gray-600 bg-transparent focus:outline-none cursor-pointer hover:text-gray-800 transition content"
       >
         <option value="">{{ t("all") }}</option>
         <option value="brouillon">{{ t("Draft") }}</option>
@@ -114,7 +113,7 @@
       <div class="relative">
         <button
           @click="showDateDropdown = !showDateDropdown"
-          class="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition"
+          class="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition content"
         >
           <span class="whitespace-nowrap">{{ dateLabel }}</span>
           <i
@@ -134,7 +133,7 @@
             <label
               v-for="(label, key) in dateOptions"
               :key="key"
-              class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 cursor-pointer hover:bg-gray-50 transition"
+              class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 cursor-pointer hover:bg-gray-50 transition content"
             >
               <input
                 type="radio"
@@ -149,7 +148,7 @@
       </div>
     </div>
 
-    <div class="flex flex-wrap gap-4 items-center border-b pb-4">
+    <div class="flex flex-wrap gap-4 items-center menu-item border-b pb-4">
       <button @click="filterCategory('All')" :class="categoryClass('All')">
         {{ t("All") }}
       </button>
@@ -169,10 +168,10 @@
 
     <div
       v-if="filteredPosts.length"
-      class="overflow-x-auto bg-white rounded-2xl shadow-sm"
+      class="overflow-x-auto bg-white rounded-2xl shadow- small"
     >
       <table class="min-w-[700px] w-full text-left border-collapse">
-        <thead class="bg-[#FAFAF9]">
+        <thead class="bg-[#FAFAF9] small">
           <tr>
             <th
               @click="sortBy('product.product')"
@@ -220,7 +219,7 @@
           <tr
             v-for="post in paginatedPosts"
             :key="post.id"
-            class="hover:bg-gray-50 transition"
+            class="hover:bg-[#FAFAF9] transition content"
           >
             <!-- Product -->
             <td class="px-6 py-3 border-b text-sm text-gray-900">
@@ -248,14 +247,14 @@
             <td
               class="px-6 py-3 border-b text-sm text-gray-700 whitespace-nowrap"
             >
-              {{ post.price }} {{ post.currency.symbol }}
+              {{ Number(post.price).toLocaleString() }} {{ post.currency.symbol }}
             </td>
 
             <!-- Category -->
             <td class="px-6 py-3 border-b text-sm">
               <span
                 :class="[
-                  'px-3 py-1 text-xs font-semibold rounded-full border whitespace-nowrap',
+                  'px-3 py-1 text-xs small-medium rounded-full border whitespace-nowrap',
                   post.type_post?.type === 'Selling'
                     ? 'border-[#10b481] text-[#10b481] bg-[#10b481]/10'
                     : 'border-[#f4a261] text-[#f4a261] bg-[#f4a261]/10',
@@ -276,7 +275,7 @@
             <td class="px-6 py-3 border-b text-sm">
               <span
                 :class="[
-                  'px-3 py-1 text-xs font-semibold rounded-full border whitespace-nowrap',
+                  'px-3 py-1 text-xs small-medium rounded-full border whitespace-nowrap',
                   statusColors[post.current_status]?.border,
                   statusColors[post.current_status]?.text,
                   statusColors[post.current_status]?.bg,
@@ -300,7 +299,7 @@
                   <i class="bx bx-receipt text-lg text-[#10b481]"></i>
                   <span
                     v-if="post.total_bids > 0"
-                    class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-semibold bg-red-600 text-white rounded-full shadow"
+                    class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] small bg-red-600 text-white rounded-full shadow"
                     >{{ post.total_bids }}</span
                   >
                 </NuxtLink>
@@ -325,7 +324,7 @@
       </table>
 
       <!-- Pagination -->
-      <div class="bg-white px-4 py-4 flex items-center justify-between sm:px-6">
+      <div class="bg-white px-4 py-4 flex items-center justify-between sm:px-6 small">
         <div class="flex-1 flex justify-between sm:hidden">
           <button
             @click="prevPage"
@@ -361,7 +360,7 @@
               <button
                 @click="prevPage"
                 :disabled="currentPage === 1"
-                class="relative inline-flex items-center px-2 py-2 rounded-l border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                class="relative inline-flex items-center px-2 py-2 rounded-l-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
               >
                 <span class="sr-only">{{ t("prev") }}</span
                 ><i class="bx bx-chevron-left"></i>
@@ -384,7 +383,7 @@
               <button
                 @click="nextPage"
                 :disabled="currentPage === totalPages"
-                class="relative inline-flex items-center px-2 py-2 rounded-r border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                class="relative inline-flex items-center px-2 py-2 rounded-r-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
               >
                 <span class="sr-only">{{ t("next") }}</span
                 ><i class="bx bx-chevron-right"></i>

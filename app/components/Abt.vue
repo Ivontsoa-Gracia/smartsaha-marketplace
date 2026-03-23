@@ -6,9 +6,9 @@
           style="background-image: url('/img/image1.jpg'); background-size: cover; background-position: center;"
         >
           <div class="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition"></div>
-          <div class="relative z-10 text-white">
-            <h3 class="text-2xl sm:text-3xl font-bold mb-1">{{ t('abttitle1') }}</h3>
-            <h4 class="text-sm font-medium mb-1">{{ t('abttext1') }}</h4>
+          <div class="relative z-10">
+            <h3 class="light-extra mb-1">{{ t('abttitle1') }}</h3>
+            <h4 class="light-content mb-1">{{ t('abttext1') }}</h4>
           </div>
         </div>
   
@@ -17,9 +17,9 @@
           style="background-image: url('/img/image2.jpg'); background-size: cover; background-position: center;"
         >
           <div class="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition"></div>
-          <div class="relative z-10 text-white">
-            <h3 class="text-2xl sm:text-3xl font-bold mb-1">{{ t('abttitle2') }}</h3>
-            <h4 class="text-sm font-medium mb-1">{{ t('abttext2') }}</h4>
+          <div class="relative z-10">
+            <h3 class="light-extra mb-1">{{ t('abttitle2') }}</h3>
+            <h4 class="light-content mb-1">{{ t('abttext2') }}</h4>
           </div>
         </div>
       </div>

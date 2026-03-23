@@ -26,12 +26,12 @@
             <img
               src="/logo.png"
               alt="Logo"
-              class="w-12 h-12 object-contain flex-shrink-0 rounded-2xl"
+              class="w-11 h-11 object-contain flex-shrink-0 rounded-xl"
             />
 
             <div v-if="!isCollapsed || isMobile" class="leading-tight">
-              <h1 class="text-xl font-semibold">SmartSaha</h1>
-              <p class="text-xs text-white/70 tracking-wide">
+              <h1 class="text-xl light-logo">SmartSaha</h1>
+              <p class="text-xs light-sous-logo tracking-wide">
                 Agricultural Marketplace
               </p>
             </div>
@@ -53,7 +53,7 @@
           <button
             v-if="isMobile"
             @click="isMobileOpen = false"
-            class="md:hidden p-1 rounded hover:bg-[#0e9a6c]"
+            class="md:hidden p-1 rounded hover:bg-[#10b481]"
           >
             <i class="bx bx-chevron-left text-lg"></i>
           </button>
@@ -72,7 +72,7 @@
               :src="currentLocale.flag"
               class="w-5 h-5 rounded-full ring-1 ring-white"
             />
-            <span class="text-sm font-medium">{{ currentLocale.name }}</span>
+            <span class="text-sm light-menu">{{ currentLocale.name }}</span>
             <i class="bx bx-chevron-down ml-auto"></i>
           </button>
 
@@ -95,35 +95,35 @@
         </div>
 
         <NuxtLink
-          to="/"
+          to="/market/post"
           :class="[
             'flex items-center transition-all duration-200 cursor-pointer',
             isCollapsed && !isMobile
-              ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]'
-              : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]',
+              ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#10b481] focus:bg-[#10b481]'
+              : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#10b481] focus:bg-[#10b481]',
           ]"
         >
-          <i class="bx bx-bx bx-store text-xl"></i>
-          <span v-if="!isCollapsed || isMobile" class="font-medium">
-            Marketplace
+          <i class="bx bx-store text-xl"></i>
+          <span v-if="!isCollapsed || isMobile" class="light-menu">
+            {{ t('marketplace') }}
           </span>
         </NuxtLink>
 
         <!-- menu administration -->
-        <template v-if="isStaffUser">
+        <template v-if="isStaffUser" class="light-menu">
           <NuxtLink
             to="/admin"
             :class="[
               'flex items-center transition-all duration-200 cursor-pointer',
               isCollapsed && !isMobile
-                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]'
-                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]',
+                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#10b481] focus:bg-[#10b481]'
+                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#10b481] focus:bg-[#10b481]',
             ]"
           >
             <i class="bx bx-bar-chart-alt-2 text-xl"></i>
 
-            <span v-if="!isCollapsed || isMobile" class="font-medium">
-              Dashboard
+            <span v-if="!isCollapsed || isMobile" class="light-menu">
+              {{ t('dashboard') }}
             </span>
           </NuxtLink>
 
@@ -132,13 +132,13 @@
             :class="[
               'flex items-center transition-all duration-200 cursor-pointer',
               isCollapsed && !isMobile
-                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]'
-                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]',
+                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#10b481] focus:bg-[#10b481]'
+                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#10b481] focus:bg-[#10b481]',
             ]"
           >
             <i class="bx bx-clipboard text-xl"></i>
-            <span v-if="!isCollapsed || isMobile" class="font-medium">
-              Gestion annonces
+            <span v-if="!isCollapsed || isMobile" class="light-menu">
+              {{ t('gestionAnnonces') }}
             </span>
           </NuxtLink>
 
@@ -147,13 +147,13 @@
             :class="[
               'flex items-center transition-all duration-200 cursor-pointer',
               isCollapsed && !isMobile
-                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]'
-                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]',
+                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#10b481] focus:bg-[#10b481]'
+                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#10b481] focus:bg-[#10b481]',
             ]"
           >
             <i class="bx bx-user text-xl"></i>
-            <span v-if="!isCollapsed || isMobile" class="font-medium">
-              Gestion utilisateur
+            <span v-if="!isCollapsed || isMobile" class="light-menu">
+              {{ t('gestionUtilisateurs') }}
             </span>
           </NuxtLink>
 
@@ -162,13 +162,13 @@
             :class="[
               'flex items-center transition-all duration-200 cursor-pointer',
               isCollapsed && !isMobile
-                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]'
-                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]',
+                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#10b481] focus:bg-[#10b481]'
+                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#10b481] focus:bg-[#10b481]',
             ]"
           >
             <i class="bx bx-package text-xl"></i>
-            <span v-if="!isCollapsed || isMobile" class="font-medium">
-              Gestion produits
+            <span v-if="!isCollapsed || isMobile" class="light-menu">
+              {{ t('gestionProduits') }}
             </span>
           </NuxtLink>
 
@@ -177,32 +177,32 @@
             :class="[
               'flex items-center transition-all duration-200 cursor-pointer',
               isCollapsed && !isMobile
-                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]'
-                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]',
+                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#10b481] focus:bg-[#10b481]'
+                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#10b481] focus:bg-[#10b481]',
             ]"
           >
             <i class="bx bx-category text-xl"></i>
-            <span v-if="!isCollapsed || isMobile" class="font-medium">
-              Gestion categories
+            <span v-if="!isCollapsed || isMobile" class="light-menu">
+              {{ t('gestionCategories') }}
             </span>
           </NuxtLink>
         </template>
 
-        <template v-else>
+        <template v-else class="">
           <!-- menu utilisateur -->
           <NuxtLink
             to="/dashboard"
             :class="[
               'flex items-center transition-all duration-200 cursor-pointer',
               isCollapsed && !isMobile
-                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]'
-                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]',
+                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#10b481] focus:bg-[#10b481] '
+                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#10b481] focus:bg-[#10b481]',
             ]"
           >
             <i class="bx bx-bar-chart-alt-2 text-xl"></i>
 
-            <span v-if="!isCollapsed || isMobile" class="font-medium">
-              Dashboard
+            <span v-if="!isCollapsed || isMobile" class="light-menu">
+              {{ t('dashboard') }}
             </span>
           </NuxtLink>
 
@@ -211,14 +211,14 @@
             :class="[
               'flex items-center transition-all duration-200 cursor-pointer',
               isCollapsed && !isMobile
-                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]'
-                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]',
+                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#10b481] focus:bg-[#10b481]'
+                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#10b481] focus:bg-[#10b481]',
             ]"
           >
             <i class="bx bx-clipboard text-xl"></i>
 
-            <span v-if="!isCollapsed || isMobile" class="font-medium">
-              Annonces
+            <span v-if="!isCollapsed || isMobile" class="light-menu">
+              {{ t('posts') }}
             </span>
           </NuxtLink>
 
@@ -227,14 +227,14 @@
             :class="[
               'flex items-center transition-all duration-200 cursor-pointer',
               isCollapsed && !isMobile
-                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]'
-                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]',
+                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#10b481] focus:bg-[#10b481]'
+                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#10b481] focus:bg-[#10b481]',
             ]"
           >
             <i class="bx bx-receipt text-xl"></i>
 
-            <span v-if="!isCollapsed || isMobile" class="font-medium">
-              Proposition
+            <span v-if="!isCollapsed || isMobile" class="light-menu">
+              {{ t('bid') }}
             </span>
           </NuxtLink>
 
@@ -243,24 +243,25 @@
             :class="[
               'flex items-center transition-all duration-200 cursor-pointer',
               isCollapsed && !isMobile
-                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]'
-                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]',
+                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#10b481] focus:bg-[#10b481]'
+                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#10b481] focus:bg-[#10b481]',
             ]"
           >
             <i class="bx bx-credit-card text-xl"></i>
-            <span v-if="!isCollapsed || isMobile" class="font-medium">
-              Payments
+            <span v-if="!isCollapsed || isMobile" class="light-menu">
+              {{ t('payment') }}
             </span>
           </NuxtLink>
         </template>
 
         <NuxtLink
-          @click="goToChat"
+          
+          to="/dashboard/chatbox"
           :class="[
             'flex items-center relative transition-all duration-200 cursor-pointer mb-4',
             isCollapsed && !isMobile
-              ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]'
-              : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]',
+              ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#10b481] focus:bg-[#10b481]'
+              : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#10b481] focus:bg-[#10b481]',
           ]"
         >
           <!-- Icon -->
@@ -271,21 +272,21 @@
             <!-- Badge miniature (collapsed) -->
             <span
               v-if="unreadCount > 0 && isCollapsed && !isMobile"
-              class="absolute -top-1.5 -right-2 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-semibold bg-red-600 text-white rounded-full shadow"
+              class="absolute -top-1.5 -right-2 min-w-[18px] small h-[18px] px-1 flex items-center justify-center text-[10px] bg-red-600 text-white rounded-full shadow"
             >
               {{ unreadCount > 9 ? "9+" : unreadCount }}
             </span>
           </div>
 
           <!-- Texte -->
-          <span v-if="!isCollapsed || isMobile" class="font-medium">
-            Messagerie
+          <span v-if="!isCollapsed || isMobile" class="light-menu">
+            {{ t('messagerie') }}
           </span>
 
           <!-- Badge pleine largeur (full sidebar) -->
           <span
             v-if="unreadCount > 0 && (!isCollapsed || isMobile)"
-            class="ml-auto min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-semibold bg-red-600 text-white rounded-full shadow"
+            class="ml-auto min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] small bg-red-600 text-white rounded-full shadow"
           >
             {{ unreadCount > 9 ? "9+" : unreadCount }}
           </span>
@@ -297,13 +298,13 @@
             :class="[
               'flex items-center transition-all duration-200 cursor-pointer',
               isCollapsed && !isMobile
-                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]'
-                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]',
+                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#10b481] focus:bg-[#10b481]'
+                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#10b481] focus:bg-[#10b481]',
             ]"
           >
             <i class="bx bx-cog text-xl"></i>
-            <span v-if="!isCollapsed || isMobile" class="font-medium">
-              Settings
+            <span v-if="!isCollapsed || isMobile" class="light-menu">
+              {{ t('setting') }}
             </span>
           </NuxtLink>
 
@@ -312,13 +313,13 @@
             :class="[
               'flex items-center transition-all duration-200 cursor-pointer',
               isCollapsed && !isMobile
-                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]'
-                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#0e9a6c] focus:bg-[#0e9a6c]',
+                ? 'justify-center w-12 h-12 mx-auto rounded-2xl hover:bg-[#10b481] focus:bg-[#10b481]'
+                : 'gap-3 px-3 py-3 rounded-lg hover:bg-[#10b481] focus:bg-[#10b481]',
             ]"
           >
             <i class="bx bx-log-out text-xl"></i>
-            <span v-if="!isCollapsed || isMobile" class="font-medium">
-              Sign out
+            <span v-if="!isCollapsed || isMobile" class="light-menu">
+              {{ t('logout') }}
             </span>
           </NuxtLink>
         </div>
@@ -329,7 +330,7 @@
     <div class="flex-1 flex flex-col w-full">
       <header
         :class="[
-          'flex items-center justify-between bg-gray-50 px-4 sm:px-12 py-4 sm:py-7 transition-shadow duration-200',
+          'flex items-center justify-between bg-[#FAFAF9] border-b px-4 sm:px-12 py-4 sm:py-7 transition-shadow duration-200',
           isScrolled ? 'shadow' : '',
         ]"
       >
@@ -337,7 +338,7 @@
           <i class="bx bx-menu text-2xl"></i>
         </button>
 
-        <h2 class="text-lg font-semibold text-gray-800 hidden sm:flex">
+        <h2 class="text-lg small text-gray-800 hidden sm:flex">
           <Breadcrumb />
         </h2>
 
@@ -348,14 +349,14 @@
               class="flex items-center gap-2 py-1.5 px-3 transition"
             >
               <img :src="currentLocale.flag" class="w-5 h-5 rounded-full" />
-              <span class="text-sm font-medium">{{ currentLocale.name }}</span>
+              <span class="text-sm text-gray-700 small-medium">{{ currentLocale.name }}</span>
               <i class="bx bx-chevron-down text-sm"></i>
             </button>
 
             <transition name="fade">
               <ul
                 v-if="open"
-                class="absolute mt-2 w-40 bg-white border border-gray-100 rounded-lg shadow-md overflow-hidden"
+                class="absolute top-10 z-50 w-40 bg-white border border-gray-100 rounded-lg shadow-md overflow-hidden"
               >
                 <li
                   v-for="loc in locales"
@@ -364,7 +365,7 @@
                   class="flex items-center gap-2 px-3 py-2 hover:bg-[#10b481]/10 cursor-pointer"
                 >
                   <img :src="loc.flag" class="w-5 h-5 rounded-full" />
-                  <span class="text-sm">{{ loc.name }}</span>
+                  <span class="text-sm text-gray-700 small-medium">{{ loc.name }}</span>
                 </li>
               </ul>
             </transition>
@@ -377,7 +378,7 @@
 
             <span
               v-if="unreadNotifCount > 0"
-              class="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-1 flex items-center justify-center text-[10px] font-semibold bg-red-600 text-white rounded-full shadow"
+              class="absolute -top-0.5 -right-0.5 min-w-[16px] small h-[16px] px-1 flex items-center justify-center text-[10px] bg-red-600 text-white rounded-full shadow"
             >
               {{ unreadNotifCount > 9 ? "9+" : unreadNotifCount }}
             </span>
@@ -393,7 +394,7 @@
 
             <div
               v-else
-              class="w-8 sm:w-10 h-8 sm:h-10 bg-[#10b481] text-white rounded-full flex items-center justify-center font-bold text-lg ring-2 ring-[#10B481]/50"
+              class="w-8 sm:w-10 h-8 sm:h-10 bg-[#10b481] text-white rounded-full username flex items-center justify-center font-bold text-lg ring-2 ring-[#10B481]/50"
             >
               {{ user?.username.charAt(0).toUpperCase() }}
             </div>
@@ -403,7 +404,7 @@
 
       <main
         ref="mainContent"
-        class="overflow-auto flex-1"
+        class="overflow-auto flex-1 bg-[#FAFAF9]"
         @scroll="handleScroll"
       >
         <NuxtPage />

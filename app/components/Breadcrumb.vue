@@ -1,39 +1,32 @@
 <template>
-  <nav
-    aria-label="Breadcrumb"
-    class="flex items-center gap-2 text-sm text-gray-500"
-  >
-    <!-- Home / Market -->
+  <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-sm">
     <NuxtLink
       to="/"
-      class="flex items-center hover:text-[#10b481]"
+      class="group flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 hover:bg-[#10b981]/10 transition"
     >
-      <i class="bx bx-store-alt text-base"></i>
+      <i
+        class="bx bx-store text-gray-700 group-hover:text-[#10b981] text-base transition"
+      ></i>
     </NuxtLink>
 
-    <!-- Dynamic breadcrumb -->
     <template v-for="(item, index) in breadcrumbs" :key="item.to">
-      <i class="bx bx-chevron-right text-gray-400"></i>
+      <i class="bx bx-chevron-right text-gray-300 text-xs"></i>
 
       <NuxtLink
         v-if="index < breadcrumbs.length - 1"
         :to="item.to"
-        class="hover:text-[#10b481] capitalize"
+        class="px-2 text-gray-700 small text-sm hover:text-[#10b981] transition "
       >
         {{ item.label }}
       </NuxtLink>
 
-      <span
-        v-else
-        class="text-gray-800 font-semibold capitalize"
-      >
+      <span v-else class="px-2 text-[#10b981] small text-sm ">
         {{ item.label }}
       </span>
     </template>
   </nav>
 </template>
 
-  
 <script setup lang="ts">
 import { useRoute } from "vue-router";
 import { computed } from "vue";
@@ -48,7 +41,7 @@ const t = (key: string) => {
   return translate[lang][key] || key;
 };
 
-const labelMap: Record<string, string> = {
+const labelMap = computed(() => ({
   dashboard: t("dashboard"),
   post: t("posts"),
   posts: t("posts"),
@@ -60,19 +53,22 @@ const labelMap: Record<string, string> = {
   bids: t("bid"),
   chatbox: t("chatbox"),
   notification: t("notif"),
-};
+  create: t("create")
+}));
 
 const breadcrumbs = computed(() => {
   const segments = route.path.split("/").filter(Boolean);
   let fullPath = "";
 
-  return segments.map((segment) => {
-    fullPath += `/${segment}`;
+  return segments
+    .filter((segment) => isNaN(Number(segment)))
+    .map((segment) => {
+      fullPath += `/${segment}`;
 
-    return {
-      label: labelMap[segment] || segment.replace(/-/g, " "),
-      to: fullPath,
-    };
-  });
+      return {
+        label: labelMap.value[segment] || segment.replace(/-/g, " "),
+        to: fullPath,
+      };
+    });
 });
 </script>
