@@ -8,11 +8,11 @@
          {{ t('ready') }}
         </span>
 
-        <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#112830] leading-tight mb-6">
+        <h2 class="text-bold leading-tight mb-6">
           {{ t("preFttitle") }}
         </h2>
 
-        <p class="text-gray-500 max-w-xl mb-10 leading-relaxed">
+        <p class="text-medium max-w-xl mb-10 leading-relaxed">
           {{ t("preFtText") }}
         </p>
 
@@ -36,10 +36,10 @@
           />
 
           <div class="text-center">
-            <p class="text-lg font-semibold mb-1 text-gray-800 ">
+            <p class="subtitle mb-1 ">
               {{ t('join') }}
             </p>
-            <p class="text-sm text-gray-500">
+            <p class="text-medium">
               {{ t('joinTxt') }}
             </p>
           </div>

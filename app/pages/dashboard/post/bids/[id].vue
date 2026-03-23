@@ -1,10 +1,7 @@
 <template>
   <div class="flex h-full">
-    <div class="flex-1 space-y-8 p-8">
-      <Breadcrumb />
-      <h2 class="text-2xl font-bold text-gray-800">
-        {{ t("bidFor") }} "{{ postTitle }}"
-      </h2>
+    <div class="flex-1 space-y-8 p-4 sm:p-8">
+      <h2 class="">{{ t("bidFor") }} "{{ postTitle }}"</h2>
 
       <div
         v-if="bids.length"
@@ -13,125 +10,148 @@
         <div
           v-for="bid in bids"
           :key="bid.id"
-          class="relative bg-white rounded-2xl p-5 border transition-all duration-300"
+          class="relative rounded-3xl p-0.5"
           :class="
             bid.is_highest
-              ? 'border-[#10b481]/50 bg-[#f0fdf8]'
-              : 'border-gray-200'
+              ? 'border-[#10b481]/50 border-b-4 bg-[#10b481] pb-8 '
+              : 'border-gray-200 shadow-sm border bg-white/80 backdrop-blur-sm'
           "
         >
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center gap-3">
-              <div
-                class="w-12 h-12 rounded-full flex items-center justify-center font-semibold text-lg"
-                :class="getAvatarColor(bid.user.username)"
-              >
-                {{ bid.user.username.charAt(0).toUpperCase() }}
-              </div>
+          <div
+            class="bg-white rounded-3xl p-5 transition-all duration-300"
+          >
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <img
+                  v-if="bid.user?.avatar_url"
+                  :src="bid.user?.avatar_url"
+                  alt="avatar"
+                  class="w-10 h-10 rounded-full cursor-pointer shadow object-cover"
+                />
 
-              <div class="flex flex-col leading-tight">
-                <span class="font-medium text-gray-900 text-sm">
-                  {{ bid.user.username }}
-                </span>
-                <div class="flex items-center gap-1 text-xs text-gray-400">
-                  <span>{{ formattedDate(bid.created_at) }}</span>
+                <div
+                  v-else
+                  class="w-10 h-10 rounded-full flex items-center justify-center username text-lg cursor-pointer shadow"
+                  :class="getAvatarColor(bid.user?.username)"
+                  @click="goToProfile(bid.user)"
+                >
+                  {{ bid.user?.username.charAt(0).toUpperCase() }}
+                </div>
+
+                <div class="flex flex-col leading-tight">
+                  <span class="font-medium text-gray-800 username text-sm">
+                    {{ bid.user.username }}
+                  </span>
+
+                  <div
+                    class="flex items-center gap-1 text-xs small text-gray-400"
+                  >
+                    <span>{{ formattedDate(bid.created_at) }}</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="flex items-center gap-2">
-              <span
-                class="px-3 py-1 rounded-full text-xs font-medium border flex items-center gap-1"
-                :class="{
-                  'bg-yellow-100 border-yellow-500 text-yellow-500':
-                    bid.current_status?.name === 'proposée',
-                  'bg-[#10b481]/10 border-[#10b481] text-[#10b481]':
-                    bid.current_status?.name === 'acceptée',
-                    'bg-[#10b481]/10 border-[#10b481] text-[#10b481]':
-                    bid.current_status?.name === 'payée',
-                  'bg-red-100 border-red-600 text-red-600':
-                    bid.current_status?.name === 'refusée',
-                  'bg-gray-100 border-gray-400 text-gray-400': ['arrêtée', 'annulée'].includes(
-                    bid.current_status?.name
-                  ),
-                }"
-              >
-                <template
-                  v-if="
-                    ['acceptée', 'proposée'].includes(
-                      bid.current_status?.name
-                    ) && bid.is_highest
-                  "
+              <div class="flex items-center gap-2">
+                <span
+                  class="px-3 py-1 rounded-full text-xs small-medium border flex items-center gap-1 "
+                  :class="{
+                    'bg-yellow-100 border-yellow-400 text-yellow-400':
+                      bid.current_status?.name === 'proposée',
+                      'bg-[#10b481]/10 border-[#10b481] text-[#10b481]': [
+                      'acceptée',
+                      'payée',
+                    ].includes(bid.current_status?.name),
+                    'bg-red-100 border-red-600 text-red-600': [
+                      'arrêtée',
+                      'annulée',
+                      'refusée',
+                    ].includes(bid.current_status?.name),
+                  }"
                 >
-                  <i class="bx bxs-star text-sm"></i>
-                </template>
-                {{
-                  bid.current_status?.name
-                    ? bid.current_status.name.charAt(0).toUpperCase() +
-                      bid.current_status.name.slice(1)
-                    : "Enchère"
-                }}
-              </span>
-            </div>
-          </div>
-
-          <div class="bg-gray-50 border border-gray-200 rounded p-3 mt-4">
-            <p class="text-sm text-gray-700 leading-relaxed">
-              {{ truncated(bid.message, 150) }}
-            </p>
-          </div>
-
-          <div class="flex gap-3 mt-4">
-            <div
-              class="flex-1 flex items-center gap-2 bg-gray-50 border border-gray-200 rounded p-2 text-sm"
-            >
-              <i class="bx bx-package text-gray-500"></i>
-              <span class="text-gray-800">
-                {{ postDetails?.quantity }}
-                {{ postDetails?.product?.unit?.abbreviation }}
-              </span>
+                  <template
+                    v-if="
+                      ['acceptée', 'proposée'].includes(
+                        bid.current_status?.name
+                      ) && bid.is_highest
+                    "
+                  >
+                    <i class="bx bxs-star text-sm"></i>
+                  </template>
+                  {{
+                    bid.current_status?.name
+                      ? bid.current_status.name.charAt(0).toUpperCase() +
+                        bid.current_status.name.slice(1)
+                      : "Enchère"
+                  }}
+                </span>
+              </div>
             </div>
 
-            <div
-              class="flex-1 flex items-center gap-2 bg-gray-50 border border-gray-200 rounded p-2 text-sm"
-            >
-              <i
-                class="bx bx-wallet"
-                :class="bid.is_highest ? 'text-[#10b481]' : 'text-gray-800'"
-              ></i>
-              <span
-                class="font-semibold"
-                :class="bid.is_highest ? 'text-[#10b481]' : 'text-gray-800'"
+            <div class="mt-4">
+              <p class="content leading-relaxed">
+                {{ truncated(bid.message, 150) }}
+              </p>
+            </div>
+
+            <div class="flex gap-3 mt-4">
+              <div
+                class="flex-1 flex items-center gap-3 bg-[#fafaf9] border border-gray-200 rounded-xl px-4 py-2 transition hover:border-gray-300 items"
               >
-                {{ bid.price }} {{ bid.currency.symbol }}
-              </span>
+                <i class="bx bx-package text-gray-700"></i>
+                <span class="text-gray-700">
+                  {{ postDetails?.quantity }}
+                  {{ postDetails?.product?.unit?.abbreviation }}
+                </span>
+              </div>
+
+              <div
+                class="flex-1 flex items-center gap-3 bg-[#fafaf9] border border-gray-200 rounded-xl px-4 py-2 transition hover:border-gray-300 items"
+              >
+                <i
+                  class="bx bx-wallet text-gray-700"
+                ></i>
+                <span
+                  class="font-semibold text-gray-700"
+                >
+                  {{ bid.price }} {{ bid.currency.symbol }}
+                </span>
+              </div>
+            </div>
+
+            <hr class="my-4 border-gray-100" />
+
+            <!-- ACTIONS -->
+            <div class="flex items-center">
+              <NuxtLink
+                v-if="bid.current_status?.name === 'proposée'"
+                :to="`/dashboard/chatbox?post=${bid.post.id}&bid=${bid.id}`"
+                class="btn-neutre w-full text-center flex items-center justify-center gap-2 transition0"
+              >
+                {{ t("negocier") }}
+              </NuxtLink>
+              <!-- <button
+                v-if="
+                  !postDetails?.accepted_bid &&
+                  !['refusée', 'annulée', 'arrêtée', 'supprimée'].includes(
+                    bid.current_status?.name
+                  )
+                "
+                class="text-sm font-medium text-[#10b481] hover:opacity-80 transition"
+                @click="openBidConfirmation(bid, 'accept')"
+              >
+                {{ t("btnaccept") }}
+              </button> -->
             </div>
           </div>
-
-          <hr class="my-4 border-gray-200" />
-
-          <!-- ACTIONS -->
-          <div class="flex justify-between items-center">
-            <NuxtLink
-              v-if="bid.current_status?.name === 'proposée'"
-              :to="`/dashboard/chatbox?post=${bid.post.id}&bid=${bid.id}`"
-              class="text-sm font-medium text-[#10b481] hover:opacity-80 transition"
+          <div
+            v-if="bid.is_highest"
+            class="absolute bottom-0 left-0 w-full flex justify-center"
+          >
+            <span
+              class="mb-1 text-xs small-medium text-white tracking-wide flex items-center gap-2 px-3"
             >
-              {{ t("negocier") }}
-            </NuxtLink>
-            <button
-              v-if="
-                !postDetails?.accepted_bid &&
-                !['refusée', 'annulée','arrêtée', 'supprimée'].includes(
-                  bid.current_status?.name
-                )
-              "
-              class="bg-[#10b481] text-white text-sm w-1/2 py-2 rounded shadow hover:bg-[#10b481]/80 transition"
-              @click="openBidConfirmation(bid, 'accept')"
-            >
-              {{ t("btnaccept") }}
-            </button>
-
+              Meilleure proposition
+            </span>
           </div>
         </div>
       </div>
@@ -145,7 +165,7 @@
       class="hidden lg:flex w-96 border-l border-[#f1f1f1] bg-[#fff] p-4 overflow-y-auto justify-center"
     >
       <div
-        class="fixed rounded shadow-sm border border-white/5 overflow-hidden mt-6 w-[350px]"
+        class="fixed rounded shadow-sm border border-white/5 overflow-hidden mt-1 w-[350px]"
       >
         <div v-if="postDetails?.image_url" class="relative">
           <div class="relative w-full rounded-2xl overflow-hidden shadow-sm">
@@ -163,49 +183,50 @@
             </div>
 
             <div
-              class="absolute top-3 left-3 flex items-center gap-1 rounded-full bg-white/90 px-3 py-1 text-xs text-gray-700 shadow z-10"
+              class="absolute top-3 left-3 flex items-center gap-1 rounded-full bg-white/90 px-3 py-1 text-xs small text-gray-700 shadow z-10"
             >
-              <i class="bx bx-time"></i>
               <span>{{ t("publishedOn") }} {{ getPublishedDate() }}</span>
             </div>
 
             <div class="absolute bottom-3 left-3 flex flex-wrap gap-2">
               <span
-                class="px-3 py-1 text-xs font-medium rounded-full text-gray-700 bg-white/90 shadow z-10"
+                class="px-3 py-1 text-xs small font-medium rounded-full text-gray-700 bg-white/90 shadow z-10"
               >
                 {{ postDetails.type_post?.type || "Type inconnu" }}
               </span>
 
               <div
-                class="flex items-center gap-1 px-3 py-1 text-xs text-gray-700 font-medium rounded-full bg-white/90 shadow z-10"
+                class="flex items-center gap-1 px-3 py-1 text-xs small text-gray-700 font-medium rounded-full bg-white/90 shadow z-10"
               >
                 <i class="bx bx-location-plus"></i>
-                <span>{{ postDetails.location || "Localisation inconnue" }}</span>
+                <span>{{
+                  postDetails.location || "Localisation inconnue"
+                }}</span>
               </div>
             </div>
           </div>
         </div>
 
         <div class="p-4 flex flex-col gap-2">
-          <h3 class="text-2xl font-bold text-gray-700">
+          <h3 class="subtitle text-gray-700">
             {{ postDetails?.title }}
           </h3>
-          <p class="text-gray-600 text-sm leading-relaxed">
+          <p class="content text-sm leading-relaxed">
             {{ postDetails?.description }}
           </p>
 
           <div class="flex flex-wrap gap-3 pt-3">
             <div
-              class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded p-2 text-sm"
+              class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded p-2 text-sm items"
             >
-              <i class="bx bx-package text-gray-500"></i>
+              <i class="bx bx-package text-gray-500 "></i>
               <span class="text-gray-800">
                 {{ postDetails?.product?.product }}
               </span>
             </div>
 
             <div
-              class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded p-2 text-sm"
+              class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded p-2 text-sm items"
             >
               <i class="bx bx-package text-gray-500"></i>
               <span class="text-gray-800">
@@ -215,7 +236,7 @@
             </div>
 
             <div
-              class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded p-2 text-sm"
+              class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded p-2 text-sm items"
             >
               <i class="bx bx-wallet text-gray-500"></i>
               <span class="text-gray-800">
@@ -233,7 +254,7 @@
                 borderColor: label.color,
                 color: label.color,
               }"
-              class="px-3 py-1 rounded-full text-xs font-semibold border whitespace-nowrap"
+              class="px-3 py-1 rounded-full text-xs small-medium border whitespace-nowrap"
             >
               {{ label.name }}
             </span>

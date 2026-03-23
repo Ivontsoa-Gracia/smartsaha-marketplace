@@ -3,18 +3,20 @@ export const translate = {
     home: "Home",
     about: "About Us",
     posts: "Listings",
-  
+
     accroche: "Connect with Global Agricultural Markets",
-    textacrroche: "Buy and sell spices, crops, and products directly with farmers, cooperatives, and businesses worldwide.",
+    textacrroche:
+      "Buy and sell spices, crops, and products directly with farmers, cooperatives, and businesses worldwide.",
     btnStart: "Start Trading",
-  
+
     abouttitle1: "Connect Globally",
-    abouttext1: "Connect directly with producers, cooperatives, and businesses without limits.",
+    abouttext1:
+      "Connect directly with producers, cooperatives, and businesses without limits.",
     abouttitle2: "Fair & Transparent Deals",
     abouttext2: "Compare prices and quality in an open marketplace.",
     abouttitle3: "Direct Trade, Better Margins",
     abouttext3: "Better prices for buyers and better margins for sellers.",
-  
+
     titleCategorie: "Product Categories",
     catBeans: "Beans",
     catCereals: "Cereals",
@@ -22,27 +24,29 @@ export const translate = {
     catNuts: "Nuts",
     catSpices: "Spices",
     catRoots: "Roots",
-  
+
     titleFeature: "Recent Listings",
     All: "All",
     Selling: "Selling",
     Buying: "Buying",
-  
+
     btnPlaceBid: "Place a Bid",
     btnMakeOffer: "Make an Offer",
     viewLess: "View Less",
     viewMore: "View More",
-  
+
     abttitle1: "High-Quality Products",
     abttext1: "From trusted producers",
     abttitle2: "Empowering Local Farmers",
     abttext2: "Supporting sustainable growth",
-  
+
     preFttitle: "Empowering farmers and producers through direct trade",
-    preFtText: "Our marketplace connects farmers, cooperatives, and producers directly with buyers worldwide.",
+    preFtText:
+      "Our marketplace connects farmers, cooperatives, and producers directly with buyers worldwide.",
     btnPost: "Post an Offer",
-    FtText: "Together, we are building a fair and sustainable future for agriculture.",
-  
+    FtText:
+      "Together, we are building a fair and sustainable future for agriculture.",
+
     quickLinks: "Quick Links",
     resources: "Resources",
     contact: "Contact",
@@ -51,17 +55,18 @@ export const translate = {
     shipping: "Shipping & Delivery",
     privacyPolicy: "Privacy Policy",
     termsOfUse: "Terms of Service",
-  
+
     stayConnected: "Stay Connected",
-    subscribeText: "Subscribe to our newsletter for updates and special offers.",
+    subscribeText:
+      "Subscribe to our newsletter for updates and special offers.",
     copy: "2025 SmartSaha Marketplace. All rights reserved.",
-  
+
     search: "Search...",
     type: "Type",
     location: "Location",
     priceRange: "Price Range",
     apply: "Apply Filters",
-  
+
     myListings: "My Listings",
     newListings: "New Listings",
     product: "Products",
@@ -74,16 +79,16 @@ export const translate = {
     sur: "of",
     prev: "Previous",
     next: "Next",
-  
+
     noListingsFound: "No listings found",
-    createTitle: "Create a New Listing",
+    createTitle: "Create a new listing",
     title: "Title",
     desc: "Description",
     listingsType: "Listing Type",
     image: "Image",
     currency: "Currency",
     btnSave: "Save",
-  
+
     bidFor: "Bids for",
     bestOffer: "Best Offer",
     btnaccept: "Accept",
@@ -92,7 +97,7 @@ export const translate = {
     MsgBuyer: "Message to Buyer",
     cancel: "Cancel",
     btndecline: "Decline",
-  
+
     mybid: "My Bids",
     monOffre: "My Offer",
     noFoundMyBid: "You have not placed any bids yet.",
@@ -101,65 +106,67 @@ export const translate = {
     confirmText: "Do you really want to cancel this bid?",
     confirm: "Confirm",
     gotopost: "View Listing",
-  
+
     receivedBid: "Received Bids",
     msgBid: "Bid Message",
     negocier: "Negotiate",
     noReceivedBidFound: "You have not received any bids yet.",
-  
+
     chats: "Chats",
     dashboard: "Dashboard",
     logout: "Sign Out",
     bid: "Bids",
     chatbox: "Chat",
-  
+
     deleteChat: "Delete Chat",
     confirmDelete: "Confirm Deletion",
-    confirmDelText: "Do you really want to delete this chat? This action cannot be undone.",
+    confirmDelText:
+      "Do you really want to delete this chat? This action cannot be undone.",
     delete: "Delete",
     confirmDeleteReport:
       "This action is <strong>irreversible</strong>.<br />The post will be marked as <span class='text-red-600 font-medium'>deleted</span> and all related reports will be approved.",
-  
+
     acceptedBid: "Bid Accepted!",
     bidOf: "Bid from",
     acceptedAt: "Accepted at",
     priceProposed: "Proposed Price",
     msg: "Message",
     send: "Send",
-  
+
     categoryProduct: "Product Categories",
     addCategory: "Add Category",
     edit: "Edit",
     add: "Add",
     noCategoryFound: "No categories available.",
-  
+
     validationPosts: "Listing Validation",
     validate: "Approve",
     reject: "Reject",
     validatePost: "Validate Listing",
     rejectPost: "Reject Listing",
-  
+
     catPlaceholder: "Cereals...",
     productTitle: "Product & Unit Management",
-    productText: "Organize products, define units, and structure your inventory.",
+    productText:
+      "Organize products, define units, and structure your inventory.",
     products: "Products",
     units: "Units",
     productName: "Name",
     productDesc: "Description",
     unit: "Unit",
     abrev: "Abbreviation",
-  
+
     userTitle: "User Management",
     username: "Username",
     email: "Email",
     password: "Password",
     justificatifUrl: "Document URL",
-  
+
     userVerified: "Verified Users",
     userPending: "Pending Users",
     viewNotVerified: "View Unverified",
     viewVerified: "View Verified",
-  
+
     user: "User",
     verified: "Verified",
     verify: "Verify",
@@ -168,7 +175,7 @@ export const translate = {
     justificatif: "Document",
     viewDoc: "View Document",
     nodoc: "No Document",
-  
+
     verifiedAccount: "Verified Account",
     notverifiedAccount: "Unverified Account",
     status: "Status",
@@ -185,7 +192,7 @@ export const translate = {
     join: "Join thousands of users",
     joinTxt: "Buying, selling & negotiating smarter every day.",
     howItWork: "How It Works",
-  
+
     totalUsers: "Total Users",
     verifiedUsers: "Verified Users",
     unverifiedUsers: "Unverified Users",
@@ -204,42 +211,64 @@ export const translate = {
     catText: "Manage your product categories",
 
     aboutTitle: "About SmartSaha Marketplace",
-    aboutText: "Connecting farmers, producers, and global buyers through a trusted and transparent marketplace that empowers local agriculture worldwide.",
+    aboutText:
+      "Connecting farmers, producers, and global buyers through a trusted and transparent marketplace that empowers local agriculture worldwide.",
     whoWeAre: "Who We Are",
-    whores1: "SmartSaha Marketplace is a digital platform designed to bring together farmers, cooperatives, and businesses across the globe. Our mission is to simplify trade by connecting producers directly with clients, fostering growth and innovation in agriculture.",
-    whores2: "We believe in empowering rural communities through fair trade, transparent transactions, and digital inclusion — helping small-scale farmers reach global markets effortlessly.",
+    whores1:
+      "SmartSaha Marketplace is a digital platform designed to bring together farmers, cooperatives, and businesses across the globe. Our mission is to simplify trade by connecting producers directly with clients, fostering growth and innovation in agriculture.",
+    whores2:
+      "We believe in empowering rural communities through fair trade, transparent transactions, and digital inclusion — helping small-scale farmers reach global markets effortlessly.",
     mission: "Our Mission & Vision",
-    missionRes1: "We are committed to transforming the agricultural value chain through innovation, transparency, and sustainable partnerships.",
+    missionRes1:
+      "We are committed to transforming the agricultural value chain through innovation, transparency, and sustainable partnerships.",
     signin: "Sign in",
     featuresTitle1: "Instant access to your workspace",
-    featuresText1: "Manage your listings, bids, and messages all in one place with our user-friendly dashboard.",
+    featuresText1:
+      "Manage your listings, bids, and messages all in one place with our user-friendly dashboard.",
     featuresTitle2: "Flexible buying & selling",
-    featuresText2: "Whether you're looking to buy or sell, our platform offers flexible options to suit your needs.",
+    featuresText2:
+      "Whether you're looking to buy or sell, our platform offers flexible options to suit your needs.",
     featuresTitle3: "Smart negotiation system",
-    featuresText3: "Engage in secure and transparent negotiations with buyers and sellers directly through our platform.",
+    featuresText3:
+      "Engage in secure and transparent negotiations with buyers and sellers directly through our platform.",
     featuresTitle4: "Built on trust & reviews",
-    featuresText4: "Our review system ensures that you can trade with confidence, knowing the reputation of your trading partners.",
+    featuresText4:
+      "Our review system ensures that you can trade with confidence, knowing the reputation of your trading partners.",
     affichage: "Showing",
     a: "to",
     résultats: "results",
+
+    welcomeback: "Welcome back",
+    welcomebacktext:
+      "The professional agricultural marketplace that secures your sales, connects you with reliable clients, and boosts your business.",
+    terms: "Terms",
+    contactus: "Contact Us",
+    login: "Login",
+    logintext: "Log in to access your account.",
+    dontaccount: "Don't have an account?",
+    createone: "Create one",
+    accountinactive: "Please contact the administrator to reactivate your account."
   },
-  
+
   fr: {
     home: "Accueil",
     about: "À propos",
     posts: "Annonces",
-  
+
     accroche: "Connectez-vous aux marchés agricoles mondiaux",
-    textacrroche: "Achetez et vendez épices, cultures et produits directement avec les producteurs, coopératives et entreprises dans le monde.",
+    textacrroche:
+      "Achetez et vendez épices, cultures et produits directement avec les producteurs, coopératives et entreprises dans le monde.",
     btnStart: "Commencer le trading",
-  
+
     abouttitle1: "Connexion mondiale",
-    abouttext1: "Connectez-vous directement avec les producteurs, coopératives et entreprises, sans limites.",
+    abouttext1:
+      "Connectez-vous directement avec les producteurs, coopératives et entreprises, sans limites.",
     abouttitle2: "Transactions justes et transparentes",
     abouttext2: "Comparez les prix et la qualité sur un marché ouvert.",
     abouttitle3: "Commerce direct, meilleures marges",
-    abouttext3: "De meilleurs prix pour les acheteurs et de meilleures marges pour les vendeurs.",
-  
+    abouttext3:
+      "De meilleurs prix pour les acheteurs et de meilleures marges pour les vendeurs.",
+
     titleCategorie: "Catégories de produits",
     catBeans: "Haricots",
     catCereals: "Céréales",
@@ -247,27 +276,28 @@ export const translate = {
     catNuts: "Noix",
     catSpices: "Épices",
     catRoots: "Racines",
-  
+
     titleFeature: "Annonces récentes",
     All: "Tous",
     Selling: "En vente",
     Buying: "En achat",
-  
+
     btnPlaceBid: "Placer une enchère",
     btnMakeOffer: "Faire une offre",
     viewLess: "Voir moins",
     viewMore: "Voir plus",
-  
+
     abttitle1: "Produits de haute qualité",
     abttext1: "Issus de producteurs de confiance",
     abttitle2: "Soutenir les producteurs locaux",
     abttext2: "Favoriser une croissance durable",
-  
+
     preFttitle: "Autonomiser les producteurs grâce au commerce direct",
-    preFtText: "Notre marketplace connecte directement les agriculteurs, coopératives et producteurs aux acheteurs du monde entier.",
+    preFtText:
+      "Notre marketplace connecte directement les agriculteurs, coopératives et producteurs aux acheteurs du monde entier.",
     btnPost: "Publier une offre",
     FtText: "Ensemble, construisons un avenir agricole équitable et durable.",
-  
+
     quickLinks: "Liens rapides",
     resources: "Ressources",
     contact: "Contact",
@@ -276,17 +306,18 @@ export const translate = {
     shipping: "Expédition & Livraison",
     privacyPolicy: "Politique de confidentialité",
     termsOfUse: "Conditions d'utilisation",
-  
+
     stayConnected: "Restez connecté",
-    subscribeText: "Abonnez-vous à notre newsletter pour recevoir les mises à jour et offres spéciales.",
+    subscribeText:
+      "Abonnez-vous à notre newsletter pour recevoir les mises à jour et offres spéciales.",
     copy: "2025 SmartSaha Marketplace. Tous droits réservés.",
-  
+
     search: "Rechercher...",
     type: "Type",
     location: "Localisation",
     priceRange: "Fourchette de prix",
     apply: "Appliquer les filtres",
-  
+
     myListings: "Mes annonces",
     newListings: "Nouvelles annonces",
     product: "Produits",
@@ -299,7 +330,7 @@ export const translate = {
     sur: "sur",
     prev: "Précédent",
     next: "Suivant",
-  
+
     noListingsFound: "Aucune annonce trouvée",
     createTitle: "Créer une nouvelle annonce",
     title: "Titre",
@@ -308,7 +339,7 @@ export const translate = {
     image: "Image",
     currency: "Devise",
     btnSave: "Enregistrer",
-  
+
     bidFor: "Enchères pour",
     bestOffer: "Meilleure offre",
     btnaccept: "Accepter",
@@ -317,7 +348,7 @@ export const translate = {
     MsgBuyer: "Message à l’acheteur",
     cancel: "Annuler",
     btndecline: "Refuser",
-  
+
     mybid: "Mes enchères",
     monOffre: "Mon offre",
     noFoundMyBid: "Vous n'avez encore placé aucune enchère.",
@@ -326,65 +357,67 @@ export const translate = {
     confirmText: "Voulez-vous vraiment annuler cette enchère ?",
     confirm: "Confirmer",
     gotopost: "Voir l’annonce",
-  
+
     receivedBid: "Enchères reçues",
     msgBid: "Message de l’enchère",
     negocier: "Négocier",
     noReceivedBidFound: "Aucune enchère reçue pour le moment.",
-  
+
     chats: "Discussions",
     dashboard: "Tableau de bord",
     logout: "Se déconnecter",
     bid: "Enchères",
     chatbox: "Messagerie",
-  
+
     deleteChat: "Supprimer la discussion",
     confirmDelete: "Confirmer la suppression",
-    confirmDelText: "Voulez-vous vraiment supprimer cette discussion ? Cette action est irréversible.",
+    confirmDelText:
+      "Voulez-vous vraiment supprimer cette discussion ? Cette action est irréversible.",
     delete: "Supprimer",
     confirmDeleteReport:
       "Cette action est <strong>irréversible</strong>.<br />L'annonce sera marquée comme <span class='text-red-600 font-medium'>supprimée</span> et tous les rapports associés seront validés.",
-  
+
     acceptedBid: "Enchère acceptée !",
     bidOf: "Enchère de",
     acceptedAt: "acceptée le",
     priceProposed: "Prix proposé",
     msg: "Message",
     send: "Envoyer",
-  
+
     categoryProduct: "Catégories de produits",
     addCategory: "Ajouter une catégorie",
     edit: "Modifier",
     add: "Ajouter",
     noCategoryFound: "Aucune catégorie disponible.",
-  
+
     validationPosts: "Validation des annonces",
     validate: "Valider",
     reject: "Rejeter",
     validatePost: "Valider l'annonce",
     rejectPost: "Rejeter l'annonce",
-  
+
     catPlaceholder: "Céréales...",
     productTitle: "Gestion des produits & unités",
-    productText: "Organisez vos produits, définissez les unités et structurez votre inventaire.",
+    productText:
+      "Organisez vos produits, définissez les unités et structurez votre inventaire.",
     products: "Produits",
     units: "Unités",
     productName: "Nom",
     productDesc: "Description",
     unit: "Unité",
     abrev: "Abréviation",
-  
+
     userTitle: "Gestion des utilisateurs",
     username: "Nom d'utilisateur",
     email: "Email",
     password: "Mot de passe",
     justificatifUrl: "URL du justificatif",
-  
+
     userVerified: "Utilisateurs vérifiés",
     userPending: "Utilisateurs en attente",
     viewNotVerified: "Voir non vérifiés",
     viewVerified: "Voir vérifiés",
-  
+
     user: "Utilisateur",
     verified: "Vérifié",
     verify: "Vérifier",
@@ -393,13 +426,13 @@ export const translate = {
     justificatif: "Justificatif",
     viewDoc: "Voir le document",
     nodoc: "Aucun justificatif",
-  
+
     verifiedAccount: "Compte vérifié",
     notverifiedAccount: "Compte non vérifié",
     status: "Statut",
     annonces: "Annonces",
     noAnnoncesFound: "Cet utilisateur n’a encore publié aucune annonce.",
-  
+
     report: "Signaler l'annonce",
     reportPlaceholder: "Expliquez la raison du signalement...",
     reports: "Rapports",
@@ -411,7 +444,7 @@ export const translate = {
     join: "Rejoignez des milliers d'utilisateurs",
     joinTxt: "Acheter, vendre et négocier plus intelligemment chaque jour.",
     howItWork: "Comment ça marche",
-  
+
     totalUsers: "Total d'utilisateurs",
     verifiedUsers: "Utilisateurs vérifiés",
     unverifiedUsers: "Utilisateurs non vérifiés",
@@ -430,34 +463,73 @@ export const translate = {
     catText: "Gérez vos catégories de produits",
 
     aboutTitle: "À propos de SmartSaha Marketplace",
-    aboutText: "Connecter les agriculteurs, producteurs et acheteurs mondiaux via une marketplace fiable et transparente qui valorise l'agriculture locale dans le monde entier.",
+    aboutText:
+      "Connecter les agriculteurs, producteurs et acheteurs mondiaux via une marketplace fiable et transparente qui valorise l'agriculture locale dans le monde entier.",
     whoWeAre: "Qui nous sommes",
-    whores1: "SmartSaha Marketplace est une plateforme numérique conçue pour réunir les agriculteurs, coopératives et entreprises du monde entier. Notre mission est de simplifier le commerce en connectant directement les producteurs aux clients, favorisant la croissance et l'innovation dans l'agriculture.",
-    whores2: "Nous croyons en l'autonomisation des communautés rurales grâce au commerce équitable, à la transparence des transactions et à l'inclusion numérique — aidant les petits producteurs à atteindre les marchés mondiaux facilement.",
+    whores1:
+      "SmartSaha Marketplace est une plateforme numérique conçue pour réunir les agriculteurs, coopératives et entreprises du monde entier. Notre mission est de simplifier le commerce en connectant directement les producteurs aux clients, favorisant la croissance et l'innovation dans l'agriculture.",
+    whores2:
+      "Nous croyons en l'autonomisation des communautés rurales grâce au commerce équitable, à la transparence des transactions et à l'inclusion numérique — aidant les petits producteurs à atteindre les marchés mondiaux facilement.",
     mission: "Notre mission & vision",
-    missionRes1: "Nous nous engageons à transformer la chaîne de valeur agricole grâce à l'innovation, la transparence et des partenariats durables.",
+    missionRes1:
+      "Nous nous engageons à transformer la chaîne de valeur agricole grâce à l'innovation, la transparence et des partenariats durables.",
     signin: "Se connecter",
     affichage: "Affichage de",
     a: "à",
     résultats: "résultats",
+
+    welcomeback: "Bon retour",
+    welcomebacktext:
+      "La marketplace agricole professionnelle qui sécurise vos ventes, connecte aux clients fiables et booste votre activité.",
+    terms: "Conditions",
+    contactus: "Contactez-nous",
+    login: "Connexion",
+    logintext: "Connectez-vous pour accéder à votre compte.",
+    dontaccount: "Vous n’avez pas de compte ?",
+    createone: "Créez-en un",
+    accountinactive: "Veuillez contacter l’administrateur pour réactiver votre compte.",
+
+    report_fake_listing: "Annonce fausse ou trompeuse",
+    report_scam: "Arnaque",
+    report_inappropriate: "Contenu inapproprié",
+    report_prohibited: "Produit interdit",
+    report_spam: "Spam",
+    report_duplicate: "Annonce en double",
+    report_other: "Autre",
+    create: "Nouveau",
+    marketplace: "Place de marché",
+    payment: "Paiement",
+    messagerie: "Messagerie",
+    setting: "Paramètres",
+
+    gestionAnnonces: "Gestion des annonces",
+gestionUtilisateurs: "Gestion des utilisateurs",
+gestionCategories: "Gestion des catégories",
+gestionProduits: "Gestion des produits",
+noImage: "Aucune image disponible",
+label: "Label",
+save: "Enregistrer"
 
   },
   mg: {
     home: "Fandraisana",
     about: "Momba anay",
     posts: "Tolotra",
-  
+
     accroche: "Mifandray amin'ny tsena fambolena maneran-tany",
-    textacrroche: "Mividy sy mivarotra zava-manitra, vokatra sy entana mivantana amin'ny tantsaha, fikambanana ary orinasa manerantany.",
+    textacrroche:
+      "Mividy sy mivarotra zava-manitra, vokatra sy entana mivantana amin'ny tantsaha, fikambanana ary orinasa manerantany.",
     btnStart: "Atombohy ny varotra",
-  
+
     abouttitle1: "Fifandraisana maneran-tany",
-    abouttext1: "Mifandray mivantana amin'ny mpamokatra, fikambanana ary orinasa, tsy misy fetra.",
+    abouttext1:
+      "Mifandray mivantana amin'ny mpamokatra, fikambanana ary orinasa, tsy misy fetra.",
     abouttitle2: "Varotra mangarahara",
     abouttext2: "Ampitahao ny vidiny sy ny kalitao amin'ny tsena misokatra.",
     abouttitle3: "Varotra mivantana, tombony tsara kokoa",
-    abouttext3: "Vidiny tsara ho an'ny mpividy ary tombony lehibe ho an'ny mpivarotra.",
-  
+    abouttext3:
+      "Vidiny tsara ho an'ny mpividy ary tombony lehibe ho an'ny mpivarotra.",
+
     titleCategorie: "Sokajy vokatra",
     catBeans: "Tsaramaso",
     catCereals: "Vary sy katsaka",
@@ -465,27 +537,28 @@ export const translate = {
     catNuts: "Voanjo",
     catSpices: "Zava-manitra",
     catRoots: "Faka",
-  
+
     titleFeature: "Tolotra vao haingana",
     All: "Rehetra",
     Selling: "Amidy",
     Buying: "Vidiana",
-  
+
     btnPlaceBid: "Mametraka tolotra",
     btnMakeOffer: "Manao tolo-kevitra",
     viewLess: "Asehoy kely",
     viewMore: "Asehoy bebe kokoa",
-  
+
     abttitle1: "Vokatra tsara kalitao",
     abttext1: "Avy amin'ny mpamokatra atokisana",
     abttitle2: "Manohana ny tantsaha",
     abttext2: "Manampy fitomboana maharitra",
-  
+
     preFttitle: "Manamafy ny tantsaha amin'ny varotra mivantana",
-    preFtText: "Mampifandray ny tantsaha, fikambanana ary mpamokatra mivantana amin'ny mpividy manerantany ny tsena anay.",
+    preFtText:
+      "Mampifandray ny tantsaha, fikambanana ary mpamokatra mivantana amin'ny mpividy manerantany ny tsena anay.",
     btnPost: "Apetraho ny tolotra",
     FtText: "Miara-manangana fambolena marina sy maharitra.",
-  
+
     quickLinks: "Rohy haingana",
     resources: "Loharano",
     contact: "Mifandraisa",
@@ -494,17 +567,17 @@ export const translate = {
     shipping: "Fandefasana & Fanaterana",
     privacyPolicy: "Politika manokana",
     termsOfUse: "Fepetra fampiasana",
-  
+
     stayConnected: "Mifandraisa",
     subscribeText: "Misoratra anarana hahazoana vaovao sy tolotra manokana.",
     copy: "2025 SmartSaha Marketplace. Zo rehetra voatokana.",
-  
+
     search: "Karohy...",
     type: "Karazana",
     location: "Toerana",
     priceRange: "Elanelam-bidy",
     apply: "Ampiharo ny sivana",
-  
+
     myListings: "Tolotrako",
     newListings: "Tolotra vaovao",
     product: "Vokatra",
@@ -517,7 +590,7 @@ export const translate = {
     sur: "amin'ny",
     prev: "Aloha",
     next: "Manaraka",
-  
+
     noListingsFound: "Tsy misy tolotra hita",
     createTitle: "Hamorona tolotra vaovao",
     title: "Lohateny",
@@ -526,7 +599,7 @@ export const translate = {
     image: "Sary",
     currency: "Vola",
     btnSave: "Tehirizo",
-  
+
     bidFor: "Tolotra ho an'ny",
     bestOffer: "Tolotra tsara indrindra",
     btnaccept: "Ekena",
@@ -535,7 +608,7 @@ export const translate = {
     MsgBuyer: "Hafatra ho an'ny mpividy",
     cancel: "Ajanony",
     btndecline: "Lavina",
-  
+
     mybid: "Ny tolotrako",
     monOffre: "Tolotro",
     noFoundMyBid: "Tsy mbola nanao tolotra ianao.",
@@ -544,65 +617,67 @@ export const translate = {
     confirmText: "Tena hanafoana ve ianao ?",
     confirm: "Hamarino",
     gotopost: "Hijery tolotra",
-  
+
     receivedBid: "Tolotra voaray",
     msgBid: "Hafatra",
     negocier: "Hifampiraharaha",
     noReceivedBidFound: "Tsy mbola nahazo tolotra ianao.",
-  
+
     chats: "Resaka",
     dashboard: "Dashboard",
     logout: "Hivoaka",
     bid: "Tolotra",
     chatbox: "Messagerie",
-  
+
     deleteChat: "Hamafa resaka",
     confirmDelete: "Hamarino ny famafana",
-    confirmDelText: "Tena hamafa ity resaka ity ve ianao ? Ity hetsika ity dia tsy azo haverina.",
+    confirmDelText:
+      "Tena hamafa ity resaka ity ve ianao ? Ity hetsika ity dia tsy azo haverina.",
     delete: "Hamafa",
     confirmDeleteReport:
       "Ity hetsika ity dia <strong>tsy azo averina</strong>.<br />Hofafana ny tolotra ary ho ekena avokoa ny tatitra rehetra mifandray aminy.",
-  
+
     acceptedBid: "Ekena ny tolotra !",
     bidOf: "Tolotra avy amin'ny",
     acceptedAt: "nekena tamin'ny",
     priceProposed: "Vidiny natolotra",
     msg: "Hafatra",
     send: "Alefa",
-  
+
     categoryProduct: "Sokajy vokatra",
     addCategory: "Manampy sokajy",
     edit: "Hanova",
     add: "Ampio",
     noCategoryFound: "Tsy misy sokajy.",
-  
+
     validationPosts: "Fanamarinana tolotra",
     validate: "Ekena",
     reject: "Lavina",
     validatePost: "Hamarino ny tolotra",
     rejectPost: "Lavina ny tolotra",
-  
+
     catPlaceholder: "Vary...",
     productTitle: "Fitantanana vokatra & singa",
-    productText: "Mandamina ny vokatra, mamaritra ny singa ary mandrafitra ny tahiry.",
+    productText:
+      "Mandamina ny vokatra, mamaritra ny singa ary mandrafitra ny tahiry.",
     products: "Vokatra",
     units: "Singa",
     productName: "Anarana",
     productDesc: "Famaritana",
     unit: "Singa",
     abrev: "Fohy",
-  
+
     userTitle: "Fitantanana mpampiasa",
     username: "Anaran'ny mpampiasa",
     email: "Mailaka",
     password: "Teny miafina",
     justificatifUrl: "Rohy porofo",
-  
+
     userVerified: "Mpampiasa voamarina",
     userPending: "Miandry fanamarinana",
     viewNotVerified: "Jereo tsy voamarina",
     viewVerified: "Jereo voamarina",
-  
+
     user: "Mpampiasa",
     verified: "Voamarina",
     verify: "Hamarino",
@@ -611,13 +686,13 @@ export const translate = {
     justificatif: "Porofo",
     viewDoc: "Hijery antontan-taratasy",
     nodoc: "Tsy misy porofo",
-  
+
     verifiedAccount: "Kaonty voamarina",
     notverifiedAccount: "Kaonty tsy voamarina",
     status: "Sata",
     annonces: "Tolotra",
     noAnnoncesFound: "Tsy mbola namoaka tolotra ity mpampiasa ity.",
-  
+
     report: "Hanolotra tatitra",
     reportPlaceholder: "Lazao ny antony handefasana tatitra...",
     reports: "Tatitra",
@@ -629,7 +704,7 @@ export const translate = {
     join: "Miaraha amin'ny mpampiasa an'arivony",
     joinTxt: "Mividy, mivarotra & mifampiraharaha tsara kokoa isan'andro.",
     howItWork: "Ahoana ny fiasany",
-  
+
     totalUsers: "Mpampiasa rehetra",
     verifiedUsers: "Mpampiasa voamarina",
     unverifiedUsers: "Mpampiasa tsy voamarina",
@@ -647,18 +722,30 @@ export const translate = {
     notif: "Fampahatsiahivana",
     catText: "Tantano ny sokajy vokatrao",
     aboutTitle: "Momba ny SmartSaha Marketplace",
-    aboutText: "Mampifandray ny tantsaha, mpamokatra ary ny mpividy maneran-tany amin'ny alàlan'ny tsena azo itokisana sy mangarahara izay manome hery ny fambolena eo an-toerana manerantany.",
+    aboutText:
+      "Mampifandray ny tantsaha, mpamokatra ary ny mpividy maneran-tany amin'ny alàlan'ny tsena azo itokisana sy mangarahara izay manome hery ny fambolena eo an-toerana manerantany.",
     whoWeAre: "Iza moa izahay",
-    whores1: "SmartSaha Marketplace dia sehatra nomerika natao hampivondrona ny tantsaha, fikambanana ary orinasa maneran-tany. Ny tanjonay dia ny hanamora ny varotra amin'ny fampifandraisana mivantana ny mpamokatra amin'ny mpanjifa, manome hery ny fitomboana sy ny fanavaozana eo amin'ny fambolena.",
-    whores2: "Mino izahay fa ny fanomezan-kery ny vondrom-piarahamonina ambanivohitra amin'ny alalan'ny varotra ara-drariny, fifanakalozana mangarahara, ary fampidirana nomerika — manampy ny tantsaha madinika hahatratra ny tsena maneran-tany mora foana.",
+    whores1:
+      "SmartSaha Marketplace dia sehatra nomerika natao hampivondrona ny tantsaha, fikambanana ary orinasa maneran-tany. Ny tanjonay dia ny hanamora ny varotra amin'ny fampifandraisana mivantana ny mpamokatra amin'ny mpanjifa, manome hery ny fitomboana sy ny fanavaozana eo amin'ny fambolena.",
+    whores2:
+      "Mino izahay fa ny fanomezan-kery ny vondrom-piarahamonina ambanivohitra amin'ny alalan'ny varotra ara-drariny, fifanakalozana mangarahara, ary fampidirana nomerika — manampy ny tantsaha madinika hahatratra ny tsena maneran-tany mora foana.",
     mission: "Ny iraka & vina",
-    missionRes1: "Manolo-tena hanova ny rojo lanjan'ny fambolena izahay amin'ny alalan'ny fanavaozana, mangarahara, ary fiaraha-miasa maharitra.",
+    missionRes1:
+      "Manolo-tena hanova ny rojo lanjan'ny fambolena izahay amin'ny alalan'ny fanavaozana, mangarahara, ary fiaraha-miasa maharitra.",
     signin: "Hiditra",
     affichage: "Fampisehoana",
     a: "hatramin'ny",
     résultats: "vokatra",
 
-  }
-  
-  
+    welcomeback: "Miarahaba indray",
+    welcomebacktext:
+      "Ny tsena an-tserasera matihanina amin’ny fambolena izay miantoka ny varotrao, mampifandray anao amin’ny mpanjifa azo itokisana, ary mampitombo ny orinasanao.",
+    terms: "Fepetra",
+    contactus: "Mifandraisa aminay",
+    login: "Midira",
+    logintext: "Midira mba hahazoana miditra amin’ny kaontinao.",
+    dontaccount: "Tsy manana kaonty ve ianao ?",
+    createone: "Mamoròna iray",
+    accountinactive: "Mifandraisa amin'ny mpandrindra mba hanavao ny kaontinao."
+  },
 };

@@ -1,84 +1,705 @@
 <template>
-  <div class="flex flex-col h-screen">
+  <div class="flex flex-col h-[583px]">
     <header
-        :class="[
-          'flex items-center justify-between bg-gray-50 px-4 sm:px-12 py-4 sm:py-7 transition-shadow duration-200',
-          isScrolled ? 'shadow' : '',
-        ]"
-      >
-        <button class="md:hidden text-gray-700" @click="isMobileOpen = true">
-          <i class="bx bx-menu text-2xl"></i>
+      :class="[
+        'flex items-center justify-between bg-white shadow px-4 sm:px-12 py-4 sm:py-7 transition-shadow duration-200 hidden',
+      ]"
+    >
+      <button class="md:hidden text-gray-700" @click="isMobileOpen = true">
+        <i class="bx bx-menu text-2xl"></i>
+      </button>
+
+      <h2 class=" hidden sm:flex">
+        <Breadcrumb />
+      </h2>
+
+      <div class="flex items-center gap-5">
+        <button
+          @click="goToNotif"
+          class="relative w-6 h-6 flex items-center justify-center rounded-full hover:bg-gray-100 transition focus:outline-none focus:ring-2 focus:ring-[#10b481]/30"
+        >
+          <i class="bx bx-bell text-xl text-gray-700"></i>
+
+          <span
+            v-if="unreadNotifCount > 0"
+            class="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-1 flex items-center justify-center text-[10px] font-semibold bg-red-600 text-white rounded-full shadow"
+          >
+            {{ unreadNotifCount > 9 ? "9+" : unreadNotifCount }}
+          </span>
         </button>
 
-        <h2 class="text-lg font-semibold text-gray-800 hidden sm:flex">
-          <Breadcrumb />
-        </h2>
+        <div class="flex items-center gap-3">
+          <img
+            v-if="user?.avatar_url"
+            :src="user?.avatar_url"
+            alt="avatar"
+            class="w-8 sm:w-10 h-8 sm:h-10 rounded-full object-cover ring-2 ring-[#10B481]/50"
+          />
 
-        <div class="flex items-center gap-5">
-        
-          <button
-            @click="goToNotif"
-            class="relative w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition focus:outline-none focus:ring-2 focus:ring-[#10b481]/30"
+          <div
+            v-else
+            class="w-8 sm:w-10 h-8 sm:h-10 bg-[#10b481] text-white rounded-full flex items-center justify-center font-bold text-lg ring-2 ring-[#10B481]/50"
           >
-            <i class="bx bx-bell text-xl text-gray-700"></i>
+            {{ user?.username.charAt(0).toUpperCase() }}
+          </div>
+        </div>
+      </div>
+    </header>
 
+    <div v-if="isMobile" class="flex flex-col bg-[#fff]">
+      <!-- ========================= -->
+      <!-- LISTE DES CHATS (Mobile) -->
+      <!-- ========================= -->
+      <div v-if="!selectedChat" class="flex flex-col h-screen bg-[#FAFAF9]">
+        <!-- Header -->
+        <div class="flex items-center justify-between px-4 py-4 flex-shrink-0">
+          <h2 class="">{{ t("chats") }}</h2>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 mb-4 flex-shrink-0">
+          <div
+            class="flex items-center gap-2 bg-white border rounded-xl px-3 py-2"
+          >
+            <i class="bx bx-search text-gray-400"></i>
+            <input
+              v-model="searchQuery"
+              placeholder="Search user..."
+              class="flex-2.5 bg-transparent text-gray-200 content placeholder-gray-400 outline-none text-sm"
+            />
+          </div>
+        </div>
+
+        <!-- Chat list -->
+        <div class="flex-1 overflow-y-auto no-scrollbar px-2">
+          <div
+            v-for="chat in filteredChats"
+            :key="chat.id"
+            @click="selectChat(chat)"
+            class="group relative flex items-center gap-3 px-4 py-3 mb-1 rounded-lg cursor-pointer transition-all"
+            :class="[
+              selectedChat?.id === chat.id
+                ? 'bg-[]#10b481/10 ring-1 ring-[#10b481]/30'
+                : getUnreadCount(chat) > 0
+                ? 'bg-transparent hover:bg-[#10b481]/10'
+                : 'hover:bg-[#10b481]/10',
+            ]"
+          >
             <span
-              v-if="unreadNotifCount > 0"
-              class="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-1 flex items-center justify-center text-[10px] font-semibold bg-red-600 text-white rounded-full shadow"
-            >
-              {{ unreadNotifCount > 9 ? "9+" : unreadNotifCount }}
-            </span>
-          </button>
+              v-if="selectedChat?.id === chat.id"
+              class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-r bg-[#10b481]"
+            ></span>
 
-          <div class="flex items-center gap-3">
+            <!-- Avatar image si existant -->
             <img
-              v-if="user?.avatar_url"
-              :src="user?.avatar_url"
+              v-if="getAvatar(chat)"
+              :src="getAvatar(chat)"
               alt="avatar"
-              class="w-8 sm:w-10 h-8 sm:h-10 rounded-full object-cover ring-2 ring-[#10B481]/50"
+              class="relative w-10 h-10 rounded-full shrink-0 cursor-pointer shadow object-cover"
             />
 
+            <!-- Sinon initiale avec couleur -->
             <div
               v-else
-              class="w-8 sm:w-10 h-8 sm:h-10 bg-[#10b481] text-white rounded-full flex items-center justify-center font-bold text-lg ring-2 ring-[#10B481]/50"
+              class="relative w-10 h-10 rounded-full flex items-center justify-center username text-lg shrink-0 cursor-pointer shadow"
+              :class="getAvatarColor(getOtherUsername(chat))"
             >
-              {{ user?.username.charAt(0).toUpperCase() }}
+              {{ getOtherUsername(chat).charAt(0).toUpperCase() }}
+            </div>
+
+            <div class="flex-1 min-w-0">
+              <div class="flex justify-between items-center">
+                <p
+                  class="truncate text-sm username"
+                  :class="
+                    getUnreadCount(chat) > 0
+                      ? 'font-semibold text-gray-800'
+                      : 'text-gray-800 font-medium'
+                  "
+                >
+                  {{ getOtherUsername(chat) }}
+                </p>
+
+                <span class="text-xs text-gray-600 small shrink-0">
+                  {{ formatTime(getLastMessageDate(chat)) }}
+                </span>
+              </div>
+
+              <div class="flex justify-between items-center gap-2">
+                <p
+                  class="text-sm small truncate flex-1"
+                  :class="
+                    getUnreadCount(chat) > 0
+                      ? 'text-gray-700 small-medium'
+                      : 'text-gray-600'
+                  "
+                >
+                  {{ truncate(getLastMessage(chat), 28) || "No message yet" }}
+                </p>
+
+                <span
+                  v-if="getUnreadCount(chat) > 0"
+                  class="min-w-[18px] h-[18px] px-1 small flex items-center justify-center text-[10px] bg-[#10b481] text-white rounded-full shadow"
+                >
+                  {{ getUnreadCount(chat) }}
+                </span>
+              </div>
             </div>
           </div>
         </div>
-      </header>
+      </div>
 
-    <div class="flex flex-1 overflow-hidden">
+      <!-- ========================= -->
+      <!-- CONVERSATION MOBILE -->
+      <!-- ========================= -->
+      <div v-else class="flex flex-col flex-1 bg-[#fafaf9]">
+        <!-- Top Bar Mobile -->
+        <div
+          class="fixed top-0 left-0 w-full bg-[#fafaf9] border-b z-40 "
+          style="padding-top: env(safe-area-inset-top)"
+        >
+          <div class="flex items-center justify-between py-4">
+            <!-- LEFT -->
+            <div class="flex items-center gap-2 min-w-0">
+              <!-- Back -->
+              <button
+                @click="selectedChat = null"
+                class="w-9 h-9 flex items-center justify-center rounded-full active:bg-gray-100 transition"
+              >
+                <i class="bx bx-chevron-left text-xl text-gray-700"></i>
+              </button>
+
+              <!-- Avatar -->
+              <div class="relative">
+                <img
+                  v-if="getAvatar(selectedChat)"
+                  :src="getAvatar(selectedChat)"
+                  class="w-9 h-9 rounded-full object-cover"
+                />
+
+                <div
+                  v-else
+                  class="w-9 h-9 rounded-full flex items-center username justify-center font-semibold text-md"
+                  :class="getAvatarColor(getOtherUsername(selectedChat))"
+                >
+                  {{ getOtherUsername(selectedChat).charAt(0).toUpperCase() }}
+                </div>
+              </div>
+
+              <!-- User Info -->
+              <div class="flex flex-col min-w-0">
+                <p class="text-[13px] font-semibold username text-gray-800 truncate">
+                  {{ getOtherUsername(selectedChat) }}
+                </p>
+                <p class="text-[11px] text-gray-500 small truncate">
+                  {{ getOtherUserEmail(selectedChat) }}
+                </p>
+              </div>
+            </div>
+
+            <!-- RIGHT ACTIONS -->
+            <div class="flex items-center gap-1">
+              <!-- Post Detail Quick Access -->
+              <button
+                v-if="post"
+                @click="openSheet"
+                class="w-9 h-9 flex items-center justify-center rounded-full active:bg-gray-100 transition"
+              >
+                <i class="bx bx-info-circle text-lg text-gray-600"></i>
+              </button>
+
+              <!-- Menu -->
+              <div class="relative">
+                <button
+                  @click="toggleChatMenu"
+                  class="w-9 h-9 flex items-center justify-center rounded-full active:bg-gray-100 transition"
+                >
+                  <i
+                    class="bx bx-dots-vertical-rounded text-lg text-gray-600"
+                  ></i>
+                </button>
+
+                <div
+                  v-if="chatMenuOpen"
+                  class="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-xl shadow-lg py-1"
+                >
+                  <button
+                    @click="
+                      confirmDelete(selectedChat);
+                      chatMenuOpen = false;
+                    "
+                    class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50"
+                  >
+                    {{ t("deleteChat") }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            v-if="confirmDeleteOpen"
+            class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-30"
+          >
+            <div class="bg-white rounded p-6 w-96">
+              <h3 class="text-lg font-semibold mb-4">
+                {{ t("confirmDelete") }}
+              </h3>
+              <p class="mb-6">
+                {{ t("confirmDelText") }}
+              </p>
+              <div class="flex justify-end gap-3">
+                <button
+                  @click="cancelDelete"
+                  class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+                >
+                  {{ t("cancel") }}
+                </button>
+                <button
+                  @click="performDelete"
+                  class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                >
+                  {{ t("delete") }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          v-if="acceptedBidNotification"
+          class="sticky top-0 z-20 flex items-center justify-between gap-4 px-4 py-4 bg-[#fafaf9] border-b border-gray-100 shadow-sm"
+        >
+          <div class="flex items-start gap-4">
+            <div
+              class="w-10 h-10 rounded-full bg-[#10b481]/10 flex items-center justify-center shrink-0"
+            >
+              <i class="bx bx-check text-[#10b481] text-xl font-bold"></i>
+            </div>
+
+            <div>
+              <p class="text-gray-900 font-semibold content text-sm">
+                {{ t("acceptedBid") }}
+              </p>
+
+              <p class="text-gray-500 text-xs small mt-1">
+                {{ t("bidOf") }}
+                <span class="font-medium text-gray-900">
+                  {{ acceptedBidNotification.price }}
+                  {{ acceptedBidNotification.currency_symbol }}
+                </span>
+                {{ t("acceptedAt") }}
+                {{ formatDateTime(acceptedBidNotification.created_at) }}
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button
+              v-if="isPayer(post, acceptedBidNotification, userId)"
+              @click="goToTransaction(acceptedBidNotification)"
+              class="bg-[#10b481] text-white text-sm px-4 py-2 rounded font-medium transition hover:opacity-90"
+            >
+              Passer à l’étape suivante
+            </button>
+
+            <button
+              @click="acceptedBidNotification = null"
+              class="text-gray-400 hover:text-gray-600 transition"
+              aria-label="Fermer notification"
+            >
+              <i class="bx bx-x text-xl"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="flex-1 overflow-y-auto pb-24 p-4 space-y-3 no-scrollbar">
+          <div
+            v-for="item in sortedChatItems"
+            :key="item.id + '-' + item.type"
+            class="flex"
+            :class="item.user.id === userId ? 'justify-end' : 'justify-start'"
+          >
+            <template v-if="item.type === 'message'">
+              <div
+                :class="[
+                  'flex w-full mb-3',
+                  item.user.id === userId ? 'justify-end' : 'justify-start',
+                ]"
+              >
+                <!-- MESSAGE DE L'AUTRE UTILISATEUR -->
+                <template v-if="item.user.id !== userId">
+                  <div class="flex items-end gap-2 max-w-xs">
+                    <!-- Avatar -->
+                    <div class="flex-shrink-0">
+                      <img
+                        v-if="getAvatar(selectedChat)"
+                        :src="getAvatar(selectedChat)"
+                        alt="avatar"
+                        class="w-6 h-6 rounded-full object-cover shadow"
+                      />
+                      <div
+                        v-else
+                        class="w-6 h-6 rounded-full flex items-center justify-center username font-bold text-xs shadow"
+                        :class="getAvatarColor(getOtherUsername(selectedChat))"
+                      >
+                        {{
+                          getOtherUsername(selectedChat).charAt(0).toUpperCase()
+                        }}
+                      </div>
+                    </div>
+
+                    <!-- Message + date -->
+                    <div class="flex flex-col">
+                      <div
+                        class="max-w-[75%] rounded-xl px-4 py-2 text-sm shadow-md bg-white"
+                        style="border-bottom-left-radius: 0"
+                      >
+                        <p class="break-words content">{{ item.message }}</p>
+                      </div>
+
+                      <!-- Date en dehors -->
+                      <span class="text-xs text-gray-400 small mt-1 ml-1">
+                        {{ formatDate(item.created_at) }}
+                      </span>
+                    </div>
+                  </div>
+                </template>
+
+                <!-- MESSAGE DE L'UTILISATEUR ACTUEL -->
+                <template v-else>
+                  <div class="flex flex-col items-end max-w-xs">
+                    <div
+                      class="rounded-xl px-4 py-2 text-sm shadow-md bg-[#10b481] text-white"
+                      style="border-bottom-right-radius: 0"
+                    >
+                      <p class="break-words light-content">{{ item.message }}</p>
+                    </div>
+
+                    <!-- Date en dehors -->
+                    <span class="text-xs text-gray-400 small mt-1 mr-1">
+                      {{ formatDate(item.created_at) }}
+                    </span>
+                  </div>
+                </template>
+              </div>
+            </template>
+
+            <template v-else-if="item.type === 'bid'">
+              <div
+                :class="[
+                  'flex w-full mb-4',
+                  item.user.id === userId ? 'justify-end' : 'justify-start',
+                ]"
+              >
+                <!-- Avatar seulement pour l'autre utilisateur -->
+                <div
+                  v-if="item.user.id !== userId"
+                  class="flex-shrink-0 mr-2 self-end"
+                >
+                  <img
+                    v-if="getAvatar(selectedChat)"
+                    :src="getAvatar(selectedChat)"
+                    class="w-6 h-6 rounded-full object-cover shadow"
+                  />
+                  <div
+                    v-else
+                    class="w-6 h-6 rounded-full flex items-center justify-center username font-bold text-xs shadow"
+                    :class="getAvatarColor(getOtherUsername(selectedChat))"
+                  >
+                    {{ getOtherUsername(selectedChat).charAt(0).toUpperCase() }}
+                  </div>
+                </div>
+
+                <!-- Card -->
+                <div class="w-[75%] bg-white border rounded-xl text-sm">
+                  <div class="px-4 py-3 border-b border-dashed border-gray-300">
+                    <div class="flex justify-between items-center">
+                      <span
+                        class="text-gray-500 uppercase text-xs small tracking-widest"
+                      >
+                        Proposition
+                      </span>
+                      <span
+                        class="text-xs  small"
+                        :class="{
+                          'text-[#10b481]':
+                            isPropose(item) || isAccept(item) || isPaied(item),
+                          'text-gray-400': isAnnule(item),
+                          'text-red-600': isArreteOrRefuse(item),
+                        }"
+                      >
+                        {{
+                          isPropose(item)
+                            ? "ACTIVE"
+                            : isAccept(item)
+                            ? "ACCEPTÉE"
+                            : isPaied(item)
+                            ? "PAYÉE"
+                            : isAnnule(item)
+                            ? "ANNULÉE"
+                            : "REFUSÉE"
+                        }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="px-4 py-4 space-y-3 text-sm">
+                    <div class="flex justify-between">
+                      <span class="text-gray-500 small">Utilisateur</span>
+                      <span class="font-medium text-gray-700 small">
+                        {{ item.user.username }}
+                      </span>
+                    </div>
+
+                    <div class="flex justify-between">
+                      <span class="text-gray-500 small">Date</span>
+                      <span class="text-gray-700 small">
+                        {{ formatDate(item.created_at) }}
+                      </span>
+                    </div>
+
+                    <div
+                      class="border-t border-dashed border-gray-300 my-3"
+                    ></div>
+
+                    <div class="flex justify-between items-center">
+                      <span
+                        class="uppercase text-xs tracking-widest text-gray-500 small"
+                      >
+                        Montant
+                      </span>
+                      <span class="text-sm font-bold text-gray-700 small">
+                        {{ item.price }} {{ item.currency.symbol }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div
+                    v-if="post?.user.id === userId && isPropose(item)"
+                    class="px-4 py-4 border-t border-dashed border-gray-300 flex justify-between gap-3"
+                  >
+                    <button
+                      @click="openBidConfirmation(item, 'decline')"
+                      class="flex-1 btn-neutre"
+                    >
+                      {{ t("decline") }}
+                    </button>
+                    <button
+                      @click="openBidConfirmation(item, 'accept')"
+                      class="flex-1 btn-primary"
+                    >
+                      {{ t("accepted") }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <div
+          v-if="selectedChat"
+          class="fixed bottom-0 left-0 right-0 w-full border-t bg-[#fafaf9] px-3 py-2 flex items-center gap-2 z-50"
+          style="padding-bottom: env(safe-area-inset-bottom)"
+        >
+          <!-- Bouton Bid -->
+          <button
+            v-if="
+              post?.current_status !== 'vendu' &&
+              post?.user?.id !== userId &&
+              !hasStoppedOrCancelledBid
+            "
+            @click="openCreateBidModal"
+            class="w-10 h-10 flex items-center content justify-center rounded-lg bg-white active:scale-95 transition"
+          >
+            <i class="bx bx-plus text-lg text-gray-600"></i>
+          </button>
+
+          <!-- Input -->
+          <div class="relative flex-1">
+            <div
+              class="flex items-center gap-2 content bg-white border rounded-lg px-4 py-2"
+            >
+              <button @click="showEmojiPicker = !showEmojiPicker">
+                <i class="bxr bx-smile text-lg text-gray-500"></i>
+              </button>
+
+              <input
+                v-model="newMessage"
+                @keyup.enter="sendMessage"
+                placeholder="Write a message..."
+                class="flex-1 bg-transparent outline-none text-sm"
+              />
+            </div>
+
+            <!-- Emoji picker -->
+            <div v-if="showEmojiPicker" class="absolute bottom-14 left-0 z-50">
+              <emoji-picker
+                @emoji-click="addEmoji"
+                class="rounded-xl shadow-xl"
+                style="width: 280px; height: 250px"
+                theme="light"
+              />
+            </div>
+          </div>
+
+          <!-- Send -->
+          <button
+            @click="sendMessage"
+            class="w-10 h-10 bg-[#10b481] text-white rounded-lg flex items-center justify-center active:scale-95 transition"
+          >
+            <i class="bx bx-send-alt text-lg"></i>
+          </button>
+        </div>
+
+        <!-- ========================= -->
+        <!-- POST DETAIL SWIPE SHEET -->
+        <!-- ========================= -->
+
+        <div
+          class="fixed inset-0 z-50 pointer-events-none"
+          v-show="showPostDetail"
+        >
+          <div
+            class="absolute inset-0 bg-black/40 transition-opacity"
+            :class="showPostDetail ? 'opacity-100' : 'opacity-0'"
+            @click="closeSheet"
+          ></div>
+
+          <div
+            ref="sheetRef"
+            class="absolute bottom-0 left-0 w-full bg-white rounded-t-3xl shadow-2xl transition-transform duration-300 pointer-events-auto max-h-[90vh] flex flex-col"
+            :style="{ transform: `translateY(${sheetTranslateY}px)` }"
+            @touchstart="onTouchStart"
+            @touchmove="onTouchMove"
+            @touchend="onTouchEnd"
+          >
+            <div class="flex justify-center py-2">
+              <div class="w-12 h-1.5 bg-gray-300 rounded-full"></div>
+            </div>
+
+            <div
+              class="overflow-y-auto flex-1 px-4 pb-6"
+              style="scroll-behavior: smooth"
+            >
+              <div
+                class="relative h-60 sm:h-64 group rounded-2xl overflow-hidden"
+              >
+                <img
+                  v-if="post?.image_url"
+                  :src="post?.image_url"
+                  class="w-full h-full object-cover"
+                />
+                <div
+                  v-else
+                  class="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500"
+                >
+                  No image
+                </div>
+
+                <div
+                  class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-transparent"
+                ></div>
+
+                <div class="absolute top-3 left-3 flex items-center gap-3 z-10">
+                  <img
+                    v-if="post?.user?.avatar_url"
+                    :src="post?.user?.avatar_url"
+                    alt="avatar"
+                    class="w-9 h-9 rounded-full object-cover"
+                  />
+                  <div
+                    v-else
+                    class="w-9 h-9 rounded-full flex items-center justify-center username font-bold text-lg cursor-pointer shadow"
+                    :class="getAvatarColor(post?.user?.username)"
+                    @click="goToProfile(post?.user)"
+                  >
+                    {{ post?.user?.username.charAt(0).toUpperCase() }}
+                  </div>
+
+                  <div class="text-white flex flex-col leading-tight">
+                    <div class="flex items-center gap-1 font-semibold username">
+                      <span class="text-sm truncate ">{{
+                        post?.user?.username
+                      }}</span>
+                      <i
+                        v-if="post?.user?.is_verified"
+                        class="bx bxs-badge-check text-white text-sm"
+                        title="Utilisateur vérifié"
+                      ></i>
+                    </div>
+                    <span class="text-[10px] text-gray-300 small">{{
+                      formattedDate(post?.updated_at)
+                    }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-4 flex flex-col gap-2">
+                <h2 class="subtitle leading-snug">
+                  {{ post?.title || "Sans titre" }}
+                </h2>
+                <p class="content">{{ post?.description }}</p>
+
+                <div class="flex flex-wrap gap-2 mt-2">
+                  <span
+                    class="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full text-xs items"
+                  >
+                    <i class="bx bx-cube text-sm"></i>
+                    {{ post?.product?.product }}
+                  </span>
+                  <span
+                    class="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full text-xs items"
+                  >
+                    <i class="bx bx-package text-sm"></i>
+                    {{ post?.quantity }} {{ post?.product?.unit?.abbreviation }}
+                  </span>
+                  <span
+                    class="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full text-xs items"
+                  >
+                    <i class="bx bx-wallet text-sm"></i>
+                    {{ post?.price }} {{ post?.currency?.symbol }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-else class="flex flex-1 overflow-hidden">
       <aside
-        class="w-80 sm:w-72 md:w-80 p-4 border-r border-gray-100 bg-[#112830] overflow-y-auto no-scrollbar"
+        class="w-80 sm:w-72 md:w-80 p-4 border-r bg-[#FAFAF9] overflow-y-auto no-scrollbar"
       >
         <button
           @click="$router.back()"
-          class="flex items-center gap-1 text-gray-100/60 transition"
+          class="flex items-center gap-1 text-gray-100/60 transition hidden"
         >
           <i class="bxr bx-chevron-left text-xl"></i>
           {{ t("back") }}
         </button>
 
-        <h2 class="p-4 text-lg font-semibold text-gray-100">
+        <h2 class="mb-4 ">
           {{ t("chats") }}
         </h2>
 
         <div
-          class="px-4 mb-6 flex items-center gap-2 relative bg-[#1f3945] rounded-lg"
+          class="px-4 mb-6 flex items-center gap-2 relative border bg-gray-50 rounded-lg"
         >
           <i class="bx bx-search text-gray-400 text-lg"></i>
 
           <input
             v-model="searchQuery"
             placeholder="Search user..."
-            class="w-full py-2 bg-transparent text-gray-200 placeholder-gray-400 outline-none"
+            class="w-full py-2.5 content bg-transparent text-gray-200 placeholder-gray-400 outline-none text-sm"
           />
         </div>
 
         <div v-if="loadingChats" class="p-4 text-gray-400">
           <div
-            class="w-8 h-8 border-4 border-gray-300 border-t-[#10b481] rounded-full animate-spin"
+            class="w-6 h-6 border-4 border-gray-300 border-t-[#10b481] rounded-full animate-spin"
           ></div>
         </div>
 
@@ -89,10 +710,10 @@
           class="group relative flex items-center gap-3 px-4 py-3 mb-1 rounded-lg cursor-pointer transition-all"
           :class="[
             selectedChat?.id === chat.id
-              ? 'bg-white/10 ring-1 ring-[#10b481]/30'
+              ? 'bg-[#10b481]/10 ring-1 ring-[#10b481]/30'
               : getUnreadCount(chat) > 0
-              ? 'bg-white/5 hover:bg-white/10'
-              : 'hover:bg-white/5',
+              ? 'bg-transparents hover:bg-[#10b481]/10'
+              : 'hover:bg-[#10b481]/10',
           ]"
         >
           <span
@@ -111,37 +732,37 @@
           <!-- Sinon initiale avec couleur -->
           <div
             v-else
-            class="relative w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shrink-0 cursor-pointer shadow"
+            class="relative w-10 h-10 rounded-full flex items-center justify-center username text-lg shrink-0 cursor-pointer shadow"
             :class="getAvatarColor(getOtherUsername(chat))"
           >
             {{ getOtherUsername(chat).charAt(0).toUpperCase() }}
           </div>
 
           <div class="flex-1 min-w-0">
-            <div class="flex justify-between items-center">
+            <div class="flex justify-between items-center ">
               <p
-                class="truncate"
+                class="truncate username text-sm"
                 :class="
                   getUnreadCount(chat) > 0
-                    ? 'font-semibold text-white'
-                    : 'text-gray-200 font-medium'
+                    ? 'font-semibold text-gray-800'
+                    : 'text-gray-800 font-medium'
                 "
               >
                 {{ getOtherUsername(chat) }}
               </p>
 
-              <span class="text-xs text-gray-400 shrink-0">
+              <span class="text-xs text-gray-600 small shrink-0">
                 {{ formatTime(getLastMessageDate(chat)) }}
               </span>
             </div>
 
             <div class="flex justify-between items-center gap-2">
               <p
-                class="text-xs truncate flex-1"
+                class="text-sm small truncate flex-1"
                 :class="
                   getUnreadCount(chat) > 0
-                    ? 'text-gray-100 font-medium'
-                    : 'text-gray-400'
+                    ? 'text-gray-700 small-medium'
+                    : 'text-gray-600'
                 "
               >
                 {{ truncate(getLastMessage(chat), 28) || "No message yet" }}
@@ -158,19 +779,12 @@
         </div>
       </aside>
 
-      <section class="flex-1 flex flex-col bg-[#fff] overflow-hidden">
+      <section class="flex-1 flex flex-col bg-[#fafaf9] overflow-hidden">
         <div
           v-if="selectedChat"
-          class="flex items-center justify-between gap-3 px-4 py-4 border-b border-gray-200 sticky top-0 bg-white z-10"
+          class="flex items-center justify-between gap-3 px-4 py-4 border-b sticky top-0 bg-[#fafaf9] z-10"
         >
           <div class="flex items-center gap-3">
-            <!-- <div
-              class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg"
-              :class="getAvatarColor(getOtherUsername(selectedChat))"
-            >
-              {{ getOtherUsername(selectedChat).charAt(0).toUpperCase() }}
-            </div> -->
-
             <img
               v-if="getAvatar(selectedChat)"
               :src="getAvatar(selectedChat)"
@@ -180,17 +794,17 @@
 
             <div
               v-else
-              class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg cursor-pointer shadow"
+              class="w-10 h-10 rounded-full flex items-center justify-center username text-lg cursor-pointer shadow"
               :class="getAvatarColor(getOtherUsername(selectedChat))"
             >
               {{ getOtherUsername(selectedChat).charAt(0).toUpperCase() }}
             </div>
 
             <div class="flex flex-col">
-              <p class="text-gray-800 font-semibold text-sm">
+              <p class="text-gray-800 username text-sm">
                 {{ getOtherUsername(selectedChat) }}
               </p>
-              <p class="text-gray-500 text-xs">
+              <p class="text-gray-500 small text-xs">
                 {{ getOtherUserEmail(selectedChat) }}
               </p>
             </div>
@@ -247,7 +861,7 @@
         </div>
         <div
           v-if="acceptedBidNotification"
-          class="sticky top-0 z-20 flex items-center justify-between gap-4 px-4 py-4 bg-white border-b border-gray-100 shadow-sm"
+          class="sticky top-0 z-20 flex items-center justify-between gap-4 px-4 py-4 bg-[#fafaf9] border-b border-gray-100 shadow-sm"
         >
           <div class="flex items-start gap-4">
             <div
@@ -257,11 +871,11 @@
             </div>
 
             <div>
-              <p class="text-gray-900 font-semibold text-sm">
+              <p class="text-gray-900 small font-semibold text-sm">
                 {{ t("acceptedBid") }}
               </p>
 
-              <p class="text-gray-500 text-xs mt-1">
+              <p class="text-gray-500 small text-xs mt-1">
                 {{ t("bidOf") }}
                 <span class="font-medium text-gray-900">
                   {{ acceptedBidNotification.price }}
@@ -277,7 +891,7 @@
             <button
               v-if="isPayer(post, acceptedBidNotification, userId)"
               @click="goToTransaction(acceptedBidNotification)"
-              class="bg-[#10b481] text-white text-sm px-4 py-2 rounded font-medium transition hover:opacity-90"
+              class="btn-primary"
             >
               Passer à l’étape suivante
             </button>
@@ -309,113 +923,183 @@
           >
             <template v-if="item.type === 'message'">
               <div
-                :class="item.user.id === userId ? 'self-end' : 'self-start'"
-                class="max-w-xs rounded-xl px-4 py-2 text-sm shadow-lg"
-                :style="
-                  item.user.id === userId
-                    ? 'background:#10b481;color:white;border-bottom-right-radius:0;'
-                    : 'background:#f9f9f9;border:1px solid #e5e5e5;border-bottom-left-radius:0;'
-                "
+                :class="[
+                  'flex w-full mb-3',
+                  item.user.id === userId ? 'justify-end' : 'justify-start',
+                ]"
               >
-                <p class="break-words">{{ item.message }}</p>
-                <span class="text-xs mt-1">{{
-                  formatDate(item.created_at)
-                }}</span>
+                <!-- MESSAGE DE L'AUTRE UTILISATEUR -->
+                <template v-if="item.user.id !== userId">
+                  <div class="flex items-end gap-2 max-w-xs">
+                    <!-- Avatar -->
+                    <div class="flex-shrink-0">
+                      <img
+                        v-if="getAvatar(selectedChat)"
+                        :src="getAvatar(selectedChat)"
+                        alt="avatar"
+                        class="w-6 h-6 rounded-full object-cover shadow"
+                      />
+                      <div
+                        v-else
+                        class="w-6 h-6 rounded-full flex items-center justify-center username text-xs shadow"
+                        :class="getAvatarColor(getOtherUsername(selectedChat))"
+                      >
+                        {{
+                          getOtherUsername(selectedChat).charAt(0).toUpperCase()
+                        }}
+                      </div>
+                    </div>
+
+                    <!-- Message + date -->
+                    <div class="flex flex-col">
+                      <div
+                        class="rounded-2xl px-4 py-2 text-sm content shadow-md bg-white"
+                        style="border-bottom-left-radius: 0"
+                      >
+                        <p class="break-words">{{ item.message }}</p>
+                      </div>
+
+                      <!-- Date en dehors -->
+                      <span class="text-xs small text-gray-400 mt-1 ml-1">
+                        {{ formatDate(item.created_at) }}
+                      </span>
+                    </div>
+                  </div>
+                </template>
+
+                <!-- MESSAGE DE L'UTILISATEUR ACTUEL -->
+                <template v-else>
+                  <div class="flex flex-col items-end max-w-xs">
+                    <div
+                      class="rounded-2xl px-4 py-2 text-sm shadow-md light-content bg-[#10b481] text-white"
+                      style="border-bottom-right-radius: 0"
+                    >
+                      <p class="break-words">{{ item.message }}</p>
+                    </div>
+
+                    <!-- Date en dehors -->
+                    <span class="text-xs small text-gray-400 mt-1 mr-1">
+                      {{ formatDate(item.created_at) }}
+                    </span>
+                  </div>
+                </template>
               </div>
             </template>
 
             <template v-else-if="item.type === 'bid'">
               <div
-                class="w-72 mb-4 self-start bg-[#f9f9f9] border border-gray-200 rounded-xl text-sm shadow-lg"
+                :class="[
+                  'flex w-full mb-4',
+                  item.user.id === userId ? 'justify-end' : 'justify-start',
+                ]"
               >
-                <div class="px-4 py-3 border-b border-dashed border-gray-300">
-                  <div class="flex justify-between items-center">
-                    <span
-                      class="text-gray-500 uppercase text-xs tracking-widest"
-                    >
-                      Proposition
-                    </span>
-                    <span
-                      class="text-xs font-semibold"
-                      :class="{
-                        'text-[#10b481]':
-                          isPropose(item) || isAccept(item) || isPaied(item),
-                        'text-gray-400': isAnnule(item),
-                        'text-red-600': isArreteOrRefuse(item),
-                      }"
-                    >
-                      {{
-                        isPropose(item)
-                          ? "ACTIVE"
-                          : isAccept(item)
-                          ? "ACCEPTÉE"
-                          : isPaied(item)
-                          ? "PAYÉE"
-                          : isAnnule(item)
-                          ? "ANNULÉE"
-                          : "REFUSÉE"
-                      }}
-                    </span>
+                <!-- Avatar seulement pour l'autre utilisateur -->
+                <div
+                  v-if="item.user.id !== userId"
+                  class="flex-shrink-0 mr-2 self-end"
+                >
+                  <img
+                    v-if="getAvatar(selectedChat)"
+                    :src="getAvatar(selectedChat)"
+                    class="w-6 h-6 rounded-full object-cover shadow"
+                  />
+                  <div
+                    v-else
+                    class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shadow"
+                    :class="getAvatarColor(getOtherUsername(selectedChat))"
+                  >
+                    {{ getOtherUsername(selectedChat).charAt(0).toUpperCase() }}
                   </div>
                 </div>
 
-                <div class="px-4 py-4 space-y-3">
-                  <div class="flex justify-between">
-                    <span class="text-gray-500">Utilisateur</span>
-                    <span class="font-medium text-gray-900">
-                      {{ item.user.username }}
-                    </span>
+                <!-- Card -->
+                <div class="w-72 bg-white border rounded-2xl text-sm">
+                  <div class="px-4 py-3 border-b border-dashed border-gray-300">
+                    <div class="flex justify-between items-center">
+                      <span
+                        class="text-gray-500 uppercase text-xs small tracking-widest"
+                      >
+                        Proposition
+                      </span>
+                      <span
+                        class="text-xs small"
+                        :class="{
+                          'text-[#10b481]':
+                            isPropose(item) || isAccept(item) || isPaied(item),
+                          'text-gray-400': isAnnule(item),
+                          'text-red-600': isArreteOrRefuse(item),
+                        }"
+                      >
+                        {{
+                          isPropose(item)
+                            ? "ACTIVE"
+                            : isAccept(item)
+                            ? "ACCEPTÉE"
+                            : isPaied(item)
+                            ? "PAYÉE"
+                            : isAnnule(item)
+                            ? "ANNULÉE"
+                            : "REFUSÉE"
+                        }}
+                      </span>
+                    </div>
                   </div>
 
-                  <div class="flex justify-between">
-                    <span class="text-gray-500">Date</span>
-                    <span class="text-gray-900">
-                      {{ formatDate(item.created_at) }}
-                    </span>
+                  <div class="px-4 py-4 space-y-3 text-sm">
+                    <div class="flex justify-between">
+                      <span class="text-gray-500 small">Utilisateur</span>
+                      <span class="font-medium small text-gray-700">
+                        {{ item.user.username }}
+                      </span>
+                    </div>
+
+                    <div class="flex justify-between">
+                      <span class="text-gray-500 small">Date</span>
+                      <span class="text-gray-700 small">
+                        {{ formatDate(item.created_at) }}
+                      </span>
+                    </div>
+
+                    <div
+                      class="border-t border-dashed border-gray-300 my-3"
+                    ></div>
+
+                    <div class="flex justify-between items-center">
+                      <span
+                        class="uppercase text-xs small tracking-widest text-gray-500"
+                      >
+                        Montant
+                      </span>
+                      <span class="text-base small font-semibold text-gray-700">
+                        {{ item.price }} {{ item.currency.symbol }}
+                      </span>
+                    </div>
                   </div>
 
                   <div
-                    class="border-t border-dashed border-gray-300 my-3"
-                  ></div>
-
-                  <div class="flex justify-between items-center">
-                    <span
-                      class="uppercase text-xs tracking-widest text-gray-500"
+                    v-if="post?.user.id === userId && isPropose(item)"
+                    class="px-4 py-4 border-t border-dashed border-gray-300 flex justify-between gap-3"
+                  >
+                    <button
+                      @click="openBidConfirmation(item, 'decline')"
+                      class="flex-1 btn-neutre"
                     >
-                      Montant
-                    </span>
-                    <span class="text-lg font-bold text-gray-900">
-                      {{ item.price }} {{ item.currency.symbol }}
-                    </span>
+                      {{ t("decline") }}
+                    </button>
+                    <button
+                      @click="openBidConfirmation(item, 'accept')"
+                      class="flex-1 btn-primary"
+                    >
+                      {{ t("accepted") }}
+                    </button>
                   </div>
-                </div>
-
-                <div
-                  v-if="post?.user.id === userId && isPropose(item)"
-                  class="px-4 py-4 border-t border-dashed border-gray-300 flex justify-between gap-3"
-                >
-                  <button
-                    @click="openBidConfirmation(item, 'decline')"
-                    class="flex-1 text-gray-400 tracking-wider text-sm hover:text-gray-700"
-                  >
-                    {{ t("decline") }}
-                  </button>
-                  <button
-                    @click="openBidConfirmation(item, 'accept')"
-                    class="flex-1 bg-[#10b481] text-white px-5 py-2 rounded font-semibold tracking-wider text-sm"
-                  >
-                    {{ t("accepted") }}
-                  </button>
                 </div>
               </div>
             </template>
           </div>
         </div>
 
-        <div
-          v-if="selectedChat"
-          class="p-4 border-t border-[#f1f1f1] bg-[#fff] flex gap-2"
-        >
+        <div v-if="selectedChat" class="p-4 border-t bg-[#fafaf9] flex gap-2">
           <button
             v-if="
               post?.current_status !== 'vendu' &&
@@ -423,13 +1107,13 @@
               !hasStoppedOrCancelledBid
             "
             @click="openCreateBidModal"
-            class="w-12 h-full flex items-center justify-center rounded-lg border border-gray-200 px-3 py-2 bg-gray-100 outline-none"
+            class="w-12 h-full flex items-center justify-center rounded-lg border content px-3 py-2 bg-white outline-none"
           >
             <i class="bx bx-plus text-xl text-gray-600"></i>
           </button>
 
           <div
-            class="flex flex-1 items-center gap-3 rounded-lg border border-gray-200 px-3 py-2 bg-gray-100 relative"
+            class="flex flex-1 items-center gap-3 rounded-lg border px-3 py-2 content bg-white relative"
           >
             <button
               @click="showEmojiPicker = !showEmojiPicker"
@@ -450,7 +1134,7 @@
               v-model="newMessage"
               @keyup.enter="sendMessage"
               placeholder="Write a message..."
-              class="flex-1 bg-transparent outline-none"
+              class="flex-1 bg-transparent outline-none text-sm"
             />
           </div>
 
@@ -465,7 +1149,7 @@
 
       <aside
         v-if="post"
-        class="hidden lg:flex w-96 border-l border-[#f1f1f1] bg-[#fff] p-4 overflow-y-auto"
+        class="hidden lg:flex w-80 border-l bg-[#fafaf4] p-4 overflow-y-auto"
       >
         <div class="rounded border border-white/5 overflow-hidden">
           <div class="relative w-full rounded-2xl overflow-hidden shadow-sm">
@@ -483,15 +1167,14 @@
             </div>
 
             <div
-              class="absolute top-3 left-3 flex items-center gap-1 rounded-full bg-white/90 px-3 py-1 text-xs text-gray-700 shadow z-10"
+              class="absolute top-3 left-3 flex items-center gap-1 small rounded-full bg-white/90 px-3 py-1 text-xs text-gray-700 shadow z-10"
             >
-              <i class="bx bx-time"></i>
               <span>{{ t("publishedOn") }} {{ getPublishedDate() }}</span>
             </div>
 
-            <div class="absolute bottom-3 left-3 flex flex-wrap gap-2">
+            <div class="absolute bottom-3 left-3 small flex flex-wrap gap-2">
               <span
-                class="px-3 py-1 text-xs font-medium rounded-full text-gray-700 bg-white/90 shadow z-10"
+                class="px-3 py-1 text-xs small font-medium rounded-full text-gray-700 bg-white/90 shadow z-10"
               >
                 {{ post.type_post?.type || "Type inconnu" }}
               </span>
@@ -505,43 +1188,32 @@
             </div>
           </div>
 
-          <div class="p-4 flex flex-col gap-2">
-            <h3 class="text-2xl font-bold text-gray-700">
+          <div class="flex flex-col gap-2">
+            <h3 class="subtitle font-bold text-gray-700">
               {{ post?.title }}
             </h3>
-            <p class="text-gray-600 text-sm leading-relaxed">
+            <p class="text-gray-600 content text-sm leading-relaxed">
               {{ post?.description }}
             </p>
 
-            <div class="flex flex-wrap gap-3 pt-3">
-              <div
-                class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded p-2 text-sm"
+            <div class="flex flex-wrap gap-2 mt-2">
+              <span
+                class="flex items-center gap-1 bg-white shadow px-3 py-1 rounded-full text-xs items"
               >
-                <i class="bx bx-package text-gray-500"></i>
-                <span class="text-gray-800">
-                  {{ post?.product?.product }}
-                </span>
-              </div>
-
-              <div
-                class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded p-2 text-sm"
+                <i class="bx bx-cube text-sm"></i> {{ post.product?.product }}
+              </span>
+              <span
+                class="flex items-center gap-1 bg-white shadow px-3 py-1 rounded-full text-xs items"
               >
-                <i class="bx bx-package text-gray-500"></i>
-                <span class="text-gray-800">
-                  {{ post?.quantity }}
-                  {{ post?.product?.unit?.abbreviation }}
-                </span>
-              </div>
-
-              <div
-                class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded p-2 text-sm"
+                <i class="bx bx-package text-sm"></i> {{ post.quantity }}
+                {{ post.product?.unit?.abbreviation }}
+              </span>
+              <span
+                class="flex items-center gap-1 bg-white shadow px-3 py-1 rounded-full text-xs items"
               >
-                <i class="bx bx-wallet text-gray-500"></i>
-                <span class="text-gray-800">
-                  {{ post?.price }}
-                  {{ post?.currency?.symbol }}
-                </span>
-              </div>
+                <i class="bx bx-wallet text-sm"></i> {{ post.price }}
+                {{ post.currency?.symbol }}
+              </span>
             </div>
             <div class="flex flex-wrap gap-2 pt-3">
               <span
@@ -552,7 +1224,7 @@
                   borderColor: label.color,
                   color: label.color,
                 }"
-                class="px-3 py-1 rounded-full text-xs font-semibold border whitespace-nowrap"
+                class="px-3 py-1 rounded-full text-xs small-medium border whitespace-nowrap"
               >
                 {{ label.name }}
               </span>
@@ -566,17 +1238,17 @@
   <!-- Popup confirmation accept/decline -->
   <div
     v-if="confirmBidOpen"
-    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-30"
+    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-30 "
   >
-    <div class="bg-white rounded p-6 w-96">
-      <h3 class="text-lg font-semibold mb-4">
+    <div class="bg-white rounded-2xl p-6 w-96">
+      <h3 class="subtitle mb-4">
         {{
           bidAction === "accept"
             ? "Confirmer l’acceptation"
             : "Confirmer le refus"
         }}
       </h3>
-      <p v-if="!showNegotiateChoice" class="mb-4">
+      <p v-if="!showNegotiateChoice" class="mb-4 content">
         {{
           bidAction === "accept"
             ? "Voulez-vous vraiment accepter cette enchère ?"
@@ -584,18 +1256,18 @@
         }}
       </p>
 
-      <div v-if="showNegotiateChoice" class="mb-4">
-        <p class="mb-2">Voulez-vous continuer la négociation ou l'arrêter ?</p>
+      <div v-if="showNegotiateChoice" class="">
+        <p class="mb-4 content">Voulez-vous continuer la négociation ou l'arrêter ?</p>
         <div class="flex justify-end gap-3">
           <button
             @click="chooseContinueNegotiation"
-            class="px-4 py-2 bg-[#10b481] text-white rounded"
+            class="btn-neutre"
           >
             Continuer
           </button>
           <button
             @click="chooseStopNegotiation"
-            class="px-4 py-2 bg-red-600 text-white rounded"
+            class="btn-decline"
           >
             Arrêter
           </button>
@@ -603,10 +1275,10 @@
       </div>
 
       <div v-if="showReasonInput" class="mb-4">
-        <label class="block text-sm mb-1">Raison :</label>
+        <label class="block label mb-1">Raison :</label>
         <textarea
           v-model="declineMessage"
-          class="w-full border rounded p-2"
+          class="w-full border rounded-lg p-2 content"
           rows="3"
         ></textarea>
       </div>
@@ -615,7 +1287,7 @@
         <button
           v-if="!showNegotiateChoice"
           @click="cancelBid"
-          class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+          class="btn-neutre"
         >
           Annuler
         </button>
@@ -623,7 +1295,7 @@
         <button
           v-if="bidAction === 'accept'"
           @click="performBidAction"
-          class="px-4 py-2 bg-[#10b481] text-white rounded"
+          class="btn-primary"
         >
           {{ t("btnaccept") }}
         </button>
@@ -631,7 +1303,7 @@
         <button
           v-else-if="!showNegotiateChoice && !showReasonInput"
           @click="openNegotiateChoice"
-          class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded"
+          class="btn-decline"
         >
           {{ t("btndecline") }}
         </button>
@@ -639,7 +1311,7 @@
         <button
           v-else-if="showReasonInput"
           @click="performBidAction"
-          class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded"
+          class="btn-primary"
         >
           Envoyer
         </button>
@@ -651,19 +1323,19 @@
     v-if="openBidModal"
     class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-30"
   >
-    <div class="bg-white rounded p-6 w-96">
-      <label class="block text-sm mb-1">{{ t("priceProposed") }} :</label>
+    <div class="bg-white rounded-2xl p-6 w-96">
+      <label class="block label mb-1">{{ t("priceProposed") }} :</label>
       <input
         type="number"
         v-model="bidPrice"
-        class="w-full border rounded p-2 mb-4"
+        class="w-full border rounded-lg content p-2 mb-4"
         placeholder="Montant en Ariary"
       />
 
-      <label class="block text-sm mb-1">{{ t("msg") }} :</label>
+      <label class="block label mb-1">{{ t("msg") }} :</label>
       <textarea
         v-model="bidMessage"
-        class="w-full border rounded p-2 mb-4"
+        class="w-full border rounded-lg content p-2 mb-4"
         rows="3"
         placeholder="Votre message..."
       ></textarea>
@@ -671,14 +1343,14 @@
       <div class="flex justify-end gap-3">
         <button
           @click="openBidModal = false"
-          class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+          class="btn-neutre"
         >
           {{ t("cancel") }}
         </button>
 
         <button
           @click="submitBid"
-          class="px-4 py-2 bg-[#10b481] text-white rounded"
+          class="btn-primary"
         >
           {{ t("send") }}
         </button>
@@ -690,8 +1362,8 @@
     v-if="reviewPopupOpen"
     class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
   >
-    <div class="bg-white rounded p-6 w-96 max-w-full">
-      <h3 class="text-lg font-semibold mb-4">Évaluez votre transaction</h3>
+    <div class="bg-white rounded-2xl p-6 w-96 max-w-full">
+      <h3 class="subtitle mb-4">Évaluez votre transaction</h3>
 
       <div class="flex gap-1 mb-4">
         <template v-for="i in 5" :key="i">
@@ -705,10 +1377,10 @@
         </template>
       </div>
 
-      <label class="block text-sm mb-1">Commentaire :</label>
+      <label class="block label mb-1">Commentaire :</label>
       <textarea
         v-model="reviewComment"
-        class="w-full border rounded p-2 mb-4"
+        class="w-full border rounded-lg p-2 mb-4 content"
         rows="3"
         placeholder="Optionnel..."
       ></textarea>
@@ -716,13 +1388,13 @@
       <div class="flex justify-end gap-3">
         <button
           @click="reviewPopupOpen = false"
-          class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+          class="btn-neutre"
         >
           {{ t("cancel") }}
         </button>
         <button
           @click="submitReview"
-          class="px-4 py-2 bg-[#10b481] text-white rounded"
+          class="btn-primary"
         >
           {{ t("send") }}
         </button>
@@ -750,7 +1422,7 @@
         <p class="font-medium text-sm text-gray-100">
           {{ notification.message }}
         </p>
-        <p class="text-gray-300 text-xs">
+        <p class="text-gray-400 text-xs">
           {{
             notification.type === "success"
               ? "Success!"
@@ -1516,10 +2188,130 @@ async function fetchNotifications() {
   } finally {
   }
 }
+let layoutName = ref("dashboard");
+const isMobile = ref(false);
+const isMobileOpen = ref(false);
+onMounted(() => {
+  const checkScreen = () => {
+    isMobile.value = window.innerWidth < 768;
+  };
+
+  checkScreen();
+  window.addEventListener("resize", checkScreen);
+
+  layoutName.value = isMobile ? "dashboard" : "default";
+
+  // si l'utilisateur redimensionne
+  window.addEventListener("resize", () => {
+    layoutName.value = isMobile ? "dashboard" : "default";
+  });
+});
+
+definePageMeta({
+  layout: layoutName.value,
+});
 
 onMounted(() => {
   fetchNotifications();
 });
+
+const showPostDetail = ref(false);
+const sheetTranslateY = ref(0);
+const startY = ref(0);
+const currentY = ref(0);
+const isDragging = ref(false);
+const sheetRef = ref(null);
+
+const screenHeight = ref(0);
+const FULL_OPEN = ref(80);
+const MID_OPEN = ref(0);
+const CLOSED = ref(0);
+
+onMounted(() => {
+  screenHeight.value = window.innerHeight;
+  MID_OPEN.value = screenHeight.value * 0.4;
+  CLOSED.value = screenHeight.value;
+  sheetTranslateY.value = screenHeight.value;
+});
+
+function openSheet() {
+  if (!post.value) return;
+  showPostDetail.value = true;
+  sheetTranslateY.value = MID_OPEN;
+}
+
+function closeSheet() {
+  sheetTranslateY.value = CLOSED;
+  setTimeout(() => {
+    showPostDetail.value = false;
+  }, 300);
+}
+
+function onTouchStart(e) {
+  isDragging.value = true;
+  startY.value = e.touches[0].clientY;
+}
+
+function onTouchMove(e) {
+  if (!isDragging.value) return;
+
+  currentY.value = e.touches[0].clientY;
+  const diff = currentY.value - startY.value;
+
+  let newTranslate = sheetTranslateY.value + diff;
+
+  if (newTranslate < FULL_OPEN) newTranslate = FULL_OPEN;
+  if (newTranslate > CLOSED) newTranslate = CLOSED;
+
+  sheetTranslateY.value = newTranslate;
+  startY.value = currentY.value;
+}
+
+function onTouchEnd() {
+  isDragging.value = false;
+
+  if (sheetTranslateY.value < screenHeight * 0.3) {
+    sheetTranslateY.value = FULL_OPEN;
+  } else if (sheetTranslateY.value < screenHeight * 0.6) {
+    sheetTranslateY.value = MID_OPEN;
+  } else {
+    closeSheet();
+  }
+}
+
+const formattedDate = (dateStr) => {
+  if (!dateStr) return "-";
+
+  try {
+    // Tronquer les microsecondes si présentes
+    const cleanDateStr = dateStr.replace(/\.(\d{3})\d+Z$/, ".$1Z");
+
+    const date = parseISO(cleanDateStr);
+
+    const diffDays = Math.floor(
+      (Date.now() - date.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    if (diffDays > 7) {
+      return date.toLocaleDateString(
+        languageStore.lang === "fr" ? "fr-FR" : "en-US",
+        {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        }
+      );
+    }
+
+    return formatDistanceToNow(date, {
+      addSuffix: true,
+      locale: languageStore.lang === "fr" ? fr : enUS,
+    });
+  } catch (e) {
+    console.error("Invalid date:", dateStr);
+    return "-";
+  }
+};
 </script>
 
 <style scoped>

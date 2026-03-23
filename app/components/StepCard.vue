@@ -2,10 +2,10 @@
   <section class="relative bg-white py-20 md:py-32 overflow-hidden">
     <div class="max-w-7xl mx-auto px-6">
       <div class="max-w-3xl mx-auto text-center mb-20">
-        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900">
+        <h2 class="text-bold tracking-tight text-gray-900">
           {{ t("howItWork") }}
         </h2>
-        <p class="mt-4 text-gray-500 text-sm sm:text-base">
+        <p class="mt-4 content">
           Une marketplace agricole moderne, simple et efficace.
         </p>
       </div>
@@ -25,13 +25,13 @@
           </div>
 
           <h3
-            class="text-lg sm:text-xl font-semibold text-gray-900 z-10 relative group-hover:text-[#10B481] transition"
+            class="subtitle z-10 relative group-hover:text-[#10B481] transition"
           >
             {{ feature.title }}
           </h3>
 
           <p
-            class="mt-2 text-xs sm:text-sm text-gray-500 leading-relaxed z-10 relative"
+            class="mt-2 content leading-relaxed z-10 relative"
           >
             {{ feature.description }}
           </p>

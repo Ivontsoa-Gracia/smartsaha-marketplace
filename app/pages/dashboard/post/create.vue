@@ -1,13 +1,13 @@
 <template>
   <div class="space-y-8 p-12 bg-gray-50/60 min-h-screen">
-    <Breadcrumb />
+    <!-- <Breadcrumb /> -->
 
-    <div class="max-w-3xl mx-auto p-8 transition-all duration-500">
-      <h1
-        class="text-2xl sm:text-3xl font-semibold text-gray-800 mb-6 text-left"
-      >
+    <div
+      class="max-w-3xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-200 p-8 transition-all duration-500"
+    >
+      <h2 class="mb-6 text-left">
         {{ t("createTitle") }}
-      </h1>
+      </h2>
 
       <div class="flex justify-between mb-8 hidden">
         <div
@@ -32,34 +32,28 @@
       <transition name="fade" mode="out-in">
         <form v-if="step === 1" @submit.prevent="nextStep" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700">{{
-              t("title")
-            }}</label>
+            <label class="block label mb-1">{{ t("title") }}</label>
             <input
               v-model="form.title"
               type="text"
-              class="input-field"
+              class="input-field content"
               required
             />
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700">{{
-              t("desc")
-            }}</label>
+            <label class="block label mb-1">{{ t("desc") }}</label>
             <textarea
               v-model="form.description"
-              class="input-field"
+              class="input-field content"
               required
             ></textarea>
           </div>
 
           <div class="flex gap-4">
             <div class="flex-1">
-              <label class="block text-sm font-medium text-gray-700">{{
-                t("listingsType")
-              }}</label>
-              <select v-model="form.type_post_id" class="input-field">
+              <label class="block label mb-1">{{ t("listingsType") }}</label>
+              <select v-model="form.type_post_id" class="input-field content">
                 <option
                   v-for="type in filteredTypePosts"
                   :key="type.id"
@@ -71,21 +65,21 @@
             </div>
 
             <div class="relative w-72">
-              <!-- Label -->
-              <label class="block text-sm font-medium text-gray-700 mb-1">
+              <label class="block label mb-1">
                 {{ t("label") }}
               </label>
 
-              <!-- Bouton -->
               <button
                 type="button"
                 @click="showDropdown = !showDropdown"
                 class="w-full flex items-center justify-between gap-2 px-4 py-2.5 bg-white border rounded-lg text-sm text-gray-700 transition focus:outline-none hover:border-[#10b481] focus:ring-2 focus:ring-[#10b481]/30"
                 :class="showDropdown ? 'border-[#10b481]' : 'border-gray-300'"
               >
-                <!-- Contenu -->
                 <span class="truncate text-left">
-                  <span v-if="!form.labels_ids.length" class="text-gray-400">
+                  <span
+                    v-if="!form.labels_ids.length"
+                    class="text-gray-400 small"
+                  >
                     Sélectionner des labels
                   </span>
 
@@ -99,7 +93,6 @@
                   </span>
                 </span>
 
-                <!-- Icône -->
                 <i
                   :class="
                     showDropdown ? 'bx bx-chevron-up' : 'bx bx-chevron-down'
@@ -108,11 +101,10 @@
                 ></i>
               </button>
 
-              <!-- Dropdown -->
               <transition name="fade">
                 <div
                   v-if="showDropdown"
-                  class="absolute z-20 mt-2 w-full bg-white rounded-lg border border-gray-200 shadow-xl max-h-60 overflow-auto"
+                  class="absolute z-20 mt-2 w-full bg-white rounded-lg border border-gray-200 shadow-xl max-h-60 overflow-auto content"
                 >
                   <div
                     v-for="lab in labels"
@@ -132,20 +124,18 @@
                     </span>
                   </div>
 
-                  <!-- Empty state -->
                   <div
                     v-if="!labels.length"
-                    class="px-4 py-3 text-sm text-gray-400 text-center"
+                    class="px-4 py-3 text-sm text-gray-400 text-center small"
                   >
                     Aucun label disponible
                   </div>
                 </div>
               </transition>
 
-              <!-- Selected badges -->
               <div
                 v-if="form.labels_ids.length"
-                class="flex flex-wrap gap-2 mt-3"
+                class="flex flex-wrap gap-2 mt-3 small"
               >
                 <span
                   v-for="lab in labels.filter((l) =>
@@ -166,17 +156,16 @@
             </div>
 
             <div class="relative flex-1">
-              <label class="block text-sm font-medium text-gray-700 mb-1">
+              <label class="block label mb-1">
                 {{ t("location") }}
               </label>
 
-              <!-- Input -->
               <div class="relative">
                 <input
                   v-model="form.location"
                   type="text"
                   placeholder="Sélectionner ou rechercher un pays"
-                  class="w-full px-4 py-2.5 rounded-lg border text-sm bg-white text-gray-700 border-gray-300 transition focus:outline-none focus:ring-2 focus:ring-[#10b481]/30 focus:border-[#10b481]"
+                  class="w-full px-4 py-2.5 content rounded-lg border text-sm bg-white text-gray-700 border-gray-300 transition focus:outline-none focus:ring-2 focus:ring-[#10b481]/30 focus:border-[#10b481]"
                   @focus="showCountryDropdown = true"
                   @input="filterCountries"
                   @blur="handleBlur"
@@ -184,7 +173,6 @@
                 />
               </div>
 
-              <!-- Dropdown -->
               <transition name="fade">
                 <div
                   v-if="showCountryDropdown"
@@ -213,44 +201,45 @@
 
           <div>
             <div
-              class="mt-8 flex flex-col items-center justify-center w-full p-6 border border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-gray-50 transition-colors"
+              class="mt-8 flex flex-col items-center justify-center border-2 border-dashed border-[#112830]/10 rounded-2xl p-8 text-center cursor-pointer bg-white hover:border-[#10b481] hover:bg-[#10b481]/5 transition-all"
             >
-              <label
-                class="flex flex-col items-center justify-center w-full h-full cursor-pointer"
-              >
-                <i class="bx bx-upload text-6xl mb-3 text-gray-400"></i>
+              <label class="w-full cursor-pointer block">
+                <div
+                  v-if="!form.image_url"
+                  class="flex flex-col items-center justify-center w-full h-full cursor-pointer"
+                >
+                  <i class="bx bx-upload text-6xl mb-3 text-gray-400"></i>
+                  <span class="label mb-2">
+                    Cliquez ou glissez-déposez votre fichier
+                  </span>
+                </div>
 
-                <span class="text-sm font-medium text-gray-700 mb-2">
-                  Cliquez ou glissez-déposez votre fichier
-                </span>
+                <div
+                  v-else
+                  class="flex items-center justify-between gap-4 bg-[#fafa9] rounded-xl p-3 group"
+                >
+                  <div class="flex items-center gap-3 min-w-0">
+                    <img
+                      :src="form.image_url"
+                      class="w-12 h-12 object-cover rounded-lg shadow-sm"
+                    />
 
-                <span v-if="fileName" class="text-sm text-blue-500 mb-2">{{
-                  fileName
-                }}</span>
+                    <div class="flex flex-col min-w-0 text-left">
+                      <span class="label truncate"> Image uploadée </span>
+                      <span class="text-xs text-gray-400 small truncate">
+                        {{ getFileName(form.image_url) }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
 
                 <input type="file" @change="handleFileUpload" class="hidden" />
               </label>
             </div>
-            <input
-              v-model="form.image_url"
-              type="url"
-              placeholder=""
-              class="input-field mb-2 border-none hidden"
-            />
-            <div v-if="form.image_url" class="mt-4">
-              <img
-                :src="form.image_url"
-                alt="Preview"
-                class="rounded w-full h-60 object-cover"
-              />
-            </div>
           </div>
 
           <div class="flex justify-end gap-3 mt-4">
-            <button
-              type="submit"
-              class="btn-primary px-4 py-2 rounded text-white font-medium transition"
-            >
+            <button type="submit" class="btn-primary">
               {{ t("next") }}
             </button>
           </div>
@@ -264,10 +253,8 @@
         <form v-if="step === 2" @submit.prevent="nextStep" class="space-y-4">
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700">{{
-                t("product")
-              }}</label>
-              <select v-model="form.product_id" class="input-field">
+              <label class="block label">{{ t("product") }}</label>
+              <select v-model="form.product_id" class="input-field content">
                 <option v-for="p in products" :key="p.id" :value="p.id">
                   {{ p.product }}
                 </option>
@@ -275,10 +262,11 @@
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700">{{
-                t("category")
-              }}</label>
-              <select v-model="form.categorie_post_id" class="input-field">
+              <label class="block label">{{ t("category") }}</label>
+              <select
+                v-model="form.categorie_post_id"
+                class="input-field content"
+              >
                 <option v-for="cat in categories" :key="cat.id" :value="cat.id">
                   {{ cat.categorie }}
                 </option>
@@ -286,36 +274,30 @@
             </div>
 
             <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-gray-700">{{
-                t("quantity")
-              }}</label>
+              <label class="block label">{{ t("quantity") }}</label>
               <input
                 v-model="form.quantity"
                 type="number"
                 min="1"
-                class="input-field w-full"
+                class="input-field content w-full"
                 required
               />
             </div>
 
             <div class="grid grid-cols-2 gap-4 md:col-span-2">
               <div>
-                <label class="block text-sm font-medium text-gray-700">{{
-                  t("price")
-                }}</label>
+                <label class="block label">{{ t("price") }}</label>
                 <input
                   v-model="form.price"
                   type="text"
-                  class="input-field w-full"
+                  class="input-field content w-full"
                   required
                 />
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700">{{
-                  t("currency")
-                }}</label>
-                <select v-model="form.currency_id" class="input-field w-full">
+                <label class="block label">{{ t("currency") }}</label>
+                <select v-model="form.currency_id" class="input-field content w-full">
                   <option v-for="c in currencies" :key="c.id" :value="c.id">
                     {{ c.currency }} ({{ c.symbol }})
                   </option>
@@ -325,18 +307,11 @@
           </div>
 
           <div class="flex justify-end gap-3 mt-4">
-            <button
-              type="button"
-              class="btn-secondary px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
-              @click="prevStep"
-            >
+            <button type="button" class="btn-neutre" @click="prevStep">
               {{ t("prev") }}
             </button>
 
-            <button
-              type="submit"
-              class="btn-primary px-4 py-2 rounded text-white font-medium transition"
-            >
+            <button type="submit" class="btn-primary">
               {{ t("next") }}
             </button>
           </div>
@@ -344,11 +319,11 @@
       </transition>
 
       <transition name="fade" mode="out-in">
-        <div v-if="step === 3" class="space-y-6">
+        <div v-if="step === 3" class="space-y-6 ">
           <div
-            class="bg-white rounded shadow-sm border border-gray-100 overflow-hidden"
+            class="rounded-2xl bg-white overflow-hidden"
           >
-            <div class="relative h-72">
+            <div class="relative h-96">
               <img
                 v-if="form.image_url"
                 :src="form.image_url"
@@ -357,23 +332,23 @@
               />
               <div
                 v-else
-                class="absolute inset-0 bg-gray-200 flex items-center justify-center text-gray-500"
+                class="absolute inset-0 bg-gray-200 flex items-center justify-center text-gray-500 small"
               >
-                No image
+                {{ t('noImage') }}
               </div>
 
               <div
-                class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-transparent"
+                class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-transparent"
               ></div>
 
               <div class="absolute bottom-4 left-4 flex flex-row gap-3">
                 <span
-                  class="rounded-full bg-white/90 px-3 py-1 text-xs text-gray-600 shadow z-10"
+                  class="rounded-full bg-white/90 px-3 py-1 text-xs text-gray-600 shadow z-10 small"
                 >
                   {{ selectedTypePost?.type || "—" }}
                 </span>
                 <div
-                  class="flex items-center gap-1 rounded-full bg-white/90 px-3 py-1 text-xs text-gray-600 shadow z-10"
+                  class="flex items-center gap-1 rounded-full bg-white/90 px-3 py-1 text-xs text-gray-600 small shadow z-10"
                 >
                   <i class="bx bx-location-plus"></i>
                   <span>{{ form.location }}</span>
@@ -382,37 +357,37 @@
             </div>
 
             <div class="p-6 space-y-4">
-              <h2 class="text-xl font-bold text-gray-900 leading-snug">
+              <h2 class="subtitle leading-snug">
                 {{ form.title || "Sans titre" }}
               </h2>
 
-              <p class="text-gray-700 text-sm leading-relaxed">
+              <p class="content leading-relaxed">
                 {{ form.description }}
               </p>
 
               <div
-                class="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-gray-200 pt-4"
+                class="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-gray-200 pt-4 small"
               >
                 <div
                   class="px-2 flex items-center justify-start gap-2 text-gray-700"
                 >
                   <i class="bx bx-package text-lg text-gray-700"></i>
-                  <span class="text-sm">
+                  <span class="text-sm small">
                     {{ selectedProduct?.product || "—" }}
                   </span>
                 </div>
-                <div class="px-2 flex items-center gap-2 text-gray-700">
+                <div class="px-2 flex items-center justify-center gap-2 text-gray-700">
                   <i class="bx bx-cube text-lg text-gray-700"></i>
-                  <span class="text-sm">
+                  <span class="text-sm small">
                     {{ form.quantity }}
                   </span>
                 </div>
 
                 <div
-                  class="px-2 flex items-center justify-center gap-2 text-gray-700"
+                  class="px-2 flex items-center justify-end gap-2 text-gray-700"
                 >
                   <i class="bx bx-wallet text-lg text-gray-700"></i>
-                  <span class="text-sm font-semibold">
+                  <span class="text-sm small">
                     {{ form.price }}
                     {{ selectedCurrency?.symbol || selectedCurrency?.currency }}
                   </span>
@@ -422,7 +397,7 @@
                 <span
                   v-for="lab in selectedLabels"
                   :key="lab.id"
-                  class="px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-700"
+                  class="px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-700 small"
                 >
                   {{ lab.name }}
                 </span>
@@ -431,19 +406,11 @@
           </div>
 
           <div class="flex justify-end gap-3 mt-4">
-            <button
-              type="button"
-              class="btn-secondary px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
-              @click="prevStep"
-            >
+            <button type="button" class="btn-neutre" @click="prevStep">
               {{ t("prev") }}
             </button>
 
-            <button
-              type="button"
-              class="btn-success px-4 py-2 rounded text-white font-medium transition"
-              @click="submitPost"
-            >
+            <button type="button" class="btn-primary" @click="submitPost">
               {{ t("save") }}
             </button>
           </div>
@@ -698,6 +665,11 @@ const nextStep = () => {
 };
 const prevStep = () => {
   if (step.value > 1) step.value--;
+};
+
+const getFileName = (url) => {
+  if (!url) return "";
+  return url.split("/").pop();
 };
 
 const handleFileUpload = async (e) => {
@@ -958,10 +930,7 @@ const removeLabel = (id) => {
 
 <style scoped>
 .input-field {
-  @apply w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none;
-}
-.btn-primary {
-  @apply bg-[#10b481] text-white px-5 py-2 rounded transition-all;
+  @apply w-full px-4 py-2.5 rounded-lg border border-[#112830]/15 bg-white focus:border-[#10b481] focus:ring-4 focus:ring-[#10b481]/10 outline-none transition-all;
 }
 .btn-secondary {
   @apply text-gray-700 border border-gray-700 px-5 py-2 transition-all;

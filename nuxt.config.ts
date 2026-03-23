@@ -9,6 +9,10 @@ export default defineNuxtConfig({
     '@nuxtjs/sitemap',
   ],
   css: ['@/assets/css/main.css'],
+  tailwindcss: {
+    configPath: 'tailwind.config.ts',
+  },
+  plugins: ['~/plugins/apexcharts.client.ts'],
 
   site: {
     url: 'https://sales.smart-saha.com',

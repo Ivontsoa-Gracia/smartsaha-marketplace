@@ -26,10 +26,84 @@ useHead({
   link: [
     { rel: "stylesheet", href: "https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" },
     { rel: "stylesheet", href: "https://cdn.boxicons.com/fonts/basic/boxicons.min.css" },
-    { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500;700;800&display=swap" }
+    { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500;700;800&display=swap" },
+    {
+      rel: "preload",
+      as: "font",
+      href: "/fonts/Inter_24pt-Regular.ttf",
+      type: "font/ttf",
+      crossorigin: "anonymous",
+    },
+    {
+      rel: "preload",
+      as: "font",
+      href: "/fonts/Inter_28pt-Italic.ttf",
+      type: "font/ttf",
+      crossorigin: "anonymous",
+    },
+    {
+      rel: "preload",
+      as: "font",
+      href: "/fonts/Inter_28pt-Medium.ttf",
+      type: "font/ttf",
+      crossorigin: "anonymous",
+    },
+    {
+      rel: "preload",
+      as: "font",
+      href: "/fonts/Manrope-Bold.ttf",
+      type: "font/ttf",
+      crossorigin: "anonymous",
+    },
+    {
+      rel: "preload",
+      as: "font",
+      href: "/fonts/Manrope-SemiBold.ttf",
+      type: "font/ttf",
+      crossorigin: "anonymous",
+    },
+    {
+      rel: "preload",
+      as: "font",
+      href: "/fonts/Manrope-ExtraBold.ttf",
+      type: "font/ttf",
+      crossorigin: "anonymous",
+    },
   ],
   script: [
     { type: "module", src: "https://cdn.jsdelivr.net/npm/emoji-picker-element@1/index.js" }
   ]
 })
 </script>
+
+<style>
+@font-face {
+  font-family: "Inter-Regular";
+  src: url("/fonts/Inter_24pt-Regular.ttf") format("opentype");
+}
+
+@font-face {
+  font-family: "Inter-Italic";
+  src: url("/fonts/Inter_28pt-Italic.ttf") format("opentype");
+}
+
+@font-face {
+  font-family: "Inter-Medium";
+  src: url("/fonts/Inter_28pt-Medium.ttf") format("opentype");
+}
+
+@font-face {
+  font-family: "Manrope-Bold";
+  src: url("/fonts/Manrope-Bold.ttf") format("opentype");
+}
+
+@font-face {
+  font-family: "Manrope-SemiBold";
+  src: url("/fonts/Manrope-SemiBold.ttf") format("opentype");
+}
+
+@font-face {
+  font-family: "Manrope-ExtraBold";
+  src: url("/fonts/Manrope-ExtraBold.ttf") format("opentype");
+}
+</style>

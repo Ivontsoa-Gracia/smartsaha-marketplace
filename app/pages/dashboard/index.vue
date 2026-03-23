@@ -1,329 +1,1297 @@
 <template>
-  <div class="space-y-8 p-12 min-h-screen">
-    <Breadcrumb />
+  <div class="min-h-screen p-8">
+    <div v-if="loading" class="text-gray-500">Chargement...</div>
+    <div v-if="error" class="text-red-500">{{ error }}</div>
 
-    <div class="flex items-center justify-between">
-      <div>
-        <h1 class="text-2xl font-semibold text-[#112830]">
-          {{ t('dashboard') }}
-        </h1>
-        <p class="text-sm text-gray-500">{{ t('dashboardText') }}</p>
-      </div>
-
-      <div class="flex items-center gap-4">
-        <select
-          v-model="period"
-          class="bg-transparent outline-none border-none rounded px-3 py-2 text-sm font-medium"
+    <div v-else class="">
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 small">
+        <div
+          class="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition duration-300"
         >
-          <option value="global">{{ t('global') }}</option>
-          <option value="last7">{{ t('last7') }}</option>
-          <option value="lastMonth">{{ t('lastMonth') }}</option>
-          <option value="year">{{ t('year') }}</option>
-        </select>
+          <div class="flex items-center justify-between">
+            <p
+              class="text-xs font-medium text-gray-400 uppercase tracking-wide"
+            >
+              Enchères reçues
+            </p>
+            <div
+              class="w-10 h-10 flex items-center justify-center rounded-xl bg-[#10b481]/10 text-[#10b481]"
+            >
+              <i class="bx bx-transfer text-lg"></i>
+            </div>
+          </div>
+          <h2 class="text-3xl mt-4">
+            {{ receivedBids.length }}
+          </h2>
+        </div>
 
         <div
-          class="flex items-center gap-3 bg-white px-4 py-2 rounded border border-gray-100"
+          class="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition duration-300"
         >
-          <div class="flex">
-            <i
-              v-for="n in 5"
-              :key="n"
-              :class="
-                n <= Math.round(averageRating)
-                  ? 'bx bxs-star text-yellow-400'
-                  : 'bx bx-star text-gray-300'
-              "
-              class="text-lg"
+          <div class="flex items-center justify-between">
+            <p
+              class="text-xs font-medium text-gray-400 uppercase tracking-wide"
+            >
+              Enchères acceptées
+            </p>
+            <div
+              class="w-10 h-10 flex items-center justify-center rounded-xl bg-[#10b481]/10 text-[#10b481]"
+            >
+              <i class="bx bx-check-circle text-lg"></i>
+            </div>
+          </div>
+          <h2 class="text-3xl mt-4">
+            {{
+              receivedBids.filter((b) => b.current_status.name === "acceptée")
+                .length
+            }}
+          </h2>
+        </div>
+
+        <div
+          class="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition duration-300"
+        >
+          <div class="flex items-center justify-between">
+            <p
+              class="text-xs font-medium text-gray-400 uppercase tracking-wide"
+            >
+              Bids payées
+            </p>
+            <div
+              class="w-10 h-10 flex items-center justify-center rounded-xl bg-[#10b481]/10 text-[#10b481]"
+            >
+              <i class="bx bx-credit-card text-lg"></i>
+            </div>
+          </div>
+          <h2 class="text-3xl mt-4">
+            {{
+              receivedBids.filter((b) => b.current_status.name === "payée")
+                .length
+            }}
+          </h2>
+        </div>
+
+        <div
+          class="bg-[#10b481] rounded-2xl p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition duration-300 text-white"
+        >
+          <div class="flex items-center justify-between">
+            <p class="text-xs uppercase tracking-wide">Satisfaction globale</p>
+            <div
+              class="w-10 h-10 flex items-center justify-center rounded-xl bg-[#10b481]/10 text-[#10b481]"
+            >
+              <i class="bx bx-transfer text-lg"></i>
+            </div>
+          </div>
+
+          <div class="mt-3 flex items-center justify-between">
+            <div class="flex items-center gap-1">
+              <i
+                v-for="n in 5"
+                :key="n"
+                :class="
+                  n <= Math.round(averageRating)
+                    ? 'bx bxs-star text-white'
+                    : 'bx bxs-star text-white/40'
+                "
+                class="text-base"
+              />
+            </div>
+
+            <div class="text-right">
+              <div class="flex items-baseline gap-1">
+                <h2 class="text-3xl text-white leading-none">
+                  {{ averageRating.toFixed(1) }}
+                </h2>
+                <span class="text-xs small text-white/70">/ 5</span>
+              </div>
+              <p class="text-xs small text-white/70">
+                {{ reviews?.reviews?.length }} avis
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mt-6">
+        <div
+          class="xl:col-span-2 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md p-6 transition-all duration-300"
+        >
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="subtitle">Activité des enchères</h3>
+
+            <div
+              class="flex bg-[#fafaf9] backdrop-blur-md rounded-full p-1 text-xs font-medium shadow-inner"
+            >
+              <button
+                @click="period = 'day'"
+                :class="[
+                  'px-4 py-1.5 rounded-full transition-all duration-200 small',
+                  period === 'day'
+                    ? 'bg-white shadow text-[#112830]'
+                    : 'text-gray-500 hover:text-[#112830]',
+                ]"
+              >
+                Jour
+              </button>
+
+              <button
+                @click="period = 'week'"
+                :class="[
+                  'px-4 py-1.5 rounded-full transition-all duration-200 small',
+                  period === 'week'
+                    ? 'bg-white shadow text-[#10b481]'
+                    : 'text-gray-500 hover:text-[#10b481]',
+                ]"
+              >
+                Semaine
+              </button>
+
+              <button
+                @click="period = 'month'"
+                :class="[
+                  'px-4 py-1.5 rounded-full transition-all duration-200 small',
+                  period === 'month'
+                    ? 'bg-white shadow text-[#112830]'
+                    : 'text-gray-500 hover:text-[#112830]',
+                ]"
+              >
+                Mois
+              </button>
+            </div>
+          </div>
+
+          <div class="">
+            <div>
+              <ApexCharts
+                type="bar"
+                height="300"
+                :options="bidsOptions"
+                :series="bidsChartData.series"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-6">
+          <div
+            class="relative small max-h-[150px] bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md p-6 flex items-center transition-all duration-300"
+          >
+            <div class="flex-1 flex-col gap-2 w-[50%]">
+              <p class="text-sm text-gray-500 tracking-wide">
+                Nombre total d’annonces
+              </p>
+              <h2
+                class="text-3xl small font-bold bg-gradient-to-r from-[#112830] to-[#10b481] bg-clip-text text-transparent"
+              >
+                {{ loading ? "..." : posts.length }}
+              </h2>
+            </div>
+
+            <div
+              class="relative flex-1 flex-col items-end justify-center w-[30%]"
+            >
+              <ApexCharts
+                type="radialBar"
+                :options="radialOptions"
+                :series="[successRate]"
+                height="200"
+              />
+            </div>
+          </div>
+
+          <div
+            class="relative bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md p-6 transition-all duration-300"
+          >
+            <h2 class="subtitle mb-4">Annonces par statut</h2>
+
+            <ApexCharts
+              type="donut"
+              :options="donutOptions"
+              :series="statusSeries"
+              width="300"
+              class="mx-auto"
             />
           </div>
-          <span class="text-sm text-gray-600">
-            <b class="text-[#112830]">{{ averageRating.toFixed(1) }}</b>
-            /5 · {{ reviews.length }}
-          </span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
+        <div
+          class="relative w-full bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md p-6 transition-all duration-300"
+        >
+          <div class="flex items-start justify-between mb-8">
+            <div>
+              <h3 class="subtitle">Taux d’acceptation</h3>
+              <p class="text-sm small text-gray-400 mt-1">
+                Performance globale des offres
+              </p>
+            </div>
+
+            <div
+              class="flex bg-[#fafaf9] backdrop-blur-md rounded-full p-1 text-xs font-medium shadow-inner"
+            >
+              <button
+                @click="rateFilter = 'all'"
+                :class="[
+                  'px-4 py-1.5 rounded-full transition-all duration-200 small',
+                  rateFilter === 'all'
+                    ? 'bg-white shadow text-[#112830]'
+                    : 'text-gray-500 hover:text-[#112830]',
+                ]"
+              >
+                Tous
+              </button>
+
+              <button
+                @click="rateFilter = 'received'"
+                :class="[
+                  'px-4 py-1.5 rounded-full transition-all duration-200 small',
+                  rateFilter === 'received'
+                    ? 'bg-white shadow text-[#10b481]'
+                    : 'text-gray-500 hover:text-[#10b481]',
+                ]"
+              >
+                Reçues
+              </button>
+
+              <button
+                @click="rateFilter = 'sent'"
+                :class="[
+                  'px-4 py-1.5 rounded-full transition-all duration-200 small',
+                  rateFilter === 'sent'
+                    ? 'bg-white shadow text-[#112830]'
+                    : 'text-gray-500 hover:text-[#112830]',
+                ]"
+              >
+                Envoyées
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            <div class="relative flex justify-center">
+              <ApexCharts
+                type="donut"
+                height="200"
+                :options="rateOptions"
+                :series="rateChartData.series"
+              />
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <div
+                v-for="(value, index) in rateChartData.series"
+                :key="index"
+                class="flex items-center justify-between bg-white backdrop-blur-md rounded-xl px-4 py-3 border border-gray-100 hover:shadow-md transition"
+              >
+                <div class="flex items-center gap-3">
+                  <span
+                    class="w-3 h-3 rounded-full"
+                    :style="{ backgroundColor: rateOptions.colors[index] }"
+                  ></span>
+
+                  <span class="text-sm small text-gray-600">
+                    {{ rateOptions.labels[index] }}
+                  </span>
+                </div>
+
+                <span class="subtitle"> {{ value }}% </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="grid gap-6"
+          :class="[
+            showSeller && showBuyer ? 'md:grid-cols-2' : 'md:grid-rows-2',
+          ]"
+        >
+          <div
+            class="relative bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md p-6 transition "
+          >
+            <p class="text-xs uppercase tracking-widest text-gray-400 mb-6">
+              Temps moyen
+            </p>
+
+            <div
+              class="flex gap-6 justify-between"
+              :class="[showSeller && showBuyer ? 'md:flex-row' : 'md:fle-col']"
+            >
+              <div>
+                <p class="text-xs text-gray-500">Négociation</p>
+                <div class="flex items-end gap-1 mt-1">
+                  <h2 class="mt-4">
+                    {{ avgNegotiationDelay }}
+                  </h2>
+                  <span class="text-xs text-gray-400 mb-1">j</span>
+                </div>
+              </div>
+
+              <div
+                class="h-10 w-px bg-gray-200"
+                :class="[
+                  showSeller && showBuyer
+                    ? 'h-[2px] w-10 bg-gray-200'
+                    : 'h-10 w-px bg-gray-200',
+                ]"
+              ></div>
+
+              <div class="text-right">
+                <p class="text-xs text-gray-500">Conclusion</p>
+                <div class="flex items-end gap-1 mt-1 justify-end">
+                  <h2 class="mt-4">
+                    {{ avgConclusionDelay }}
+                  </h2>
+                  <span class="text-xs text-gray-400 mb-1">j</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="grid gap-6"
+            :class="[
+              showSeller && showBuyer ? 'md:grid-cols-1' : 'md:grid-rows-2',
+            ]"
+          >
+            <div
+              v-if="showSeller"
+              class=" bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md p-6 transition"
+            >
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="text-xs uppercase tracking-widest text-gray-400">
+                    Revenus
+                  </p>
+                  <h2 class="mt-4">
+                    {{ formatCurrency(sellerRevenue) }}
+                  </h2>
+                </div>
+
+                <span
+                  class="bg-[#10b481]/10 text-[#10b481] text-xs font-semibold px-3 py-1 rounded-full"
+                >
+                  +12.4%
+                </span>
+              </div>
+              <ApexCharts
+                type="line"
+                height="100"
+                width="100%"
+                :options="sellerRevenueOptions"
+                :series="sellerRevenueSeries"
+              />
+            </div>
+
+            <div
+              v-if="showBuyer"
+              class=" bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md p-6 transition"
+            >
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="text-xs uppercase tracking-widest text-gray-400">
+                    Achats
+                  </p>
+                  <h2 class="mt-4">
+                    {{ formatCurrency(buyerSpending) }}
+                  </h2>
+                </div>
+
+                <span
+                  class="bg-[#112830]/10 text-[#112830] text-xs font-semibold px-3 py-1 rounded-full"
+                >
+                  -4.2%
+                </span>
+              </div>
+              <ApexCharts
+                type="line"
+                height="100"
+                width="100%"
+                :options="buyerRevenueOptions"
+                :series="buyerRevenueSeries"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div
-      class="grid grid-cols-1 sm:grid-cols-4 gap-4 overflow-hidden"
-    >
-      <StatCard
-        label="Posts"
-        :value="stats.posts"
-        icon="bx bx-book"
-        color="#10b481"
-      />
-      <StatCard
-        label="Received bids"
-        :value="stats.receivedBids"
-        icon="bx bx-down-arrow-circle"
-        color="#219ebc"
-        bordered
-      />
-      <StatCard
-        label="Sent bids"
-        :value="stats.sentBids"
-        icon="bx bx-up-arrow-circle"
-        color="#f4a261"
-        bordered
-      />
-      <StatCard
-        label="Accepted revenue"
-        :value="formattedRevenue"
-        icon="bx bx-money"
-        color="#5fd4a2"
-        bordered
-      />
-    </div>
+    <div class="mt-6">
+      <div
+        v-if="
+          (recentPosts && recentPosts.length) ||
+          (recentReceivedBids && recentReceivedBids.length)
+        "
+      >
+        <div
+          class="relative rounded-2xl border border-white/40 bg-gradient-to-br from-white/95 to-white/80 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.05)] overflow-hidden"
+        >
+          <div
+            class="flex items-center justify-between px-6 py-6 border-b border-gray-100"
+          >
+            <div>
+              <h3 class="subtitle tracking-tight">Activité récente</h3>
+              <p class="text-sm small text-gray-400 mt-1">Cette semaine</p>
+            </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div class="lg:col-span-2 bg-white rounded p-6 border border-gray-100">
-        <h2 class="text-gray-500 font-semibold text-sm uppercase tracking-wide mb-4">{{ t('annoncesEvolution') }}</h2>
-        <div class="h-72 w-full">
-          <canvas ref="soldPostsChart" class="w-full h-full"></canvas>
-        </div>
-      </div>
+            <div class="flex flex-col sm:flex-row gap-2">
+              <button
+                class="group text-sm small-medium text-[#10b481] flex items-center justify-center gap-1"
+              >
+                voir plus
+                <i
+                  class="bx bx-right-arrow-alt text-lg transition-transform duration-200 group-hover:translate-x-1"
+                ></i>
+              </button>
+            </div>
+          </div>
 
-      <div class="bg-white rounded p-6 border border-gray-100">
-        <h2 class="text-gray-500 font-semibold text-sm uppercase tracking-wide mb-4">{{ t('postsStatus') }}</h2>
-        <div class="h-72">
-          <canvas ref="postsChart" />
+          <div class="overflow-x-auto">
+            <table class="w-[100%] text-sm text-left border-collapse">
+              <thead
+                class="text-xs font-medium text-gray-400 uppercase tracking-wider"
+              >
+                <tr>
+                  <th class="px-8 py-4 small">Type</th>
+                  <th class="px-8 py-4 small">Titre</th>
+                  <th class="px-8 py-4 small">Utilisateur</th>
+                  <th class="px-8 py-4 small text-right">Montant</th>
+                  <th class="px-8 py-4 small text-right">Statut</th>
+                  <th class="px-8 py-4 small text-right">Date</th>
+                </tr>
+              </thead>
+
+              <tbody class="divide-y divide-gray-100 content">
+                <tr
+                  v-for="post in recentPosts"
+                  :key="'post-' + post.id"
+                  class="hover:bg-[#fafaf9] hover:border-l-emerald-500 transition-all duration-200 ease-in-out border-l-4 border-[#10b481]"
+                >
+                  <td class="px-8 py-5 font-medium">Post</td>
+
+                  <td class="px-8 py-5 font-medium hover:text-[#10b481]">
+                    <NuxtLink :to="`/dashboard/post/bids/${post.id}`">
+                      {{ post.title }}
+                    </NuxtLink>
+                  </td>
+
+                  <td class="px-8 py-5">—</td>
+
+                  <td class="px-8 py-5 text-right font-semibold">
+                    {{ Number(post.price).toLocaleString() }}
+                    {{ post.currency.symbol }}
+                  </td>
+
+                  <td class="px-8 py-5 text-right">
+                    {{ post.current_status }}
+                  </td>
+
+                  <td class="px-8 py-5 text-right">
+                    {{ formatDate(post.created_at) }}
+                  </td>
+                </tr>
+
+                <tr
+                  v-for="bid in recentReceivedBids"
+                  :key="'bid-' + bid.id"
+                  class="hover:bg-[#fafaf9] hover:border-l-emerald-500 transition-all duration-200 ease-in-out border-l-4 border-[#112830]"
+                >
+                  <td class="px-8 py-5 text-[#112830] font-medium">Enchère</td>
+
+                  <td class="px-8 py-5 font-medium hover:text-[#10b481]">
+                    <NuxtLink :to="`/dashboard/post/bids/${bid.post.id}`">
+                      {{ bid.post.title }}
+                    </NuxtLink>
+                  </td>
+
+                  <td class="px-8 py-5">
+                    {{ bid.user.username }}
+                  </td>
+
+                  <td class="px-8 py-5 text-right font-semibold">
+                    {{ Number(bid.price).toLocaleString() }}
+                    {{ bid.currency.symbol }}
+                  </td>
+
+                  <td class="px-8 py-5 text-right">
+                    <span
+                      class="text-xs font-medium px-3 py-1 rounded-full"
+                      :class="{
+                        'bg-[#10b481]/10 text-[#10b481]':
+                          bid.current_status.name === 'acceptée',
+                        'bg-[#fd7e14]/10 text-[#fd7e14]':
+                          bid.current_status.name === 'proposée',
+                        'bg-[#dc3545]/10 text-[#dc3545]':
+                          bid.current_status.name === 'refusée',
+                      }"
+                    >
+                      {{ bid.current_status.name }}
+                    </span>
+                  </td>
+
+                  <td class="px-8 py-5 text-right">
+                    {{ formatDate(bid.created_at) }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 definePageMeta({ layout: "dashboard" });
-
-import { ref, onMounted, computed, watch } from "vue";
-import { Chart, registerables } from "chart.js";
-import Breadcrumb from "~/components/Breadcrumb.vue";
-import StatCard from "~/components/StatCard.vue";
+import { ref, onMounted } from "vue";
+import ApexCharts from "vue3-apexcharts";
 import { API_URL } from "~/utils/config";
+import { parseISO, formatDistanceToNow } from "date-fns";
+import { fr, enUS } from "date-fns/locale";
+import { startOfWeek, endOfWeek, isWithinInterval } from "date-fns";
 import { useLanguageStore } from "~/stores/language";
 import { translate } from "~/utils/translate";
-import { useRouter } from "vue-router";
-const router = useRouter();
+import { getWeek, format } from "date-fns";
 
 const languageStore = useLanguageStore();
-const t = (key) => {
-  const lang = languageStore.lang;
-  return translate[lang][key] || key;
+const t = (key: string) => translate[languageStore.lang][key] || key;
+
+const formatDate = (dateStr: string) => {
+  if (!dateStr) return "-";
+  const date = parseISO(dateStr.replace(/\.(\d{3})\d+Z$/, ".$1Z"));
+  const diffDays = Math.floor(
+    (Date.now() - date.getTime()) / (1000 * 60 * 60 * 24)
+  );
+  if (diffDays > 7)
+    return date.toLocaleDateString(
+      languageStore.lang === "fr" ? "fr-FR" : "en-US",
+      { year: "numeric", month: "short", day: "numeric" }
+    );
+  return formatDistanceToNow(date, {
+    addSuffix: true,
+    locale: languageStore.lang === "fr" ? fr : enUS,
+  });
 };
 
-Chart.register(...registerables);
+const posts = ref<any[]>([]);
+const sentBids = ref<any[]>([]);
+const receivedBids = ref<any[]>([]);
+const loading = ref(true);
+const error = ref("");
 
-const posts = ref([]);
-const receivedBids = ref([]);
-const sentBids = ref([]);
+const result = ref(0);
+const currentPage = ref(1);
+const itemsPerPage = 4;
+
+const statusSeries = ref<number[]>([]);
+const statusLabels = [
+  "Brouillon",
+  "Publié",
+  "Négociation",
+  "Vendu",
+  "Supprimé",
+];
+const period = ref<"day" | "week" | "month">("day");
+const successRate = ref<number>(0);
+const acceptedBid = ref<number>(0);
+
 const reviews = ref([]);
-
-const period = ref("global");
-
-const stats = ref({
-  posts: 0,
-  receivedBids: 0,
-  sentBids: 0,
-});
-
-let soldChart = null;
-let statusChart = null;
-
-const postsChart = ref(null);
-const soldPostsChart = ref(null);
-
-async function fetchData(url, target) {
-  const token = localStorage.getItem("access_token");
-  const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (res.ok) target.value = await res.json();
-}
-
-function isInPeriod(date) {
-  const d = new Date(date);
-  const now = new Date();
-
-  if (period.value === "last7") {
-    const start = new Date();
-    start.setDate(now.getDate() - 7);
-    return d >= start;
-  }
-
-  if (period.value === "lastMonth") {
-    const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const endLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
-    return d >= lastMonth && d <= endLastMonth;
-  }
-
-  if (period.value === "year") {
-    return d.getFullYear() === now.getFullYear();
-  }
-
-  return true;
-}
 
 const averageRating = computed(() => {
   return reviews.value?.average_rating ?? 0;
 });
 
-const filteredPosts = computed(() =>
-  posts.value.filter((p) => isInPeriod(p.created_at))
-);
-const filteredReceived = computed(() =>
-  receivedBids.value.filter((b) => isInPeriod(b.created_at))
-);
-const filteredSent = computed(() =>
-  sentBids.value.filter((b) => isInPeriod(b.created_at))
-);
+onMounted(async () => {
+  try {
+    const token = localStorage.getItem("access_token");
+    if (!token) throw new Error("Token manquant");
 
-const totalRevenue = computed(() => {
-  // On va créer un objet par currency
-  const revenueByCurrency = {};
-
-  filteredReceived.value
-    .filter((b) => b.current_status.name === "acceptée" || b.current_status.name === "payée")
-    .forEach((b) => {
-      const post = posts.value.find((p) => p.id === b.post.id);
-      if (post && post.current_status === "vendu") {
-        const currency = post.currency.symbol || "Ar"; // fallback
-        revenueByCurrency[currency] = (revenueByCurrency[currency] || 0) + Number(b.price || 0);
-      }
+    const resPosts = await fetch(`${API_URL}/api/posts/my_posts/`, {
+      headers: { Authorization: `Bearer ${token}` },
     });
+    if (!resPosts.ok) throw new Error("Impossible de récupérer les annonces");
+    posts.value = await resPosts.json();
 
-  return revenueByCurrency;
-});
+    console.log("Annonces récupérées :", JSON.stringify(posts.value, null, 2));
 
-// Formatage pour affichage
-const formattedRevenue = computed(() => {
-  const parts = [];
-  for (const [currency, amount] of Object.entries(totalRevenue.value)) {
-    parts.push(`${amount.toLocaleString()} ${currency}`);
+    const resSent = await fetch(`${API_URL}/api/bids/my_bids/`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!resSent.ok)
+      throw new Error("Impossible de récupérer les enchères envoyées");
+    sentBids.value = await resSent.json();
+    console.log(
+      "SendBids récupérées :",
+      JSON.stringify(sentBids.value, null, 2)
+    );
+
+    const resReceived = await fetch(`${API_URL}/api/bids/received_bids/`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!resReceived.ok)
+      throw new Error("Impossible de récupérer les enchères reçues");
+    receivedBids.value = await resReceived.json();
+    console.log(
+      "ReceivedBids récupérées :",
+      JSON.stringify(receivedBids.value, null, 2)
+    );
+
+    const resReview = await fetch(
+      `${API_URL}/api/reviews/user/${userId.value}/`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    if (!resReview.ok)
+      throw new Error("Impossible de récupérer les enchères reçues");
+    reviews.value = await resReview.json();
+    console.log("reviews récupérées :", JSON.stringify(reviews.value, null, 2));
+
+    const draft = posts.value.filter(
+      (p: any) => p.current_status === "brouillon"
+    ).length;
+    const published = posts.value.filter(
+      (p: any) => p.current_status === "published"
+    ).length;
+    const ongoing = posts.value.filter(
+      (p: any) => p.current_status === "négociation"
+    ).length;
+    const sold = posts.value.filter(
+      (p: any) => p.current_status === "vendu"
+    ).length;
+    const deleted = posts.value.filter(
+      (p: any) => p.current_status === "supprimé"
+    ).length;
+    statusSeries.value = [draft, published, ongoing, sold, deleted];
+
+    successRate.value = posts.value.length
+      ? Math.round((sold / posts.value.length) * 100)
+      : 0;
+
+    const radialSeries = [successRate.value];
+
+    acceptedBid.value = receivedBids.value.filter(
+      (b: any) => b.current_status.name === "acceptée"
+    ).length;
+  } catch (err: any) {
+    error.value = err.message || "Une erreur est survenue";
+    console.error(err);
+  } finally {
+    loading.value = false;
   }
-  return parts.join(" · "); // si plusieurs devises
 });
 
+// function groupBidsByPeriod(bids: any[]) {
+//   const grouped: Record<string, number> = {};
 
-watch([filteredPosts, filteredReceived, filteredSent], () => {
-  stats.value.posts = filteredPosts.value.length;
-  stats.value.receivedBids = filteredReceived.value.length;
-  stats.value.sentBids = filteredSent.value.length;
-});
+//   bids.forEach((b) => {
+//     const key = formatDate(b.created_at);
+//     grouped[key] = (grouped[key] || 0) + 1;
+//   });
 
-function renderCharts() {
-  soldChart?.destroy();
-  statusChart?.destroy();
+//   return grouped;
+// }
 
-  const sold = filteredPosts.value.filter((p) => p.current_status === "vendu");
+function formatChartLabel(timestamp: number) {
+  const date = new Date(timestamp);
 
-  const soldCounts = {};
-  sold.forEach((p) => {
-    const dateKey = new Date(p.created_at).toLocaleDateString();
-    soldCounts[dateKey] = (soldCounts[dateKey] || 0) + 1;
-  });
+  if (period.value === "day") {
+    // Feb 28 2026
+    return format(date, "MMM dd yyyy", {
+      locale: languageStore.lang === "fr" ? fr : enUS,
+    });
+  }
 
-  soldChart = new Chart(soldPostsChart.value, {
-    type: "line",
-    data: {
-      labels: Object.keys(soldCounts),
-      datasets: [
-        {
-          data: Object.values(soldCounts),
-          borderColor: "#10b481",
-          backgroundColor: "rgba(16,180,129,0.3)",
-          fill: true,
-          tension: 0.4,
-          pointRadius: 4,
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { display: false } },
-        y: {
-          beginAtZero: true,
-          ticks: { stepSize: 1, precision: 0 },
-        },
-      },
-    },
-  });
+  if (period.value === "week") {
+    // S numéro de semaine + année
+    const startOfWeek = new Date(date);
+    startOfWeek.setDate(date.getDate() - date.getDay());
+    const weekNumber = getWeek(startOfWeek, {
+      locale: languageStore.lang === "fr" ? fr : enUS,
+    });
+    const year = startOfWeek.getFullYear();
+    return `S${weekNumber} ${year}`;
+  }
 
-  const statusColors = {
-    brouillon: "#6B7280", // gris
-    published: "#219ebc", // bleu
-    négociation: "#f4a261", // jaune
-    vendu: "#10B481", // vert
-    supprimé: "#EF4444", // rouge
-  };
-
-  const statusCount = filteredPosts.value.reduce((a, p) => {
-    a[p.current_status] = (a[p.current_status] || 0) + 1;
-    return a;
-  }, {});
-
-  statusChart = new Chart(postsChart.value, {
-    type: "doughnut",
-    data: {
-      labels: Object.keys(statusCount),
-      datasets: [
-        {
-          data: Object.values(statusCount),
-          backgroundColor: Object.keys(statusCount).map(
-            (s) => statusColors[s] || "#D1D5DB"
-          ), 
-          borderWidth: 0,
-        },
-      ],
-    },
-    options: {
-      cutout: "75%",
-      plugins: {
-        legend: { position: "bottom" },
-      },
-    },
-  });
+  if (period.value === "month") {
+    // Feb 2026
+    return format(date, "MMM yyyy", {
+      locale: languageStore.lang === "fr" ? fr : enUS,
+    });
+  }
 }
 
+function groupBidsByPeriod(bids: any[]) {
+  const grouped: Record<string, number> = {};
+
+  bids.forEach((b) => {
+    const date = new Date(b.created_at);
+
+    let keyTimestamp: number;
+
+    if (period.value === "day") {
+      keyTimestamp = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate()
+      ).getTime();
+    } else if (period.value === "week") {
+      const firstDay = new Date(date);
+      firstDay.setDate(date.getDate() - date.getDay());
+      keyTimestamp = firstDay.getTime();
+    } else {
+      keyTimestamp = new Date(date.getFullYear(), date.getMonth(), 1).getTime();
+    }
+
+    const label = formatChartLabel(keyTimestamp);
+    grouped[label] = (grouped[label] || 0) + 1;
+  });
+
+  return grouped;
+}
+
+const bidsChartData = computed(() => {
+  const currentPeriod = period.value;
+
+  const sentGrouped = groupBidsByPeriod(sentBids.value);
+  const receivedGrouped = groupBidsByPeriod(receivedBids.value);
+
+  const keys = Array.from(
+    new Set([...Object.keys(sentGrouped), ...Object.keys(receivedGrouped)])
+  )
+    .map((k) => k)
+    .sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+
+  return {
+    categories: keys.map((k) => k),
+    series: [
+      {
+        name: "Enchères envoyées",
+        data: keys.map((k) => sentGrouped[k] || 0),
+      },
+      {
+        name: "Enchères reçues",
+        data: keys.map((k) => receivedGrouped[k] || 0),
+      },
+    ],
+  };
+});
+
+const colors = ["#C4C9CB", "#10B481", "#C3ECDD", "#112830", "#EF4444"];
+
+function computeOffset(index: number) {
+  const total = statusSeries.reduce((a, b) => a + b, 0);
+  const sumBefore = statusSeries.slice(0, index).reduce((a, b) => a + b, 0);
+  return 100 - (sumBefore / total) * 100;
+}
+
+const donutOptions = {
+  labels: statusLabels,
+  colors: ["#C4C9CB", "#10B481", "#C3ECDD", "#112830", "#EF4444"],
+  chart: { type: "donut", toolbar: { show: false } },
+
+  dataLabels: {
+    enabled: false,
+  },
+
+  legend: {
+    formatter: (seriesName: string) => {
+      return `<span class="text-xs small text-gray-500" style="margin-left:8px;">${seriesName}</span>`;
+    },
+  },
+};
+
+const radialOptions = {
+  chart: {
+    type: "radialBar",
+    toolbar: { show: false },
+    animations: { enabled: true, easing: "easeout", speed: 900 },
+  },
+  plotOptions: {
+    radialBar: {
+      startAngle: -135,
+      endAngle: 135,
+      hollow: {
+        size: "50%",
+      },
+      track: {
+        background: "#e6f0ee",
+        strokeWidth: "100%",
+        margin: 5,
+      },
+      dataLabels: {
+        name: {
+          show: true,
+          fontSize: "12px",
+          color: "#4B5563",
+          fontFamily: "Inter, sans-serif",
+          fontWeight: 500,
+          formatter: () => "Succès",
+        },
+        value: {
+          show: true,
+          fontSize: "16px",
+          fontWeight: 700,
+          fontFamily: "Inter, sans-serif",
+          color: "#10b481",
+          offsetY: 6,
+          formatter: function (val: string) {
+            return val + "%";
+          },
+        },
+      },
+      stroke: { lineCap: "round" },
+    },
+  },
+  fill: {
+    type: "gradient",
+    gradient: {
+      shade: "light",
+      type: "horizontal",
+      gradientToColors: ["#34d399"],
+      stops: [0, 100],
+    },
+  },
+  colors: ["#10b481"],
+  tooltip: {
+    enabled: true,
+    theme: "dark",
+    y: { formatter: (val: string) => val + "%" },
+  },
+};
+
+const bidsOptions = computed(() => ({
+  chart: {
+    type: "bar",
+    toolbar: { show: false },
+    zoom: { enabled: false },
+  },
+  plotOptions: {
+    bar: {
+      borderRadius: 8,
+      borderRadiusApplication: "end",
+      // columnWidth: "30%",
+      distributed: false,
+    },
+  },
+  // stroke: {
+  //   curve: "smooth",
+  //   width: 2,
+  // },
+  xaxis: {
+    categories: bidsChartData.value.categories,
+    labels: {
+      style: {
+        fontSize: "0.75rem",
+        colors: "#6B7280",
+        fontFamily: "Inter, sans-serif",
+      },
+    },
+  },
+  yaxis: {
+    labels: {
+      style: {
+        fontSize: "0.75rem",
+        colors: "#6B7280",
+        fontFamily: "Inter, sans-serif",
+      },
+    },
+  },
+  colors: ["#10b481", "#112830"],
+  // markers: {
+  //   size: 3,
+  //   strokeWidth: 2,
+  // },
+  legend: {
+    position: "top",
+    horizontalAlign: "right",
+    verticalAlign: "bottom",
+    formatter: (seriesName: string) => {
+      return `<span class="text-xs small text-gray-500" style="margin-left:8px;">${seriesName}</span>`;
+    },
+  },
+  grid: {
+    borderColor: "#f1f1f1",
+  },
+}));
+
+const rateFilter = ref("all");
+
+function filterBids() {
+  let relevant = [];
+  if (rateFilter.value === "received") relevant = receivedBids.value;
+  else if (rateFilter.value === "sent") relevant = sentBids.value;
+  else relevant = [...receivedBids.value, ...sentBids.value];
+  return relevant;
+}
+
+const rateChartData = computed(() => {
+  const bids = filterBids();
+
+  let accepted = 0;
+  let declined = 0;
+  let proposed = 0;
+  let cancelled = 0;
+
+  bids.forEach((b) => {
+    const status = b.current_status.name.toLowerCase();
+    if (status === "acceptée" || status === "payée") accepted++;
+    else if (status === "refusée" || status === "arrêtée") declined++;
+    else if (status === "proposée") proposed++;
+    else if (status === "annulée") cancelled++;
+  });
+
+  const total = bids.length;
+
+  const acceptedRate = total > 0 ? Math.round((accepted / total) * 100) : 0;
+  const declinedRate = total > 0 ? Math.round((declined / total) * 100) : 0;
+  const proposedRate = total > 0 ? Math.round((proposed / total) * 100) : 0;
+  const cancelledRate = total > 0 ? Math.round((cancelled / total) * 100) : 0;
+
+  return {
+    series: [acceptedRate, declinedRate, proposedRate, cancelledRate],
+  };
+});
+
+const rateOptions = {
+  labels: ["Proposée", "Acceptées", "Refusées", "Annulée"],
+  dataLabels: {
+    enabled: false,
+  },
+  legend: {
+    show: false,
+  },
+  stroke: {
+    width: 0,
+  },
+  plotOptions: {
+    pie: {
+      donut: {
+        size: "70%",
+      },
+    },
+  },
+  colors: ["#C3ECDD", "#10b481", "#112830", "#C4C9CB"],
+};
+
+const acceptedTrend = computed(() => {
+  const grouped: Record<string, number> = {};
+
+  receivedBids.value.forEach((b: any) => {
+    if (b.current_status.name !== "acceptée") return;
+
+    const date = new Date(b.created_at);
+    const key = date.toISOString().split("T")[0];
+
+    if (!grouped[key]) grouped[key] = 0;
+    grouped[key]++;
+  });
+
+  const categories = Object.keys(grouped).sort();
+
+  return {
+    categories,
+    series: [
+      {
+        name: "Acceptées",
+        data: categories.map((c) => grouped[c]),
+      },
+    ],
+  };
+});
+
+const acceptedOptions = computed(() => ({
+  chart: {
+    type: "line",
+    sparkline: { enabled: true },
+  },
+  stroke: {
+    curve: "smooth",
+    width: 2,
+  },
+  colors: ["#10b481"],
+  tooltip: {
+    enabled: true,
+  },
+}));
+
+const user = ref(null);
 const userId = ref(0);
+
+const userCategory = computed(() => {
+  if (!user.value || !user.value.id_categorie_user) return null;
+  return user.value.id_categorie_user.categorie;
+});
 
 async function checkUser() {
   const token = localStorage.getItem("access_token");
   if (!token) return;
-
   try {
     const res = await fetch(`${API_URL}/api/me/`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-
     if (!res.ok) throw new Error("Unauthorized");
-
     const data = await res.json();
     userId.value = data.id;
-  } catch (err) {
-    console.error("Failed to fetch user:", err);
+    user.value = data;
+    console.log("User data:", data);
+  } catch {
+    user.value = null;
   }
 }
 
-onMounted(async () => {
-  await checkUser();
-
-  await fetchData(`${API_URL}/api/posts/my_posts/`, posts);
-  await fetchData(`${API_URL}/api/bids/received_bids/`, receivedBids);
-  await fetchData(`${API_URL}/api/bids/my_bids/`, sentBids);
-  await fetchData(`${API_URL}/api/reviews/user/${userId.value}/`, reviews);
-
-  // console.log("received_bids :", JSON.parse(JSON.stringify(receivedBids.value, null, 2)));
-  // console.log("posts :", JSON.parse(JSON.stringify(posts.value, null, 2)));
-  // console.log("reviews :", JSON.parse(JSON.stringify(reviews.value, null, 2)));
-
-  renderCharts();
+onMounted(() => {
+  checkUser();
 });
 
-watch(period, renderCharts);
+function calculateAmounts(bids: any[]) {
+  const revenueByCurrency: Record<string, number> = {};
+  bids
+    .filter(
+      (b) =>
+        b.current_status.name === "acceptée" ||
+        b.current_status.name === "payée"
+    )
+    .forEach((b) => {
+      const currency = b.post?.currency?.symbol || "Ar";
+      revenueByCurrency[currency] =
+        (revenueByCurrency[currency] || 0) + Number(b.price || 0);
+    });
+  return revenueByCurrency;
+}
+
+const sellerRevenue = computed(() => calculateAmounts(receivedBids.value));
+const buyerSpending = computed(() => calculateAmounts(sentBids.value));
+
+function formatCurrency(data: Record<string, number | null | undefined>) {
+  if (!data) return "0";
+  return Object.entries(data)
+    .map(
+      ([currency, amount]) => `${(amount ?? 0).toLocaleString()} ${currency}`
+    )
+    .join(" · ");
+}
+
+function groupRevenueTrend(bids: any[]) {
+  const grouped: Record<string, { estimated: number; paid: number }> = {};
+
+  bids.forEach((b) => {
+    const date = new Date(b.updated_at || b.created_at)
+      .toISOString()
+      .split("T")[0];
+    if (!grouped[date]) grouped[date] = { estimated: 0, paid: 0 };
+
+    if (b.current_status.name === "acceptée")
+      grouped[date].estimated += Number(b.price || 0);
+    if (b.current_status.name === "payée")
+      grouped[date].paid += Number(b.price || 0);
+  });
+
+  const categories = Object.keys(grouped).sort();
+
+  return {
+    categories,
+    series: [
+      { name: "Estimé", data: categories.map((c) => grouped[c].estimated) },
+      { name: "Payé", data: categories.map((c) => grouped[c].paid) },
+    ],
+  };
+}
+
+const sellerRevenueSeries = computed(
+  () => groupRevenueTrend(receivedBids.value).series
+);
+
+const sellerRevenueOptions = computed(() => {
+  const data = groupRevenueTrend(receivedBids.value);
+  return {
+    chart: {
+      type: "line",
+      toolbar: { show: false },
+      sparkline: { enabled: true },
+    },
+    stroke: { curve: "straight", width: 2 },
+    colors: ["#10b481", "#112830"],
+    legend: { position: "top" },
+    grid: { borderColor: "#f1f1f1" },
+    xaxis: { categories: data.categories },
+    yaxis: { labels: { show: false } },
+    tooltip: {
+      shared: true,
+      intersect: false,
+      y: { formatter: (val: number) => val.toLocaleString() + " Ar" },
+    },
+  };
+});
+
+const buyerRevenueSeries = computed(
+  () => groupRevenueTrend(sentBids.value).series
+);
+
+const buyerRevenueOptions = computed(() => {
+  const data = groupRevenueTrend(sentBids.value);
+  return {
+    chart: {
+      type: "line",
+      toolbar: { show: false },
+      sparkline: { enabled: true },
+    },
+    stroke: { curve: "straight", width: 2 },
+    colors: ["#10b481", "#112830"],
+    legend: { position: "top" },
+    grid: { borderColor: "#f1f1f1" },
+    xaxis: { categories: data.categories },
+    yaxis: { labels: { show: false } },
+    tooltip: {
+      shared: true,
+      intersect: false,
+      y: { formatter: (val: number) => val.toLocaleString() + " Ar" },
+    },
+  };
+});
+// const buyerRevenueOptions = computed(() => {
+//   const data = groupRevenueTrend(sentBids.value);
+//   return {
+//     chart: { type: "line", toolbar: { show: false } },
+//     stroke: { curve: "straight", width: 2 },
+//     colors: ["#10b481", "#112830"],
+//     legend: { position: "top" },
+//     grid: { borderColor: "#f1f1f1" },
+//     xaxis: { categories: data.categories },
+//     yaxis: { labels: { formatter: (val: number) => val.toLocaleString() } },
+//     tooltip: {
+//       shared: true,
+//       intersect: false,
+//       y: { formatter: (val: number) => val.toLocaleString() + " Ar" },
+//     },
+//   };
+// });
+
+function calculateAvgNegotiationDelay(bids: any[]) {
+  const delays: number[] = [];
+
+  bids.forEach((b) => {
+    if (b.current_status.name === "proposée") return;
+
+    const created = new Date(b.created_at).getTime();
+    const updated = new Date(b.updated_at).getTime();
+
+    const diffDays = Math.max(
+      (updated - created) / (1000 * 60 * 60 * 24),
+      0.01
+    );
+    delays.push(diffDays);
+  });
+
+  if (!delays.length) return 0;
+  return Number((delays.reduce((a, b) => a + b, 0) / delays.length).toFixed(2));
+}
+
+function calculateAvgConclusionDelay(bids: any[]) {
+  const delays: number[] = [];
+
+  bids.forEach((b) => {
+    if (
+      !["acceptée", "payée", "refusée", "arrêtée"].includes(
+        b.current_status.name
+      )
+    )
+      return;
+
+    const created = new Date(b.created_at).getTime();
+    const updated = new Date(b.updated_at).getTime();
+
+    const diffDays = Math.max(
+      (updated - created) / (1000 * 60 * 60 * 24),
+      0.01
+    );
+    delays.push(diffDays);
+  });
+
+  if (!delays.length) return 0;
+  return Number((delays.reduce((a, b) => a + b, 0) / delays.length).toFixed(2));
+}
+
+const avgNegotiationDelay = computed(() =>
+  calculateAvgNegotiationDelay(receivedBids.value)
+);
+const avgConclusionDelay = computed(() =>
+  calculateAvgConclusionDelay(receivedBids.value)
+);
+
+const topPosts = computed(() => {
+  return [...posts.value]
+    .sort((a, b) => (b.total_bids || 0) - (a.total_bids || 0))
+    .slice(0, 5);
+});
+
+const startWeek = startOfWeek(new Date(), { weekStartsOn: 1 });
+const endWeek = endOfWeek(new Date(), { weekStartsOn: 1 });
+
+const recentPosts = computed(() =>
+  posts.value.filter((p) =>
+    isWithinInterval(parseISO(p.created_at), { start: startWeek, end: endWeek })
+  )
+);
+
+const recentReceivedBids = computed(() =>
+  receivedBids.value.filter((b) =>
+    isWithinInterval(parseISO(b.created_at), { start: startWeek, end: endWeek })
+  )
+);
+
+const miniRateOptions = {
+  chart: {
+    sparkline: { enabled: true },
+    toolbar: { show: false },
+  },
+  stroke: {
+    curve: "smooth",
+    width: 2,
+  },
+  fill: {
+    type: "gradient",
+    gradient: {
+      shadeIntensity: 1,
+      opacityFrom: 0.3,
+      opacityTo: 0.05,
+    },
+  },
+  colors: ["#112830"],
+  tooltip: {
+    enabled: true,
+  },
+};
+
+const showSeller = computed(
+  () => userCategory.value === "Vendeur" || userCategory.value === "User"
+);
+
+const showBuyer = computed(
+  () => userCategory.value === "Acheteur" || userCategory.value === "User"
+);
+
+const cardCount = computed(() => {
+  let count = 1;
+  if (showSeller.value) count++;
+  if (showBuyer.value) count++;
+  return count;
+});
 </script>
 
+<style>
+.apexcharts-legend::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.apexcharts-legend::-webkit-scrollbar-thumb {
+  background: rgba(16, 180, 129, 0.6);
+  border-radius: 10px;
+}
+
+.apexcharts-legend::-webkit-scrollbar-track {
+  background: transparent;
+}
+</style>

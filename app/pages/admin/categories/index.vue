@@ -1,15 +1,15 @@
 <template>
   <div class="space-y-8 p-12 bg-gray-50/60 min-h-screen">
-    <Breadcrumb />
+    <!-- <Breadcrumb /> -->
 
     <header
       class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-6"
     >
       <div>
-        <h1 class="text-2xl font-bold text-[#112830] tracking-tight">
+        <h2 class="tracking-tight">
           {{ t("categoryProduct") }}
-        </h1>
-        <p class="text-sm text-gray-500 mt-1">
+        </h2>
+        <p class="content mt-1">
           {{ t("catText") }}
         </p>
       </div>
@@ -33,7 +33,7 @@
           class="flex flex-col sm:flex-row gap-4 items-end"
         >
           <div class="flex-1 w-full">
-            <label class="text-sm font-medium text-gray-600 mb-1 block">
+            <label class="label mb-1 block">
               {{ t("category") }}
             </label>
             <input
@@ -41,7 +41,7 @@
               maxlength="50"
               required
               :placeholder="t('catPlaceholder')"
-              class="w-full border border-gray-300 rounded px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#10B481]/30 focus:border-[#10B481] outline-none"
+              class="w-full border border-gray-300 rounded px-4 py-2.5 content focus:ring-2 focus:ring-[#10B481]/30 focus:border-[#10B481] outline-none"
             />
           </div>
 
@@ -56,7 +56,7 @@
 
         <p
           v-if="message"
-          :class="['mt-4 p-3 rounded text-sm font-medium', messageClass]"
+          :class="['mt-4 p-3 rounded text-sm font-medium small', messageClass]"
         >
           {{ message }}
         </p>
@@ -70,12 +70,12 @@
         class="flex items-center justify-between bg-white border border-gray-200 rounded p-5 shadow-sm hover:shadow-md transition"
       >
         <div>
-          <h3 class="font-semibold text-gray-800">
+          <h3 class="small-medium text-gray-700">
             {{ cat.categorie }}
           </h3>
-          <p class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+          <p class="text-xs text-gray-500 mt-1 flex items-center gap-1 small">
             <i class="bx bx-calendar"></i>
-            {{ new Date(cat.created_at).toLocaleDateString() }}
+            {{formatDate(cat.created_at)}}
           </p>
         </div>
 
@@ -122,6 +122,8 @@ import { API_URL } from "~/utils/config";
 import { useLanguageStore } from "~/stores/language";
 import { translate } from "~/utils/translate";
 import { useRouter } from "vue-router";
+import { parseISO, formatDistanceToNow } from "date-fns";
+import { fr, enUS } from "date-fns/locale";
 const router = useRouter();
 
 const languageStore = useLanguageStore();
@@ -235,6 +237,23 @@ async function deleteCategory(id: number) {
     console.error(err);
   }
 }
+
+const formatDate = (dateStr: string) => {
+  if (!dateStr) return "-";
+  const date = parseISO(dateStr.replace(/\.(\d{3})\d+Z$/, ".$1Z"));
+  const diffDays = Math.floor(
+    (Date.now() - date.getTime()) / (1000 * 60 * 60 * 24)
+  );
+  if (diffDays > 7)
+    return date.toLocaleDateString(
+      languageStore.lang === "fr" ? "fr-FR" : "en-US",
+      { year: "numeric", month: "short", day: "numeric" }
+    );
+  return formatDistanceToNow(date, {
+    addSuffix: true,
+    locale: languageStore.lang === "fr" ? fr : enUS,
+  });
+};
 
 onMounted(fetchCategories);
 </script>
