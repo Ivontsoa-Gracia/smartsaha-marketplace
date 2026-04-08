@@ -29,7 +29,7 @@
           >
             {{ t("btnStart") }}
             <i
-              class="bx bx-right-arrow-alt text-lg transition-transform duration-200 group-hover:translate-x-1"
+              class="bx bx-right-arrow-alt transition-transform duration-200 group-hover:translate-x-1"
             ></i>
           </button>
         </div>

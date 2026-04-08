@@ -103,7 +103,7 @@
         <button
           @click="initiatePayment(selectedMethod)"
           :disabled="!selectedMethod"
-          class="w-full bg-[#10b481] text-white py-3 rounded-2xl font-semibold transition disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#10b481]"
+          class="w-full btn-primary disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#10b481]"
         >
           Payer maintenant
         </button>
@@ -119,7 +119,7 @@
 
         <button
           @click="handleCardPayment"
-          class="w-full bg-[#10b481] text-white py-3 rounded-2xl font-semibold hover:bg-[#10b481] transition"
+          class="w-full btn-primary"
         >
           Confirmer le paiement
         </button>

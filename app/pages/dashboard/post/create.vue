@@ -419,7 +419,7 @@
     </div>
   </div>
 
-  <transition name="slide-right">
+  <!-- <transition name="slide-right">
     <div
       v-if="notification.visible"
       class="fixed bottom-4 right-4 z-[9999] bg-[#112830] rounded shadow-xl px-6 py-4 flex items-center gap-4 w-80 text-left border-l-4 transition-all duration-300"
@@ -448,6 +448,67 @@
         </p>
       </div>
     </div>
+  </transition> -->
+
+
+  <transition name="slide-right">
+    <div
+      v-if="notification.visible"
+      class="fixed bottom-10 right-10 z-50 w-full max-w-lg"
+    >
+      <div
+        :class="[
+          'flex items-start justify-between gap-4 px-6 py-4 rounded-xl shadow-xl border backdrop-blur-md transition-all',
+          notification.type === 'success' && 'bg-white border-[#10b481]/30',
+          notification.type === 'error' && 'bg-white border-red-400/40',
+          notification.type === 'inactive' && 'bg-white border-white',
+        ]"
+      >
+        <div class="flex items-start gap-4">
+          <div
+            :class="[
+              'w-10 h-10 rounded-full flex items-center justify-center',
+              notification.type === 'success' &&
+                'bg-[#10b481]/15 text-[#10b481]',
+              notification.type === 'error' && 'bg-red-100 text-red-500',
+              notification.type === 'inactive' && 'bg-red-500/20 text-red-500',
+            ]"
+          >
+            <i
+              :class="[
+                'text-xl',
+                notification.type === 'success' && 'bx bx-check',
+                notification.type === 'error' && 'bx bx-x',
+                notification.type === 'inactive' && 'bx bx-lock-alt',
+              ]"
+            ></i>
+          </div>
+
+          <div>
+            <p class="text-gray-700 username text-sm">
+              {{ notification.message }}
+            </p>
+
+            <p
+              class="text-xs text-gray-600 small mt-1"
+            >
+            {{
+            notification.type === "success"
+              ? "Success!"
+              : "Something went wrong."
+          }}
+            </p>
+          </div>
+        </div>
+
+        <button
+          @click="closeNotification"
+          class="text-gray-400 hover:text-gray-700 transition"
+        >
+          <i class="bx bx-x text-xl"></i>
+        </button>
+      </div>
+    </div>
   </transition>
 
   <transition name="fade">
@@ -456,7 +517,7 @@
       class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
     >
       <div
-        class="w-[420px] max-w-[90vw] bg-white rounded shadow-2xl p-6 space-y-6 animate-scaleIn"
+        class="w-[420px] max-w-[90vw] bg-white rounded-2xl shadow-2xl p-6 space-y-6 animate-scaleIn"
       >
         <div class="flex items-center gap-3">
           <div
@@ -466,21 +527,21 @@
           </div>
 
           <div class="text-left">
-            <h3 class="text-lg font-semibold text-gray-800">
+            <h3 class=" subtitle">
               Fichier trop lourd
             </h3>
-            <p class="text-sm text-gray-500">
+            <p class="content">
               La taille dépasse la limite autorisée
             </p>
           </div>
         </div>
 
-        <div class="rounded bg-gray-50 border px-4 py-3 text-sm text-gray-700">
-          <div class="flex justify-between">
-            <span>Taille actuelle</span>
+        <div class="rounded-xl bg-white border border-gray-200 px-4 py-3 text-sm text-gray-700">
+          <div class="flex justify-between small">
+            <span class="small">Taille actuelle</span>
             <strong>{{ originalSizeMB }} Mo</strong>
           </div>
-          <div class="flex justify-between text-gray-500">
+          <div class="flex justify-between text-gray-400 small">
             <span>Limite maximale</span>
             <span>10 Mo</span>
           </div>
@@ -510,14 +571,14 @@
         <div v-else class="flex gap-3">
           <button
             @click="cancelCompression"
-            class="flex-1 py-2.5 rounded border border-gray-300 text-gray-600 font-medium hover:bg-gray-100 transition"
+            class="flex-1 py-2.5 btn-neutre"
           >
             Annuler
           </button>
 
           <button
             @click="confirmCompression"
-            class="flex-1 py-2.5 rounded bg-[#10b481] text-white font-semibold hover:bg-emerald-600 transition"
+            class="flex-1 py-2.5 btn-primary"
           >
             Compresser
           </button>
@@ -679,15 +740,15 @@ const handleFileUpload = async (e) => {
   selectedFile = file;
   originalSizeMB.value = +(file.size / (1024 * 1024)).toFixed(2);
 
-  if (originalSizeMB.value > 50) {
+  if (originalSizeMB.value > 10) {
     showNotification(
-      "Le fichier dépasse 50 Mo. Veuillez choisir une image plus légère.",
+      "Le fichier dépasse 10 Mo. Veuillez choisir une image plus légère.",
       "error"
     );
     return;
   }
 
-  if (originalSizeMB.value > 10) {
+  if (originalSizeMB.value > 5) {
     showCompressModal.value = true;
     return;
   }

@@ -48,12 +48,14 @@ const labelMap = computed(() => ({
   categories: t("category"),
   products: t("product"),
   users: t("user"),
-  admin: "Admin",
+  admin: t("dashboard"),
   bid: t("bid"),
   bids: t("bid"),
   chatbox: t("chatbox"),
   notification: t("notif"),
-  create: t("create")
+  create: t("create"),
+  payment: "Paiement",
+  transaction: "Transaction"
 }));
 
 const breadcrumbs = computed(() => {

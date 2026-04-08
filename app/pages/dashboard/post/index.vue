@@ -74,6 +74,26 @@
       </transition>
     </div>
 
+    
+
+    <div class="flex flex-wrap gap-4 items-center menu-item border-b">
+      <button @click="filterCategory('All')" :class="categoryClass('All')">
+        {{ t("All") }}
+      </button>
+      <button
+        @click="filterCategory('Buying')"
+        :class="categoryClass('Buying')"
+      >
+        {{ t("Buying") }}
+      </button>
+      <button
+        @click="filterCategory('Selling')"
+        :class="categoryClass('Selling')"
+      >
+        {{ t("Selling") }}
+      </button>
+    </div>
+
     <div
       class="hidden sm:flex items-center gap-3 border border-gray-200 rounded-xl px-4 py-2 bg-white shadow-sm transition"
     >
@@ -148,24 +168,6 @@
       </div>
     </div>
 
-    <div class="flex flex-wrap gap-4 items-center menu-item border-b pb-4">
-      <button @click="filterCategory('All')" :class="categoryClass('All')">
-        {{ t("All") }}
-      </button>
-      <button
-        @click="filterCategory('Buying')"
-        :class="categoryClass('Buying')"
-      >
-        {{ t("Buying") }}
-      </button>
-      <button
-        @click="filterCategory('Selling')"
-        :class="categoryClass('Selling')"
-      >
-        {{ t("Selling") }}
-      </button>
-    </div>
-
     <div
       v-if="filteredPosts.length"
       class="overflow-x-auto bg-white rounded-2xl shadow- small"
@@ -191,18 +193,20 @@
             >
               {{ t("price") }} <i class="bxr bx-carets-up-down"></i>
             </th>
-            <th
-              @click="sortBy('type_post.type')"
-              class="cursor-pointer px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider border-b"
-            >
-              {{ t("category") }} <i class="bxr bx-carets-up-down"></i>
-            </th>
+
             <th
               @click="sortBy('created_at')"
               class="cursor-pointer px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider border-b"
             >
               {{ t("date") }} <i class="bxr bx-carets-up-down"></i>
             </th>
+            <th
+              @click="sortBy('type_post.type')"
+              class="cursor-pointer px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider border-b"
+            >
+              {{ t("category") }} <i class="bxr bx-carets-up-down"></i>
+            </th>
+
             <th
               class="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider border-b"
             >
@@ -247,7 +251,15 @@
             <td
               class="px-6 py-3 border-b text-sm text-gray-700 whitespace-nowrap"
             >
-              {{ Number(post.price).toLocaleString() }} {{ post.currency.symbol }}
+              {{ Number(post.price).toLocaleString() }}
+              {{ post.currency.symbol }}
+            </td>
+
+            <!-- Date -->
+            <td
+              class="px-6 py-3 border-b text-sm text-gray-600 whitespace-nowrap"
+            >
+              {{ formatDate(post.created_at) }}
             </td>
 
             <!-- Category -->
@@ -262,13 +274,6 @@
               >
                 {{ post.type_post?.type }}
               </span>
-            </td>
-
-            <!-- Date -->
-            <td
-              class="px-6 py-3 border-b text-sm text-gray-600 whitespace-nowrap"
-            >
-              {{ formatDate(post.created_at) }}
             </td>
 
             <!-- Status -->
@@ -324,7 +329,9 @@
       </table>
 
       <!-- Pagination -->
-      <div class="bg-white px-4 py-4 flex items-center justify-between sm:px-6 small">
+      <div
+        class="bg-white px-4 py-4 flex items-center justify-between sm:px-6 small"
+      >
         <div class="flex-1 flex justify-between sm:hidden">
           <button
             @click="prevPage"
@@ -484,7 +491,7 @@ const filterCategory = (category) => {
 const categoryClass = (category) => [
   "relative pb-1 font-medium text-gray-700 hover:text-[#10b481] transition-colors text-sm",
   selectedType.value === category
-    ? "after:absolute after:-bottom-0.5 after:left-0 after:w-full after:h-0.5 after:bg-[#10b481]"
+    ? "after:absolute after:-bottom-0.5 after:text-[#10b481] after:left-0 after:w-full after:h-0.5 after:bg-[#10b481]"
     : "",
 ];
 

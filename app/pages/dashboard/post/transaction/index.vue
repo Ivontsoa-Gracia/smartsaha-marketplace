@@ -101,48 +101,78 @@
               :key="payment.id"
               class="hover:bg-[#fafaf9] transition-colors duration-150 content"
             >
+              <td class="px-6 py-3 border-b text-sm text-gray-900">
+                <div class="flex items-center gap-3">
+                  <!-- Argent entrant (↙) -->
+                  <template v-if="user?.username === payment.seller">
+                    <span
+                      class="flex items-center justify-center w-11 h-11 bg-[#10b481]/10 text-[#10b481] rounded-lg"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="w-5 h-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <!-- Ligne diagonale -->
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M7 7v10h10"
+                        />
+                        <!-- Flèche -->
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M7 17L17 7"
+                        />
+                      </svg>
+                    </span>
+                    <span class="text-gray-700">
+                      {{ payment.buyer }}
+                    </span>
+                  </template>
 
-            <td class="px-6 py-3 border-b text-sm text-gray-900">
-  <div class="flex items-center gap-3">
+                  <!-- Argent sortant (↗) -->
+                  <template v-else-if="user?.username === payment.buyer">
+                    <span
+                      class="flex items-center justify-center w-11 h-11 bg-red-600/10 text-red-600 rounded-lg"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="w-5 h-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <!-- Ligne diagonale -->
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M17 17V7H7"
+                        />
+                        <!-- Flèche -->
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M17 7L7 17"
+                        />
+                      </svg>
+                    </span>
+                    <span class="text-gray-700">
+                      {{ payment.seller }}
+                    </span>
+                  </template>
 
-    <!-- Argent entrant (↙) -->
-    <template v-if="user?.username === payment.seller">
-      <span class="flex items-center justify-center w-11 h-11 bg-[#10b481]/10 text-[#10b481] rounded-lg">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <!-- Ligne diagonale -->
-          <path stroke-linecap="round" stroke-linejoin="round" d="M7 7v10h10" />
-          <!-- Flèche -->
-          <path stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7" />
-        </svg>
-      </span>
-      <span class="text-gray-700">
-       {{ payment.buyer }}
-      </span>
-    </template>
-
-    <!-- Argent sortant (↗) -->
-    <template v-else-if="user?.username === payment.buyer">
-      <span class="flex items-center justify-center w-11 h-11 bg-red-600/10 text-red-600 rounded-lg">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <!-- Ligne diagonale -->
-          <path stroke-linecap="round" stroke-linejoin="round" d="M17 17V7H7" />
-          <!-- Flèche -->
-          <path stroke-linecap="round" stroke-linejoin="round" d="M17 7L7 17" />
-        </svg>
-      </span>
-      <span class="text-gray-700">
-        {{ payment.seller }}
-      </span>
-    </template>
-
-    <span v-else>-</span>
-
-  </div>
-</td>
+                  <span v-else>-</span>
+                </div>
+              </td>
 
               <!-- Date -->
               <td class="px-6 py-3 text-sm text-gray-700 border-b">
-                
                 {{ formatDate(payment.transaction_date) }}
               </td>
 
@@ -173,43 +203,49 @@
                   class="px-3 py-1 rounded-full text-sm border"
                   :class="statusClass(payment.status)"
                 >
-                  {{ payment.status }}
+                  {{ t(payment.status) }}
                 </span>
               </td>
 
               <!-- Actions -->
               <td class="px-6 py-3 border-b text-center">
-  <div class="flex items-center justify-center gap-2">
+                <div class="flex items-center justify-center gap-2">
+                  <!-- Boutons de confirmation -->
+                  <button
+                    v-if="
+                      !payment.buyer_confirmation &&
+                      isLoggedIn &&
+                      user?.username === payment.buyer
+                    "
+                    @click="confirmBuyerPayment(payment)"
+                    class="btn-primary"
+                    title="Confirmer paiement"
+                  >
+                    Confirmer
+                  </button>
 
-    <!-- Boutons de confirmation -->
-    <button
-      v-if="!payment.buyer_confirmation && isLoggedIn && user?.username === payment.buyer"
-      @click="confirmBuyerPayment(payment)"
-      class="btn-primary"
-      title="Confirmer paiement"
-    >
-      Confirmer
-    </button>
+                  <button
+                    v-else-if="
+                      !payment.seller_confirmation &&
+                      isLoggedIn &&
+                      user?.username === payment.seller
+                    "
+                    @click="confirmSellerPayment(payment)"
+                    class="btn-primary"
+                    title="Confirmer paiement"
+                  >
+                    Confirmer
+                  </button>
 
-    <button
-      v-else-if="!payment.seller_confirmation && isLoggedIn && user?.username === payment.seller"
-      @click="confirmSellerPayment(payment)"
-      class="px-4 py-2 bg-[#10b481] text-white text-xs rounded-lg transition"
-      title="Confirmer paiement"
-    >
-      Confirmer
-    </button>
-
-    <!-- Bouton Supprimer toujours à la fin -->
-    <button
-      class="p-2 rounded-full hover:bg-red-100 transition ml-auto"
-      title="Supprimer"
-    >
-      <i class="bx bx-trash text-red-600 text-lg"></i>
-    </button>
-
-  </div>
-</td>
+                  <!-- Bouton Supprimer toujours à la fin -->
+                  <button
+                    class="p-2 rounded-full hover:bg-red-100 transition ml-auto"
+                    title="Supprimer"
+                  >
+                    <i class="bx bx-trash text-red-600 text-lg"></i>
+                  </button>
+                </div>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -289,6 +325,64 @@
       </div>
     </div>
   </div>
+
+  <transition name="slide-right">
+    <div
+      v-if="notification.visible"
+      class="fixed bottom-10 right-10 z-50 w-full max-w-lg"
+    >
+      <div
+        :class="[
+          'flex items-start justify-between gap-4 px-6 py-4 rounded-xl shadow-xl border backdrop-blur-md transition-all',
+          notification.type === 'success' && 'bg-white border-[#10b481]/30',
+          notification.type === 'error' && 'bg-white border-red-400/40',
+          notification.type === 'inactive' && 'bg-white border-white',
+        ]"
+      >
+        <div class="flex items-start gap-4">
+          <div
+            :class="[
+              'w-10 h-10 rounded-full flex items-center justify-center',
+              notification.type === 'success' &&
+                'bg-[#10b481]/15 text-[#10b481]',
+              notification.type === 'error' && 'bg-red-100 text-red-500',
+              notification.type === 'inactive' && 'bg-red-500/20 text-red-500',
+            ]"
+          >
+            <i
+              :class="[
+                'text-xl',
+                notification.type === 'success' && 'bx bx-check',
+                notification.type === 'error' && 'bx bx-x',
+                notification.type === 'inactive' && 'bx bx-lock-alt',
+              ]"
+            ></i>
+          </div>
+
+          <div>
+            <p class="text-gray-700 username text-sm">
+              {{ notification.message }}
+            </p>
+
+            <p class="text-xs text-gray-600 small mt-1">
+              {{
+                notification.type === "success"
+                  ? "Success!"
+                  : "Something went wrong."
+              }}
+            </p>
+          </div>
+        </div>
+
+        <button
+          @click="closeNotification"
+          class="text-gray-400 hover:text-gray-700 transition"
+        >
+          <i class="bx bx-x text-xl"></i>
+        </button>
+      </div>
+    </div>
+  </transition>
 </template>
 
 <script setup>
@@ -305,6 +399,13 @@ const user = ref(null);
 const isLoggedIn = ref(false);
 const languageStore = useLanguageStore();
 const t = (key) => translate[languageStore.lang][key] || key;
+
+const notification = ref({ visible: false, message: "", type: "success" });
+
+const showNotification = (message, type = "success", duration = 3000) => {
+  notification.value = { visible: true, message, type };
+  setTimeout(() => (notification.value.visible = false), duration);
+};
 
 const result = ref(0);
 const currentPage = ref(1);
@@ -331,7 +432,6 @@ function statusClass(status) {
       return "border-gray-300 text-gray-700 bg-gray-100/50"; // état par défaut → gris neutre
   }
 }
-
 
 // Vérifie l'utilisateur connecté
 async function checkUser() {
@@ -503,11 +603,11 @@ async function confirmBuyerPayment(payment) {
       }
     );
     if (!res.ok) throw new Error("Erreur lors de la confirmation");
-    payment.buyer_confirmation = true; // mise à jour live
-    alert("Paiement confirmé avec succès !");
+    payment.buyer_confirmation = true;
+    showNotification("Paiement confirmé avec succès !", "success");
   } catch (err) {
     console.error(err);
-    alert("Impossible de confirmer le paiement.");
+    showNotification("Impossible de confirmer le paiement.", "error");
   }
 }
 
@@ -533,11 +633,11 @@ async function confirmSellerPayment(payment) {
       }
     );
     if (!res.ok) throw new Error("Erreur lors de la confirmation");
-    payment.buyer_confirmation = true; // mise à jour live
-    alert("Paiement confirmé avec succès !");
+    payment.buyer_confirmation = true;
+    showNotification("Paiement confirmé avec succès !", "success");
   } catch (err) {
     console.error(err);
-    alert("Impossible de confirmer le paiement.");
+    showNotification("Impossible de confirmer le paiement.", "error");
   }
 }
 

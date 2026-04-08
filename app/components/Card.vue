@@ -51,8 +51,8 @@
           {{ post.user?.username.charAt(0).toUpperCase() }}
         </div>
 
-        <div class="text-white">
-          <div class="flex items-center justify-center gap-1 username">
+        <div class="text-white text-left">
+          <div class="flex items-center gap-1 username">
             <span class="leading-none text-sm">
               {{ post.user?.username }}
             </span>
@@ -371,8 +371,8 @@
           {{ post.user?.username.charAt(0).toUpperCase() }}
         </div>
 
-        <div class="text-white">
-          <div class="flex items-center justify-center gap-1 username text-sm">
+        <div class="text-white text-left">
+          <div class="flex items-center  gap-1 username text-sm">
             <span class="leading-none">
               {{ post.user?.username }}
             </span>
@@ -806,33 +806,60 @@
     </div>
   </div>
 </transition>
-  <transition name="slide-right">
+<transition name="slide-right">
     <div
       v-if="notification.visible"
-      class="fixed bottom-4 right-4 z-[9999] bg-[#112830] rounded shadow-xl px-6 py-4 flex items-center gap-4 w-96 text-left border-l-4 transition-all duration-300"
-      :class="
-        notification.type === 'success' ? 'border-[#10b481]' : 'border-red-500'
-      "
+      class="fixed bottom-10 right-10 z-50 w-full max-w-lg"
     >
       <div
-        :class="notification.type === 'success' ? 'bg-[#10b481]' : 'bg-red-500'"
-        class="w-11 h-11 rounded-full flex items-center justify-center text-white text-2xl"
+        :class="[
+          'flex items-start justify-between gap-4 px-6 py-4 rounded-xl shadow-xl border backdrop-blur-md transition-all',
+          notification.type === 'success' && 'bg-white border-[#10b481]/30',
+          notification.type === 'error' && 'bg-white border-red-400/40',
+          notification.type === 'inactive' && 'bg-white border-white',
+        ]"
       >
-        <i
-          :class="notification.type === 'success' ? 'bx bx-check' : 'bx bx-x'"
-        ></i>
-      </div>
-      <div>
-        <p class="font-medium text-sm text-gray-100">
-          {{ notification.message }}
-        </p>
-        <p class="text-gray-300 text-xs">
-          {{
-            notification.type === "success"
-              ? "Succès !"
-              : "Une erreur est survenue."
-          }}
-        </p>
+        <div class="flex items-start gap-4">
+          <div
+            :class="[
+              'w-10 h-10 rounded-full flex items-center justify-center',
+              notification.type === 'success' &&
+                'bg-[#10b481]/15 text-[#10b481]',
+              notification.type === 'error' && 'bg-red-100 text-red-500',
+              notification.type === 'inactive' && 'bg-red-500/20 text-red-500',
+            ]"
+          >
+            <i
+              :class="[
+                'text-xl',
+                notification.type === 'success' && 'bx bx-check',
+                notification.type === 'error' && 'bx bx-x',
+                notification.type === 'inactive' && 'bx bx-lock-alt',
+              ]"
+            ></i>
+          </div>
+
+          <div>
+            <p class="text-gray-700 username text-sm">
+              {{ notification.message }}
+            </p>
+
+            <p class="text-xs text-gray-600 small mt-1">
+              {{
+                notification.type === "success"
+                  ? "Success!"
+                  : "Something went wrong."
+              }}
+            </p>
+          </div>
+        </div>
+
+        <button
+          @click="closeNotification"
+          class="text-gray-400 hover:text-gray-700 transition"
+        >
+          <i class="bx bx-x text-xl"></i>
+        </button>
       </div>
     </div>
   </transition>
@@ -975,12 +1002,12 @@ async function sendReport() {
 
     if (!res.ok) {
       const err = await res.json();
-      alert("Erreur lors du signalement : " + JSON.stringify(err));
+      showNotification(JSON.stringify(err), "error");
       reportLoading.value = false;
       return;
     }
 
-    alert("Signalement envoyé avec succès.");
+    showNotification("Signalement envoyé avec succès.", "success");
     reportReason.value = "";
     reportModalOpen.value = false;
   } catch (err) {

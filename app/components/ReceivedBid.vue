@@ -5,7 +5,7 @@
         class="w-8 h-8 border-4 border-gray-300 border-t-[#10b481] rounded-full animate-spin"
       ></div>
     </div>
-    <div v-if="errorMsg" class="text-center text-red-500">{{ errorMsg }}</div>
+    <div v-if="errorMsg" class="text-center text-red-500 small">{{ errorMsg }}</div>
 
     <div
       v-if="bids.length"
@@ -14,21 +14,30 @@
       <div
         v-for="bid in bids"
         :key="bid.id"
-        class="relative bg-white border border-gray-100 rounded-2xl p-5 flex flex-col gap-4 overflow-hidden"
+        class="relative bg-white border border-gray-200 rounded-2xl p-6 flex flex-col gap-4 overflow-hidden"
       >
         <!-- <div class="absolute top-0 left-0 w-full h-1 bg-[#10b481]"></div> -->
 
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
+            <img
+              v-if="bid.user?.avatar_url"
+              :src="bid.user?.avatar_url"
+              alt="avatar"
+              class="w-9 h-9 rounded-full cursor-pointer shadow object-cover"
+            />
+
             <div
-              class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm"
+              v-else
+              class="w-9 h-9 rounded-full flex items-center justify-center username text-md cursor-pointer shadow"
               :class="getAvatarColor(bid.user?.username)"
+              @click="goToProfile(bid.user)"
             >
-              {{ bid.user?.username?.charAt(0).toUpperCase() || "U" }}
+              {{ bid.user?.username.charAt(0).toUpperCase() }}
             </div>
 
             <div>
-              <p class="text-sm font-medium text-gray-900">
+              <p class="text-sm username text-gray-700">
                 {{ bid.user?.username || "Utilisateur" }}
               </p>
               <p class="text-xs text-gray-400">
@@ -38,7 +47,7 @@
           </div>
 
           <span
-            class="px-3 py-1 border rounded-full text-xs font-medium flex items-center justify-center gap-1"
+            class="px-3 py-1 border rounded-full text-xs small-medium flex items-center justify-center gap-1"
             :class="{
               'bg-yellow-100 border-yellow-500 text-yellow-500':
                 bid.current_status?.name === 'proposée',
@@ -64,35 +73,38 @@
           </span>
         </div>
 
-        <h2 class="text-sm font-semibold text-gray-900 leading-snug">
-          {{ bid.post?.title || "Post sans titre" }}
-        </h2>
+        <div class="flex gap-2 items-center small ">
+          <i class="bx bx-clipboard text-sm text-gray-700"></i>
+          <h2 class="text-sm leading-snug text-gray-700">
+            {{ bid.post?.title || "Post sans titre" }}
+          </h2>
+        </div>
 
-        <div class="bg-gray-50 border border-gray-200 rounded p-3">
-          <p class="text-xs text-gray-500 mb-1">
+        <div class="bg-white border border-gray-200 rounded-xl p-3">
+          <p class="text-xs text-gray-400 small mb-1">
             {{ t("monOffre") }}
           </p>
-          <p class="text-sm text-gray-700">
+          <p class="content">
             {{ bid.message }}
           </p>
         </div>
 
         <div class="flex gap-3">
           <div
-            class="flex-1 flex items-center gap-2 bg-gray-50 border border-gray-200 rounded p-2 text-sm"
+            class="flex-1 flex items-center gap-2 bg-white border border-gray-200 rounded-xl p-2 text-sm small"
           >
-            <i class="bx bx-wallet text-gray-500"></i>
-            <span class="text-gray-800">
+            <i class="bx bx-wallet text-gray-700"></i>
+            <span class="text-gray-700 small-medium">
               {{ bid.price || "-" }}
               {{ bid.post_detail?.currency?.symbol || "-" }}
             </span>
           </div>
 
           <div
-            class="flex-1 flex items-center gap-2 bg-gray-50 border border-gray-200 rounded p-2 text-sm"
+            class="flex-1 flex items-center gap-2 bg-white border border-gray-200 rounded-xl p-2 text-sm small"
           >
-            <i class="bx bx-package text-gray-500"></i>
-            <span class="text-gray-800">
+            <i class="bx bx-package text-gray-700"></i>
+            <span class="text-gray-700 small-medium">
               {{ bid.post_detail?.quantity || "-" }}
               {{ bid.post_detail?.product?.unit?.abbreviation || "-" }}
             </span>
@@ -102,7 +114,7 @@
         <div class="flex justify-between items-center pt-2">
           <NuxtLink
             :to="`/dashboard/post/bids/${bid.post.id}`"
-            class="text-sm text-gray-600 hover:underline"
+            class="menu-item hover:underline"
           >
             {{ t("gotopost") }}
           </NuxtLink>
@@ -110,7 +122,7 @@
           <NuxtLink
           v-if="bid.current_status?.name === 'proposée'"
           :to="`/dashboard/chatbox?post=${bid.post.id}&bid=${bid.id}`"
-          class="text-sm text-[#10b481] hover:underline"
+          class="text-sm text-[#10b481] small hover:underline"
         >
           {{ t("negocier") }}
         </NuxtLink>

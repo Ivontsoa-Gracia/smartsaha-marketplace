@@ -1,7 +1,78 @@
 <template>
   <div class="space-y-8 p-12 bg-gray-50/60 min-h-screen">
-    <!-- <Breadcrumb /> -->
     <h2 class="mb-4">{{ t("validationPosts") }}</h2>
+
+    <div
+  class="hidden sm:flex flex-col gap-3 border border-gray-200 rounded-xl px-4 py-3 bg-white shadow-sm transition"
+>
+  <!-- TOP BAR -->
+  <div class="flex items-center gap-3 w-full">
+    
+    <!-- Search -->
+    <div class="relative flex-1">
+      <i class="bx bx-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+      <input
+        v-model="searchQuery"
+        type="text"
+        class="w-full pl-10 pr-3 py-2 text-sm bg-transparent focus:outline-none text-gray-800 placeholder-gray-400"
+        placeholder="Rechercher par produit ou titre"
+      />
+    </div>
+
+    <!-- Divider -->
+    <div class="w-px h-6 bg-gray-200"></div>
+
+    <!-- Status -->
+    <select
+      v-model="statusFilter"
+      class="text-sm text-gray-600 bg-transparent focus:outline-none cursor-pointer hover:text-gray-800 transition"
+    >
+      <option value="">{{ t("all") }}</option>
+      <option value="brouillon">{{ t("draft") }}</option>
+      <option value="published">{{ t("published") }}</option>
+      <option value="négociation">{{ t("negotiation") }}</option>
+      <option value="vendu">{{ t("sold") }}</option>
+      <option value="supprimé">{{ t("deleted") }}</option>
+    </select>
+
+    <!-- Divider -->
+    <div class="w-px h-6 bg-gray-200"></div>
+
+    <!-- Date -->
+    <select
+      v-model="dateFilter"
+      class="text-sm text-gray-600 bg-transparent focus:outline-none cursor-pointer hover:text-gray-800 transition"
+    >
+      <option value="">Toutes périodes</option>
+      <option value="today">Aujourd’hui</option>
+      <option value="7d">7 jours</option>
+      <option value="30d">30 jours</option>
+    </select>
+  </div>
+
+  <!-- LABELS (NOUVELLE LIGNE) -->
+
+</div>
+
+<div class="flex flex-wrap gap-2">
+    <button
+      v-for="label in allLabels"
+      :key="label.id"
+      @click="toggleLabel(label.id)"
+      :style="{
+        backgroundColor: selectedLabels.includes(label.id)
+          ? label.color
+          : `${label.color}20`,
+        color: selectedLabels.includes(label.id) ? '#fff' : label.color,
+        borderColor: selectedLabels.includes(label.id) ? '#fff' : label.color,
+      }"
+      class="px-3 py-1 rounded-full text-xs font-semibold border transition hover:scale-[1.03]"
+    >
+      {{ label.name }}
+    </button>
+  </div>
+
+
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
       <div
@@ -146,7 +217,10 @@
             </div>
           </div>
 
-          <div class="flex gap-2 pt-10">
+          <div
+            class="flex gap-2 pt-10"
+            v-if="post.current_status === 'brouillon'"
+          >
             <button
               class="flex-1 btn-primary"
               @click="openValidationModal(post.id, true)"
@@ -185,10 +259,7 @@
         class="w-full border border-gray-300 rounded-lg p-2 resize-none h-24 mb-4"
       ></textarea>
       <div class="flex justify-end gap-3">
-        <button
-          class="btn-neutre"
-          @click="closeValidationModal"
-        >
+        <button class="btn-neutre" @click="closeValidationModal">
           {{ t("cancel") }}
         </button>
         <button
@@ -267,6 +338,12 @@ const avatarColors = [
   "bg-purple-200 text-purple-700",
   "bg-pink-200 text-pink-700",
 ];
+
+const searchQuery = ref("");
+const statusFilter = ref("");
+const dateFilter = ref("");
+const selectedLabels = ref([]);
+
 function getAvatarColor(username) {
   let hash = 0;
   for (let i = 0; i < username.length; i++)
@@ -274,7 +351,82 @@ function getAvatarColor(username) {
   return avatarColors[Math.abs(hash) % avatarColors.length];
 }
 
-const draftPosts = computed(() => posts.value);
+const allLabels = computed(() => {
+  const map = new Map();
+  posts.value.forEach((p) => {
+    p.labels?.forEach((l) => {
+      if (!map.has(l.id)) map.set(l.id, l);
+    });
+  });
+  return Array.from(map.values());
+});
+
+function toggleLabel(id) {
+  if (selectedLabels.value.includes(id)) {
+    selectedLabels.value = selectedLabels.value.filter((l) => l !== id);
+  } else {
+    selectedLabels.value.push(id);
+  }
+}
+
+const draftPosts = computed(() => {
+  return (
+    posts.value
+      // .filter((post) => post.current_status === "brouillon")
+
+      // 🔎 SEARCH
+      .filter((post) => {
+        if (!searchQuery.value) return true;
+
+        const q = searchQuery.value.toLowerCase();
+
+        return (
+          post.title?.toLowerCase().includes(q) ||
+          post.product?.product?.toLowerCase().includes(q) ||
+          post.user?.username?.toLowerCase().includes(q)
+        );
+      })
+
+      // 📊 STATUS
+      .filter((post) => {
+        if (!statusFilter.value) return true;
+        return post.current_status === statusFilter.value;
+      })
+
+      // 📅 DATE
+      .filter((post) => {
+        if (!dateFilter.value) return true;
+
+        const postDate = new Date(post.updated_at).getTime();
+        const now = Date.now();
+
+        if (dateFilter.value === "today") {
+          return now - postDate < 24 * 60 * 60 * 1000;
+        }
+
+        if (dateFilter.value === "7d") {
+          return now - postDate < 7 * 24 * 60 * 60 * 1000;
+        }
+
+        if (dateFilter.value === "30d") {
+          return now - postDate < 30 * 24 * 60 * 60 * 1000;
+        }
+
+        return true;
+      })
+
+      // 🏷️ LABELS
+      .filter((post) => {
+        if (!selectedLabels.value.length) return true;
+
+        const postLabelIds = post.labels?.map((l) => l.id) || [];
+
+        return selectedLabels.value.every((id) => postLabelIds.includes(id));
+      })
+  );
+});
+
+// const draftPosts = computed(() => posts.value);
 // const draftPosts = computed(() =>
 //   posts.value.filter((post) => post.current_status === "brouillon")
 // );
@@ -372,7 +524,7 @@ async function fetchPosts() {
     if (response.ok) posts.value = data;
     else
       showNotification("Erreur: impossible de récupérer les posts.", "error");
-      // console.log("Annonces: " + JSON.stringify(data))
+    // console.log("Annonces: " + JSON.stringify(data))
   } catch (err) {
     console.error(err);
     showNotification("Erreur serveur.", "error");
