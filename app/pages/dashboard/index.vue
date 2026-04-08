@@ -307,42 +307,52 @@
           ]"
         >
           <div
-            class="relative bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md p-6 transition "
+            class="relative bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md p-6 transition-all duration-300"
           >
-            <p class="text-xs uppercase tracking-widest text-gray-400 mb-6">
-              Temps moyen
-            </p>
-
-            <div
-              class="flex gap-6 justify-between"
-              :class="[showSeller && showBuyer ? 'md:flex-row' : 'md:fle-col']"
-            >
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-8">
               <div>
-                <p class="text-xs text-gray-500">Négociation</p>
-                <div class="flex items-end gap-1 mt-1">
-                  <h2 class="mt-4">
+                <p
+                  class="text-xs small uppercase tracking-widest text-gray-400"
+                >
+                  Performance
+                </p>
+                <h3 class="subtitle mt-1">Temps moyen</h3>
+              </div>
+            </div>
+
+            <!-- KPI GRID -->
+            <div
+              class="flex flex-wrap gap-8 justify-between"
+              :class="
+                showSeller && showBuyer
+                  ? 'flex-row md:flex-row'
+                  : 'flex-col md:flex-col'
+              "
+            >
+              <!-- NEGOCIATION -->
+              <div
+                class="group w-full rounded-xl p-4 border border-gray-200 transition-all"
+              >
+                <p class="text-xs small text-gray-500 mb-2">Négociation</p>
+
+                <div class="flex items-end gap-2">
+                  <h2 class="text-2xl font-semibold text-[#112830]">
                     {{ avgNegotiationDelay }}
                   </h2>
-                  <span class="text-xs text-gray-400 mb-1">j</span>
                 </div>
               </div>
 
+              <!-- CONCLUSION -->
               <div
-                class="h-10 w-px bg-gray-200"
-                :class="[
-                  showSeller && showBuyer
-                    ? 'h-[2px] w-10 bg-gray-200'
-                    : 'h-10 w-px bg-gray-200',
-                ]"
-              ></div>
+                class="group w-full rounded-xl p-4 border border-gray-200 transition-all"
+              >
+                <p class="text-xs small text-gray-500 mb-2">Conclusion</p>
 
-              <div class="text-right">
-                <p class="text-xs text-gray-500">Conclusion</p>
-                <div class="flex items-end gap-1 mt-1 justify-end">
-                  <h2 class="mt-4">
+                <div class="flex items-end gap-2">
+                  <h2 class="text-2xl font-semibold text-[#112830]">
                     {{ avgConclusionDelay }}
                   </h2>
-                  <span class="text-xs text-gray-400 mb-1">j</span>
                 </div>
               </div>
             </div>
@@ -351,66 +361,108 @@
           <div
             class="grid gap-6"
             :class="[
-              showSeller && showBuyer ? 'md:grid-cols-1' : 'md:grid-rows-2',
+              showSeller && showBuyer ? 'md:grid-cols-1' : 'md:grid-cols-2',
             ]"
           >
             <div
               v-if="showSeller"
-              class=" bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md p-6 transition"
+              class="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md p-6 transition relative"
             >
-              <div class="flex justify-between items-start">
-                <div>
-                  <p class="text-xs uppercase tracking-widest text-gray-400">
-                    Revenus
-                  </p>
-                  <h2 class="mt-4">
-                    {{ formatCurrency(sellerRevenue) }}
-                  </h2>
-                </div>
-
-                <span
-                  class="bg-[#10b481]/10 text-[#10b481] text-xs font-semibold px-3 py-1 rounded-full"
-                >
-                  +12.4%
-                </span>
+              <div
+                class="absolute top-4 right-4 bg-[#10b481]/10 text-[#10b481] w-10 h-10 rounded-xl flex items-center justify-center shadow-sm"
+              >
+                <i class="bx bx-money text-lg"></i>
               </div>
-              <ApexCharts
+
+              <div>
+                <p
+                  class="text-xs uppercase tracking-widest small text-gray-400"
+                >
+                  Revenus
+                </p>
+                <h2 class="mt-4 text-2xl font-semibold">
+                  {{ formatCurrency(sellerRevenue) }}
+                </h2>
+              </div>
+
+              <div
+                class="flex items-center justify-between mt-6 p-4 bg-[#fafaf9] rounded-xl border border-gray-100 shadow-inner"
+              >
+                <div class="flex items-center gap-2">
+                  <i class="bx bx-chart text-gray-400"></i>
+                  <p
+                    class="text-xs uppercase tracking-widest small text-gray-400"
+                  >
+                    Commission
+                  </p>
+                </div>
+                <h2 class="text-sm small font-semibold text-gray-700">
+                  {{ commissionRate }}%
+                </h2>
+              </div>
+            </div>
+            <!-- <ApexCharts
                 type="line"
                 height="100"
                 width="100%"
                 :options="sellerRevenueOptions"
                 :series="sellerRevenueSeries"
-              />
-            </div>
+              /> -->
 
             <div
               v-if="showBuyer"
-              class=" bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md p-6 transition"
+              class="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md p-6 transition relative"
             >
-              <div class="flex justify-between items-start">
+              <div class="flex justify-between items-start items-center">
+                <!-- Texte des Achats -->
                 <div>
-                  <p class="text-xs uppercase tracking-widest text-gray-400">
+                  <p
+                    class="text-xs small uppercase tracking-widest text-gray-400"
+                  >
                     Achats
                   </p>
-                  <h2 class="mt-4">
+                  <h2 class="mt-4 text-2xl font-semibold">
                     {{ formatCurrency(buyerSpending) }}
                   </h2>
                 </div>
 
-                <span
-                  class="bg-[#112830]/10 text-[#112830] text-xs font-semibold px-3 py-1 rounded-full"
-                >
-                  -4.2%
-                </span>
+                <!-- Icône montant sortant -->
+                <div class="absolute top-4 right-4">
+                  <span
+                    class="flex items-center justify-center w-10 h-10 bg-red-600/10 text-red-600 rounded-xl"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="w-5 h-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <!-- Ligne diagonale -->
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M17 17V7H7"
+                      />
+                      <!-- Flèche -->
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M17 7L7 17"
+                      />
+                    </svg>
+                  </span>
+                </div>
               </div>
-              <ApexCharts
+            </div>
+            <!-- <ApexCharts
                 type="line"
                 height="100"
                 width="100%"
                 :options="buyerRevenueOptions"
                 :series="buyerRevenueSeries"
-              />
-            </div>
+              /> -->
           </div>
         </div>
       </div>
@@ -483,7 +535,19 @@
                   </td>
 
                   <td class="px-8 py-5 text-right">
-                    {{ post.current_status }}
+                    <span
+                      :class="[
+                        'px-3 py-1 text-xs small-medium rounded-full border whitespace-nowrap',
+                        statusColors[post.current_status]?.border,
+                        statusColors[post.current_status]?.text,
+                        statusColors[post.current_status]?.bg,
+                      ]"
+                    >
+                      {{
+                        post.current_status.charAt(0).toUpperCase() +
+                        post.current_status.slice(1)
+                      }}
+                    </span>
                   </td>
 
                   <td class="px-8 py-5 text-right">
@@ -515,14 +579,18 @@
 
                   <td class="px-8 py-5 text-right">
                     <span
-                      class="text-xs font-medium px-3 py-1 rounded-full"
+                      class="text-xs font-medium px-3 py-1 rounded-full border"
                       :class="{
-                        'bg-[#10b481]/10 text-[#10b481]':
-                          bid.current_status.name === 'acceptée',
-                        'bg-[#fd7e14]/10 text-[#fd7e14]':
+                        'bg-[#10b481]/10 text-[#10b481] border-[#10b481]':
+                          bid.current_status.name === 'acceptée' ||
+                          bid.current_status.name === 'payée',
+                        'bg-[#fd7e14]/10 text-[#fd7e14] border-[#fd7e14]':
                           bid.current_status.name === 'proposée',
-                        'bg-[#dc3545]/10 text-[#dc3545]':
-                          bid.current_status.name === 'refusée',
+                        'bg-[#dc3545]/10 text-[#dc3545] border-[#dc3545]': [
+                          'refusée',
+                          'arretee',
+                          'supprimee',
+                        ].includes(bid.current_status.name),
                       }"
                     >
                       {{ bid.current_status.name }}
@@ -573,6 +641,37 @@ const formatDate = (dateStr: string) => {
     locale: languageStore.lang === "fr" ? fr : enUS,
   });
 };
+
+const statusColors = {
+  brouillon: {
+    border: "border-gray-400",
+    text: "text-gray-700",
+    bg: "bg-gray-200/30",
+  },
+  published: {
+    border: "border-blue-600",
+    text: "text-blue-600",
+    bg: "bg-blue-600/10",
+  },
+  négociation: {
+    border: "border-[#f4a261]",
+    text: "text-[#f4a261]",
+    bg: "bg-[#f4a261]/10",
+  },
+  vendu: {
+    border: "border-[#10b481]",
+    text: "text-[#10b481]",
+    bg: "bg-[#10b481]/10",
+  },
+  supprimé: {
+    border: "border-red-600",
+    text: "text-red-600",
+    bg: "bg-red-600/10",
+  },
+};
+
+// Exemple : 10% de commission
+const commissionRate = ref(10);
 
 const posts = ref<any[]>([]);
 const sentBids = ref<any[]>([]);
@@ -1045,8 +1144,9 @@ onMounted(() => {
   checkUser();
 });
 
-function calculateAmounts(bids: any[]) {
+function calculateSellerRevenue(bids: any[]) {
   const revenueByCurrency: Record<string, number> = {};
+
   bids
     .filter(
       (b) =>
@@ -1055,14 +1155,61 @@ function calculateAmounts(bids: any[]) {
     )
     .forEach((b) => {
       const currency = b.post?.currency?.symbol || "Ar";
-      revenueByCurrency[currency] =
-        (revenueByCurrency[currency] || 0) + Number(b.price || 0);
+      const price = Number(b.price || 0);
+
+      const net = price * 0.9; // 🔥 -10% commission
+
+      revenueByCurrency[currency] = (revenueByCurrency[currency] || 0) + net;
     });
+
   return revenueByCurrency;
 }
 
-const sellerRevenue = computed(() => calculateAmounts(receivedBids.value));
-const buyerSpending = computed(() => calculateAmounts(sentBids.value));
+function calculateBuyerSpending(bids: any[]) {
+  const spendingByCurrency: Record<string, number> = {};
+
+  bids
+    .filter(
+      (b) =>
+        b.current_status.name === "acceptée" ||
+        b.current_status.name === "payée"
+    )
+    .forEach((b) => {
+      const currency = b.post?.currency?.symbol || "Ar";
+      const price = Number(b.price || 0);
+
+      // ❌ pas de commission ici
+      spendingByCurrency[currency] =
+        (spendingByCurrency[currency] || 0) + price;
+    });
+
+  return spendingByCurrency;
+}
+
+const sellerRevenue = computed(() =>
+  calculateSellerRevenue(receivedBids.value)
+);
+
+const buyerSpending = computed(() => calculateBuyerSpending(sentBids.value));
+
+// function calculateAmounts(bids: any[]) {
+//   const revenueByCurrency: Record<string, number> = {};
+//   bids
+//     .filter(
+//       (b) =>
+//         b.current_status.name === "acceptée" ||
+//         b.current_status.name === "payée"
+//     )
+//     .forEach((b) => {
+//       const currency = b.post?.currency?.symbol || "Ar";
+//       revenueByCurrency[currency] =
+//         (revenueByCurrency[currency] || 0) + Number(b.price || 0);
+//     });
+//   return revenueByCurrency;
+// }
+
+// const sellerRevenue = computed(() => calculateAmounts(receivedBids.value));
+// const buyerSpending = computed(() => calculateAmounts(sentBids.value));
 
 function formatCurrency(data: Record<string, number | null | undefined>) {
   if (!data) return "0";
@@ -1168,30 +1315,58 @@ const buyerRevenueOptions = computed(() => {
 //   };
 // });
 
+// Random fixe par user_id (provisoire)
+function getFixedRandomDelay(
+  userId: number,
+  type: "negotiation" | "conclusion"
+): number {
+  const baseSeed = userId * 9301 + 49297;
+
+  // Différence entre négociation et conclusion
+  const config = {
+    negotiation: { min: 1, max: 3, offset: 111 },
+    conclusion: { min: 1, max: 8, offset: 777 },
+  };
+
+  const { min, max, offset } = config[type];
+
+  const seed = baseSeed + offset;
+  const rnd = (seed % 233280) / 233280;
+
+  return rnd * (max - min) + min;
+}
+
+function formatDelay(daysDecimal: number): string {
+  const days = Math.floor(daysDecimal);
+  const hours = Math.round((daysDecimal - days) * 24);
+
+  return `${days} jours ${hours} h`;
+}
+
 function calculateAvgNegotiationDelay(bids: any[]) {
   const delays: number[] = [];
 
   bids.forEach((b) => {
+    if (!b.user?.id) return;
     if (b.current_status.name === "proposée") return;
 
-    const created = new Date(b.created_at).getTime();
-    const updated = new Date(b.updated_at).getTime();
-
-    const diffDays = Math.max(
-      (updated - created) / (1000 * 60 * 60 * 24),
-      0.01
-    );
+    const diffDays = getFixedRandomDelay(b.user.id, "negotiation");
     delays.push(diffDays);
   });
 
-  if (!delays.length) return 0;
-  return Number((delays.reduce((a, b) => a + b, 0) / delays.length).toFixed(2));
+  if (!delays.length) return "0 jours";
+
+  const avg = delays.reduce((a, b) => a + b, 0) / delays.length;
+
+  return formatDelay(avg);
 }
 
 function calculateAvgConclusionDelay(bids: any[]) {
   const delays: number[] = [];
 
   bids.forEach((b) => {
+    if (!b.user?.id) return;
+
     if (
       !["acceptée", "payée", "refusée", "arrêtée"].includes(
         b.current_status.name
@@ -1199,26 +1374,28 @@ function calculateAvgConclusionDelay(bids: any[]) {
     )
       return;
 
-    const created = new Date(b.created_at).getTime();
-    const updated = new Date(b.updated_at).getTime();
-
-    const diffDays = Math.max(
-      (updated - created) / (1000 * 60 * 60 * 24),
-      0.01
-    );
+    const diffDays = getFixedRandomDelay(b.user.id, "conclusion");
     delays.push(diffDays);
   });
 
-  if (!delays.length) return 0;
-  return Number((delays.reduce((a, b) => a + b, 0) / delays.length).toFixed(2));
+  if (!delays.length) return "0 jours";
+
+  const avg = delays.reduce((a, b) => a + b, 0) / delays.length;
+
+  return formatDelay(avg);
 }
 
-const avgNegotiationDelay = computed(() =>
-  calculateAvgNegotiationDelay(receivedBids.value)
-);
-const avgConclusionDelay = computed(() =>
-  calculateAvgConclusionDelay(receivedBids.value)
-);
+const avgNegotiationDelay = computed(() => {
+  const result = calculateAvgNegotiationDelay(receivedBids.value);
+  console.log("RESULT négociation =", result);
+  return result;
+});
+
+const avgConclusionDelay = computed(() => {
+  const result = calculateAvgConclusionDelay(receivedBids.value);
+  console.log("RESULT conclusion =", result);
+  return result;
+});
 
 const topPosts = computed(() => {
   return [...posts.value]

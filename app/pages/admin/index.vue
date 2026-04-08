@@ -4,7 +4,7 @@
     <div v-if="error" class="text-red-500">{{ error }}</div>
 
     <div v-else class="">
-      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 small">
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 small">
         <div
           class="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition duration-300"
         >
@@ -72,7 +72,7 @@
         </div>
 
         <div
-          class="bg-[#10b481] rounded-2xl p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition duration-300 text-white"
+          class="hidden bg-[#10b481] rounded-2xl p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition duration-300 text-white"
         >
           <div class="flex items-center justify-between">
             <p class="text-xs uppercase tracking-wide">Satisfaction globale</p>

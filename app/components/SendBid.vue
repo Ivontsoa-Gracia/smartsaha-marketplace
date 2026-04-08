@@ -15,33 +15,40 @@
       <div
         v-for="bid in bids"
         :key="bid.id"
-        class="relative bg-white border border-gray-100 rounded-2xl p-5 flex flex-col gap-4 overflow-hidden"
+        class="relative bg-white border border-gray-200 rounded-2xl p-6 flex flex-col gap-4 overflow-hidden"
       >
-        <!-- <div class="absolute top-0 left-0 w-full h-1 bg-[#10b481]"></div> -->
+        <!-- <div class="absolute top-0 left-0 w-full h-1 bg-[#10b481] rounded-b-2xl"></div> -->
 
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
+            <img
+              v-if="bid.post_detail?.user?.avatar_url"
+              :src="bid.post_detail?.user?.avatar_url"
+              alt="avatar"
+              class="w-9 h-9 rounded-full cursor-pointer shadow object-cover"
+            />
+
             <div
-              class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm"
+              v-else
+              class="w-9 h-9 rounded-full flex items-center justify-center username text-md cursor-pointer shadow"
               :class="getAvatarColor(bid.post_detail?.user?.username)"
+              @click="goToProfile(bid.post_detail?.user)"
             >
-              {{
-                bid.post_detail?.user?.username?.charAt(0).toUpperCase() || "U"
-              }}
+              {{ bid.post_detail?.user?.username.charAt(0).toUpperCase() }}
             </div>
 
             <div>
-              <p class="text-sm font-medium text-gray-900">
+              <p class="text-sm username text-gray-700">
                 {{ bid.post_detail?.user?.username || "Utilisateur" }}
               </p>
-              <p class="text-xs text-gray-400">
+              <p class="text-xs text-gray-400 small">
                 {{ formattedDate(bid.created_at) }}
               </p>
             </div>
           </div>
 
           <span
-            class="px-3 py-1 border rounded-full text-xs font-medium flex items-center justify-center gap-1"
+            class="px-3 py-1 border rounded-full text-xs small-medium flex items-center justify-center gap-1"
             :class="{
               'bg-yellow-100 border-yellow-500 text-yellow-500':
                 bid.current_status?.name === 'proposée',
@@ -63,39 +70,45 @@
               "
               class="bx bxs-star text-sm"
             ></i>
-            {{ bid.current_status?.name?.charAt(0).toUpperCase() + bid.current_status?.name?.slice(1) }}
+            {{
+              bid.current_status?.name?.charAt(0).toUpperCase() +
+              bid.current_status?.name?.slice(1)
+            }}
           </span>
         </div>
 
-        <h2 class="text-sm font-semibold text-gray-900 leading-snug">
-          {{ bid.post?.title || "Post sans titre" }}
-        </h2>
+        <div class="flex gap-2 items-center small-medium text-gray-700">
+          <i class="bx bx-clipboard text-sm"></i>
+          <h2 class="text-sm leading-snug">
+            {{ bid.post?.title || "Post sans titre" }}
+          </h2>
+        </div>
 
-        <div class="bg-gray-50 border border-gray-200 rounded p-3">
-          <p class="text-xs text-gray-500 mb-1">
+        <div class="bg-white border border-gray-200 rounded-xl p-3">
+          <p class="text-xs text-gray-400 smalll mb-1">
             {{ t("monOffre") }}
           </p>
-          <p class="text-sm text-gray-700">
+          <p class="content">
             {{ bid.message }}
           </p>
         </div>
 
         <div class="flex gap-3">
           <div
-            class="flex-1 flex items-center gap-2 bg-gray-50 border border-gray-200 rounded p-2 text-sm"
+            class="flex-1 flex items-center gap-2 bg-ahite border border-gray-200 rounded-xl p-2 text-sm small-medium"
           >
-            <i class="bx bx-wallet text-gray-500"></i>
-            <span class="text-gray-800">
+            <i class="bx bx-wallet text-gray-700"></i>
+            <span class="text-gray-700">
               {{ bid.price || "-" }}
               {{ bid.post_detail?.currency?.symbol || "-" }}
             </span>
           </div>
 
           <div
-            class="flex-1 flex items-center gap-2 bg-gray-50 border border-gray-200 rounded p-2 text-sm"
+            class="flex-1 flex items-center gap-2 bg-ahite border border-gray-200 rounded-xl p-2 text-sm small-medium"
           >
-            <i class="bx bx-package text-gray-500"></i>
-            <span class="text-gray-800">
+            <i class="bx bx-package text-gray-700"></i>
+            <span class="text-gray-700">
               {{ bid.post_detail?.quantity || "-" }}
               {{ bid.post_detail?.product?.unit?.abbreviation || "-" }}
             </span>
@@ -105,7 +118,7 @@
         <div class="flex justify-between items-center pt-2">
           <button
             @click="openPostModal(bid.post_detail)"
-            class="text-sm text-[#10b481] hover:underline"
+            class="menu-item hover:underline"
           >
             {{ t("gotopost") }}
           </button>
@@ -113,7 +126,7 @@
           <button
             v-if="bid.current_status?.name !== 'acceptée'"
             @click="openCancelModal(bid.id)"
-            class="text-sm text-red-600 hover:underline"
+            class="text-sm text-red-600 small hover:underline"
           >
             {{ t("btnCancel") }}
           </button>
@@ -121,7 +134,7 @@
       </div>
     </div>
 
-    <div v-else class="text-center text-gray-500 mt-12">
+    <div v-else class="text-center text-gray-400 small mt-12">
       {{ t("noFoundMyBid") }}
     </div>
   </div>
@@ -130,20 +143,14 @@
     v-if="showCancelModal"
     class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
   >
-    <div class="bg-white rounded-lg p-6 w-80">
-      <h2 class="text-lg font-bold mb-4">{{ t("comfirmCancel") }}</h2>
-      <p class="mb-6">{{ t("confirmText") }}</p>
+    <div class="bg-white rounded-2xl p-6 w-80">
+      <h3 class="subtitle mb-4">{{ t("comfirmCancel") }}</h3>
+      <p class="mb-6 content">{{ t("confirmText") }}</p>
       <div class="flex justify-end gap-3">
-        <button
-          @click="showCancelModal = false"
-          class="px-4 py-2 rounded border border-gray-300 hover:bg-gray-100"
-        >
+        <button @click="showCancelModal = false" class="btn-neutre">
           {{ t("cancel") }}
         </button>
-        <button
-          @click="confirmCancelBid"
-          class="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
-        >
+        <button @click="confirmCancelBid" class="btn-decline">
           {{ t("confirm") }}
         </button>
       </div>
@@ -153,37 +160,115 @@
   <transition name="fade">
     <div
       v-if="modalOpen"
-      class="fixed inset-0 bg-black/70 flex justify-center items-center z-50 p-4"
+      class="fixed inset-0 bg-black/70 backdrop-blur-sm flex justify-center items-center z-50 p-"
     >
       <div
-        class="bg-white w-full max-w-4xl rounded shadow-2xl overflow-y-auto max-h-[90vh] relative p-6"
+        class="bg-white w-full max-w-4xl rounded-3xl shadow-2xl overflow-y-auto max-h-[90vh] relative p-6"
       >
         <button
           @click="closeModal"
-          class="absolute top-4 right-4 text-gray-400 text-3xl hover:text-gray-700 transition"
+          class="absolute top-4 right-4 text-gray-400 text-xl hover:text-gray-700 transition"
         >
           <i class="bx bx-x"></i>
         </button>
 
         <div class="flex flex-col md:flex-row gap-6">
-          <!-- Image -->
           <div class="md:w-1/2 relative">
             <img
               v-if="selectedPost.image_url"
               :src="selectedPost.image_url"
               alt="product"
-              class="w-full h-80 md:h-[24rem] object-cover rounded shadow-md"
+              class="w-full h-80 md:h-[32rem] object-cover rounded-2xl shadow-md"
             />
             <div
               v-else
-              class="w-full h-80 md:h-[32rem] bg-gray-100 rounded flex items-center justify-center text-gray-400 font-medium"
+              class="w-full h-80 md:h-[32rem] bg-gray-100 rounded-2xl flex items-center justify-center text-gray-400 font-medium"
             >
               No image available
             </div>
+            <div
+              class="absolute inset-0 rounded-2xl pointer-events-none"
+              style="
+                background: linear-gradient(
+                  to bottom,
+                  rgba(17, 40, 48, 0.4),
+                  rgba(17, 40, 48, 0),
+                  rgba(17, 40, 48, 0.4)
+                );
+              "
+            ></div>
 
             <div
-              class="absolute top-4 left-4 flex flex-row gap-3"
+              class="absolute top-4 left-4 right-4 flex justify-between items-start"
             >
+              <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-2">
+                  <img
+                    v-if="selectedPost.user?.avatar_url"
+                    :src="selectedPost.user?.avatar_url"
+                    alt="avatar"
+                    class="w-11 h-11 rounded-full cursor-pointer shadow object-cover"
+                  />
+
+                  <div
+                    v-else
+                    class="w-11 h-11 rounded-full flex items-center justify-center username text-lg cursor-pointer shadow"
+                    :class="getAvatarColor(selectedPost.user?.username)"
+                    @click="goToProfile(selectedPost.user)"
+                  >
+                    {{ selectedPost.user?.username.charAt(0).toUpperCase() }}
+                  </div>
+
+                  <div class="text-white">
+                    <div class="username leading-tight">
+                      {{ selectedPost.user?.username }}
+                    </div>
+                    <div class="text-xs small">
+                      {{ formattedDate(selectedPost.updated_at) }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="absolute top-4 right-4 flex items-center gap-3 z-10">
+              <button
+                @click="addToFavorite"
+                :disabled="favoriteLoading"
+                class="w-10 h-10 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow hover:scale-110 transition"
+                :class="isFavorite ? 'text-red-600' : 'text-gray-600'"
+              >
+                <i
+                  :class="isFavorite ? 'bx bxs-heart' : 'bx bx-heart'"
+                  class="text-xl"
+                ></i>
+              </button>
+
+              <div class="relative">
+                <button
+                  @click="toggleReportMenu"
+                  class="w-10 h-10 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow hover:scale-110 transition"
+                >
+                  <i
+                    class="bx bx-dots-vertical-rounded text-xl text-gray-600"
+                  ></i>
+                </button>
+
+                <div
+                  v-if="showReportMenu"
+                  class="absolute right-0 mt-2 w-36 bg-white rounded shadow-lg border z-20"
+                >
+                  <button
+                    @click="openReportModal"
+                    class="w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-50 rounded"
+                  >
+                    Signaler
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="absolute bottom-4 left-4 flex flex-row gap-3 small">
               <span
                 class="rounded-full px-3 py-1 text-xs text-gray-600 shadow z-10"
                 :class="
@@ -198,87 +283,72 @@
                 class="flex items-center gap-1 rounded-full bg-white/90 px-3 py-1 text-xs text-gray-600 shadow z-10"
               >
                 <i class="bx bx-location-plus"></i>
-                <span>{{ selectedPost.location || "Localisation inconnue" }}</span>
+                <span>{{
+                  selectedPost.location || "Localisation inconnue"
+                }}</span>
               </div>
             </div>
           </div>
 
-          <!-- Contenu du post -->
-          <div class="md:w-1/2 flex flex-col justify-between gap-4">
-            <div class="flex justify-between items-start">
-              <div class="flex flex-col gap-2">
-                <div class="flex items-center gap-2">
-                  <div
-                    class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg"
-                    :class="getAvatarColor(selectedPost.user?.username)"
-                  >
-                    {{ selectedPost.user?.username?.charAt(0).toUpperCase() }}
+          <div class="md:w-1/2 flex flex-col justify-between gap-4 py-6">
+            <div>
+              <h2 class="subtitle text-gray-900 mb-3">
+                {{ selectedPost.title || "Product Name" }}
+              </h2>
+
+              <p class="content mb-3 text-sm">
+                {{ selectedPost.description || "No description available." }}
+              </p>
+
+              <div
+                class="flex-1 flex flex-col gap-2 text-gray-700 text-sm justify-between pt-4"
+              >
+                <div
+                  class="w-full grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-200 bg-white overflow-hidden"
+                >
+                  <div class="px-2 flex flex-col gap-1items">
+                    <div class="flex items-center justify-start gap-2 items">
+                      <i class="bx bx-cube text-lg"></i>
+                      <span class="text-sm">{{
+                        selectedPost.product?.product
+                      }}</span>
+                    </div>
                   </div>
-                  <div class="flex flex-col">
-                    <span class="font-semibold text-gray-800">{{
-                      selectedPost.user?.username
-                    }}</span>
-                    <div class="flex items-center gap-1 text-gray-500 text-xs">
-                      <span>{{ formattedDate(selectedPost.updated_at) }}</span>
+
+                  <div class="px-2 flex flex-col gap-1">
+                    <div class="flex items-center justify-center gap-2 items">
+                      <i class="bx bx-package text-lg"></i>
+                      <span class="text-sm">
+                        {{ selectedPost.quantity }}
+                        {{ selectedPost.product?.unit?.abbreviation }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="px-2 flex flex-col gap-1">
+                    <div class="flex items-center justify-end gap-2 items">
+                      <i class="bx bx-wallet text-lg"></i>
+                      <span class="text-sm">
+                        {{ Number(selectedPost.price).toLocaleString() }}
+                        {{ selectedPost.currency?.symbol }}
+                      </span>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div>
-              <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-3">
-                {{ selectedPost.title || "Product Name" }}
-              </h2>
-              <p class="text-gray-700 mb-3">
-                {{ selectedPost.description || "No description available." }}
-              </p>
-            </div>
-
-            <div
-              class="flex-1 flex flex-col gap-2 text-gray-700 text-sm justify-between"
-            >
-              <div class="flex gap-3">
-                <div
-                  class="flex-1 flex items-center gap-2 bg-gray-50 border border-gray-200 rounded p-2 text-sm"
-                >
-                  <i class="bx bx-package text-gray-500"></i>
-                  <span class="text-gray-800">
-                    {{ selectedPost.product?.product }}
-                  </span>
-                </div>
-
-                <div
-                  class="flex-1 flex items-center gap-2 bg-gray-50 border border-gray-200 rounded p-2 text-sm"
-                >
-                  <i class="bx bx-package text-gray-500"></i>
-                  <span class="text-gray-800">
-                    {{ selectedPost?.quantity }}
-                    {{ selectedPost?.product?.unit?.abbreviation }}
-                  </span>
-                </div>
-
-                <div
-                  class="flex-1 flex items-center gap-2 bg-gray-50 border border-gray-200 rounded p-2 text-sm"
-                >
-                  <i class="bx bx-wallet text-gray-500"></i>
-                  <span class="text-gray-800">
-                    {{ selectedPost?.price }}
-                    {{ selectedPost?.currency?.symbol }}
-                  </span>
-                </div>
-              </div>
-            </div>
             <div class="flex flex-wrap gap-2">
               <span
                 v-for="label in selectedPost.labels"
                 :key="label.id"
                 :style="{
-                  backgroundColor: `${label.color}20`,
-                  borderColor: label.color,
-                  color: label.color,
+                  backgroundColor: `${label.color}`,
+                  // backgroundColor: `${label.color}20`,
+                  // borderColor: label.color,
+                  // color: label.color,
                 }"
-                class="px-3 py-1 rounded-full text-xs font-semibold border whitespace-nowrap"
+                class="px-3 py-1 rounded-full text-xs text-white small border whitespace-nowrap"
               >
                 {{ label.name }}
               </span>

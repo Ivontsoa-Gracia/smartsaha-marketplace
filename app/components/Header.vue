@@ -62,7 +62,7 @@
                 v-for="loc in locales"
                 :key="loc.code"
                 @click="selectLocale(loc.code)"
-                class="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 cursor-pointer transition"
+                class="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 cursor-pointer transition content"
               >
                 <img :src="loc.flag" class="w-5 h-5 rounded-full" />
                 {{ loc.name }}

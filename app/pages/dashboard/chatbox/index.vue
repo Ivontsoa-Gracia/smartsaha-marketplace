@@ -1100,6 +1100,8 @@
         </div>
 
         <div v-if="selectedChat" class="p-4 border-t bg-[#fafaf9] flex gap-2">
+
+          <!-- Bouton Bid -->
           <button
             v-if="
               post?.current_status !== 'vendu' &&
@@ -1107,9 +1109,9 @@
               !hasStoppedOrCancelledBid
             "
             @click="openCreateBidModal"
-            class="w-12 h-full flex items-center justify-center rounded-lg border content px-3 py-2 bg-white outline-none"
+            class="w-10 h-10 flex items-center content justify-center rounded-lg bg-white active:scale-95 transition"
           >
-            <i class="bx bx-plus text-xl text-gray-600"></i>
+            <i class="bx bx-plus text-lg text-gray-600"></i>
           </button>
 
           <div

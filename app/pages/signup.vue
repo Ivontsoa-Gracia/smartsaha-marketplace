@@ -59,25 +59,45 @@
                       />
                     </div>
 
-                    <div>
+                    <div class="mt-8">
                       <label class="block label mb-3">
                         Avatar (facultatif)
                       </label>
 
                       <div
                         @click="$refs.avatarInput.click()"
-                        class="border-2 border-dashed border-[#112830]/10 rounded-2xl p-8 text-center cursor-pointer bg-white hover:border-[#10b481] hover:bg-[#10b481]/5 transition-all"
+                        class="flex flex-col items-center justify-center border-2 border-dashed border-[#112830]/10 rounded-2xl p-8 text-center cursor-pointer bg-white hover:border-[#10b481] hover:bg-[#10b481]/5 transition-all"
                       >
-                        <p class="text-sm small text-[#112830]/60">
-                          Ajouter une photo de profil
-                        </p>
-
-                        <p
-                          v-if="avatarFileName"
-                          class="text-[#10b481] small mt-3 text-sm"
+                        <div
+                          v-if="!avatarPreview"
+                          class="flex flex-col items-center justify-center w-full h-full"
                         >
-                          {{ avatarFileName }}
-                        </p>
+                          <i class="bx bx-user text-6xl mb-3 text-gray-400"></i>
+                          <span class="label mb-2">
+                            Ajouter une photo de profil
+                          </span>
+                        </div>
+
+                        <div
+                          v-else
+                          class="flex items-center justify-between gap-4 rounded-xl p-3 w-full"
+                        >
+                          <div class="flex items-center gap-3 min-w-0">
+                            <img
+                              :src="avatarPreview"
+                              class="w-12 h-12 object-cover rounded-lg shadow-sm"
+                            />
+
+                            <div class="flex flex-col min-w-0 text-left">
+                              <span class="label truncate">
+                                Avatar uploadé
+                              </span>
+                              <span class="text-xs text-gray-400 truncate">
+                                {{ avatarFileName }}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
                       </div>
 
                       <input
@@ -129,25 +149,52 @@
 
                     <div
                       @click="$refs.fileInput.click()"
-                      class="border-2 border-dashed border-[#112830]/10 rounded-2xl p-8 text-center cursor-pointer bg-white hover:border-[#10b481] hover:bg-[#10b481]/5 transition-all"
+                      class="flex flex-col items-center justify-center border-2 border-dashed border-[#112830]/10 rounded-2xl p-8 text-center cursor-pointer bg-white hover:border-[#10b481] hover:bg-[#10b481]/5 transition-all"
                     >
-                      <p class="text-sm small text-[#112830]/60">
-                        Cliquez pour téléverser un fichier (image ou PDF)
-                      </p>
-
-                      <p
-                        v-if="selectedFileName"
-                        class="text-[#10b481] mt-3 text-sm small"
+                      <div
+                        v-if="!filePreview"
+                        class="flex flex-col items-center justify-center w-full h-full"
                       >
-                        {{ selectedFileName }}
-                      </p>
+                        <i class="bx bx-upload text-6xl mb-3 text-gray-400"></i>
+                        <span class="label mb-2">
+                          Cliquez pour téléverser un fichier (image ou PDF)
+                        </span>
+                      </div>
+
+                      <div
+                        v-else
+                        class="flex items-center justify-between gap-4 ] rounded-xl p-3 w-full"
+                      >
+                        <div class="flex items-center gap-3 min-w-0">
+                          <!-- Aperçu si image -->
+                          <img
+                            v-if="isImage"
+                            :src="filePreview"
+                            class="w-12 h-12 object-cover rounded-lg shadow-sm"
+                          />
+                          <!-- Icône PDF si PDF -->
+                          <i
+                            v-else
+                            class="bx bx-file text-4xl text-gray-400"
+                          ></i>
+
+                          <div class="flex flex-col min-w-0 text-left">
+                            <span class="label truncate">
+                              Fichier sélectionné
+                            </span>
+                            <span class="text-xs text-gray-400 truncate">
+                              {{ selectedFileName }}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
                     <input
                       ref="fileInput"
                       type="file"
-                      @change="handleFileUpload"
                       accept="image/*,.pdf"
+                      @change="handleFileUpload"
                       class="hidden"
                     />
                   </div>
@@ -212,7 +259,6 @@
       <div
         class="relative z-50 flex flex-col justify-center h-full gap-y-8 px-4 sm:px-0"
       >
-
         <div class="flex flex-col justify-center gap-2">
           <h2 class="leading-snug text-2xl font-bold">
             Bienvenue sur SmartSaha
@@ -222,9 +268,7 @@
             meilleurs clients.
           </p>
         </div>
-        <div
-          class="flex flex-col sm:flex-row items-center gap-1 self-start"
-        >
+        <div class="flex flex-col sm:flex-row items-center gap-1 self-start">
           <p class="text-sm small text-[#112830] text-center sm:text-left">
             Déjà un compte ?
           </p>
@@ -244,7 +288,7 @@
     class="absolute inset-0 bg-black/50 flex items-center justify-center"
   >
     <div
-      class="w-12 h-12 border-4 border-t-[#10b481] border-white rounded-lg-full animate-spin"
+      class="w-12 h-12 border-4 border-t-[#10b481] border-white rounded-full animate-spin"
     ></div>
   </div>
 
@@ -399,24 +443,22 @@
         <div
           class="absolute -bottom-64 right-[-100px] w-[800px] h-[400px] sm:bg-[#10b481] opacity-40 rounded-[60%_40%_55%_45%/50%_60%_40%_50%] blur-3xl"
         ></div>
-        <div>
+        <div class="z-50">
           <div
-            class="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center mb-8"
+            class="w-12 h-12 rounded-xl bg-[#112830]/20 flex items-center justify-center mb-8"
           >
-            <i class="bx bx-credit-card text-3xl text-emerald-400"></i>
+            <i class="bx bx-credit-card text-3xl text-[#112830]"></i>
           </div>
 
-          <h3 class="text-2xl font-semibold leading-snug">
-            Activation des paiements
-          </h3>
+          <h2 class="leading-snug">Activation des paiements</h2>
 
-          <p class="mt-5 text-sm text-white/70 lightcontent leading-relaxed">
+          <p class="mt-5 content leading-relaxed">
             Pour pouvoir publier des offres et recevoir des paiements en toute
             sécurité sur la plateforme, la configuration Stripe est une étape
             obligatoire.
           </p>
 
-          <div class="mt-8 space-y-3 text-sm text-white/60 lightcontent">
+          <div class="mt-8 space-y-3 content">
             <div class="flex items-start gap-2">
               <span>•</span>
               <span>Vérification d’identité</span>
@@ -432,7 +474,7 @@
           </div>
         </div>
 
-        <div class="text-xs text-white/50 small mt-12">
+        <div class="text-xs text-gray-700 small mt-12">
           Traitement sécurisé via Stripe · Conforme aux standards internationaux
         </div>
       </div>
@@ -564,6 +606,25 @@ const originalSizeMB = ref(0);
 const compressedSizeMB = ref(0);
 const fileToCompress = ref<File | null>(null);
 
+const filePreview = ref(null);
+const isImage = ref(false);
+
+// const handleFileUpload = (e) => {
+//   const file = e.target.files[0];
+//   if (!file) return;
+
+//   selectedFileName.value = file.name;
+
+//   // Preview seulement si image
+//   if (file.type.startsWith("image/")) {
+//     isImage.value = true;
+//     filePreview.value = URL.createObjectURL(file);
+//   } else {
+//     isImage.value = false;
+//     filePreview.value = null; // pas de preview pour PDF
+//   }
+// };
+
 const handleFileUpload = async (event: Event) => {
   const input = event.target as HTMLInputElement;
   if (!input.files || !input.files[0]) return;
@@ -572,6 +633,14 @@ const handleFileUpload = async (event: Event) => {
   const sizeMB = file.size / 1024 / 1024;
 
   selectedFileName.value = file.name;
+
+  if (file.type.startsWith("image/")) {
+    isImage.value = true;
+    filePreview.value = URL.createObjectURL(file);
+  } else {
+    isImage.value = false;
+    filePreview.value = null;
+  }
 
   // ❌ PDF → pas de compression
   if (file.type === "application/pdf" && sizeMB > MAX_FILE_SIZE_MB) {
@@ -730,6 +799,13 @@ const uploadToCloudinary = async (file: File) => {
   return data.secure_url;
 };
 
+const fileInput = ref(null);
+const avatarPreview = ref(null);
+
+const triggerFile = () => {
+  fileInput.value.click();
+};
+
 const handleAvatarUpload = async (event: Event) => {
   const input = event.target as HTMLInputElement;
   if (!input.files || !input.files[0]) return;
@@ -737,6 +813,7 @@ const handleAvatarUpload = async (event: Event) => {
   const file = input.files[0];
   avatarFile.value = file;
   avatarFileName.value = file.name;
+  avatarPreview.value = URL.createObjectURL(file);
 
   avatarUrl.value = await uploadToCloudinary(file);
 };

@@ -11,8 +11,9 @@
     ></div>
 
     <div
-      class="absolute -top-48 right-[-100px] w-[800px] h-[400px] sm:bg-[#10b481] opacity-30 rounded-[60%_40%_55%_45%/50%_60%_40%_50%] blur-3xl"
+      class="absolute -top-48 right-[-100px] w-[800px] h-[400px] bg-[#10b481] opacity-30 rounded-[60%_40%_55%_45%/50%_60%_40%_50%] blur-3xl"
     ></div>
+
 
     <div class="hidden lg:flex w-1/2 flex-col p-12 relative overflow-hidden">
       <div class="flex-1 flex items-center">
@@ -181,7 +182,7 @@
           </button>
         </form>
 
-        <p class="text-center small text-sm text-gray-500 mt-8">
+        <p class="text-center small text-xs sm:text-sm text-gray-500 mt-8 px-8">
           {{ t("dontaccount") }}
           <NuxtLink
             to="/signup"

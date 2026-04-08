@@ -247,7 +247,8 @@ export const translate = {
     logintext: "Log in to access your account.",
     dontaccount: "Don't have an account?",
     createone: "Create one",
-    accountinactive: "Please contact the administrator to reactivate your account."
+    accountinactive:
+      "Please contact the administrator to reactivate your account.",
   },
 
   fr: {
@@ -487,7 +488,8 @@ export const translate = {
     logintext: "Connectez-vous pour accéder à votre compte.",
     dontaccount: "Vous n’avez pas de compte ?",
     createone: "Créez-en un",
-    accountinactive: "Veuillez contacter l’administrateur pour réactiver votre compte.",
+    accountinactive:
+      "Veuillez contacter l’administrateur pour réactiver votre compte.",
 
     report_fake_listing: "Annonce fausse ou trompeuse",
     report_scam: "Arnaque",
@@ -503,13 +505,24 @@ export const translate = {
     setting: "Paramètres",
 
     gestionAnnonces: "Gestion des annonces",
-gestionUtilisateurs: "Gestion des utilisateurs",
-gestionCategories: "Gestion des catégories",
-gestionProduits: "Gestion des produits",
-noImage: "Aucune image disponible",
-label: "Label",
-save: "Enregistrer"
+    gestionUtilisateurs: "Gestion des utilisateurs",
+    gestionCategories: "Gestion des catégories",
+    gestionProduits: "Gestion des produits",
+    noImage: "Aucune image disponible",
+    label: "Label",
+    save: "Enregistrer",
 
+    all: "Tous",
+    draft: "Brouillon",
+    published: "Publiée",
+    negotiation: "En négociation",
+    sold: "Vendu",
+    deleted: "Supprimée",
+    payée: "Payé",
+
+    completed: "Terminé",
+funds_secured: "Fonds sécurisés",
+awaiting_payment: "Paiement en attente"
   },
   mg: {
     home: "Fandraisana",
@@ -746,6 +759,7 @@ save: "Enregistrer"
     logintext: "Midira mba hahazoana miditra amin’ny kaontinao.",
     dontaccount: "Tsy manana kaonty ve ianao ?",
     createone: "Mamoròna iray",
-    accountinactive: "Mifandraisa amin'ny mpandrindra mba hanavao ny kaontinao."
+    accountinactive:
+      "Mifandraisa amin'ny mpandrindra mba hanavao ny kaontinao.",
   },
 };
